@@ -65,7 +65,9 @@ public class Server {
     }
 
     public void broadcast(Packet packet) {
-        getConnections().forEach(n -> n.sendPacket(packet));
+        for (ServerSideConnection elem : getConnections()) {
+            if (!elem.isAuthorized()) continue;
+            elem.sendPacket(packet);
+        }
     }
-
 }

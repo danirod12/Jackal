@@ -1,0 +1,3 @@
+# Project exclude paths
+/jackal-client/target/
+/jackal-server/target/

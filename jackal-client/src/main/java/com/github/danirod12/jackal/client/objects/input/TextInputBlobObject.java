@@ -1,0 +1,123 @@
+package com.github.danirod12.jackal.client.objects.input;
+
+import com.github.danirod12.jackal.client.Jackal;
+import com.github.danirod12.jackal.client.controllers.KeyboardExecutor;
+import com.github.danirod12.jackal.client.controllers.MouseExecutor;
+import com.github.danirod12.jackal.client.controllers.SelectableObject;
+import com.github.danirod12.jackal.client.objects.RenderObject;
+import com.github.danirod12.jackal.client.render.GameLoop;
+import com.github.danirod12.jackal.client.util.Misc;
+
+import java.awt.*;
+import java.awt.event.KeyEvent;
+import java.util.function.Consumer;
+
+public class TextInputBlobObject extends RenderObject implements MouseExecutor, KeyboardExecutor, SelectableObject {
+
+    private final GameLoop loop = Jackal.getGameLoop();
+
+    private final int width, height, arc, limit;
+    private final Color main, bound, selected_bound;
+    private final Consumer<String> action;
+    private final Font font;
+
+    private final String default_text;
+
+    private boolean moved = false;
+    private int text_offset = -1;
+
+    private String typed = "";
+
+    public String getValue() { return typed; }
+
+    public TextInputBlobObject(int x, int y, int width, int height, int arc, Color main, Color bound, Color selected_bound,
+                               Font font, int limit, String default_text, Consumer<String> accept) {
+        super(x, y);
+        this.width = width;
+        this.height = height;
+        this.arc = arc;
+        this.limit = limit;
+        this.main = main;
+        this.bound = bound;
+        this.selected_bound = selected_bound;
+        this.action = accept;
+        this.font = font;
+        this.default_text = default_text;
+
+    }
+
+    @Override
+    public boolean onMouseClick(int x, int y) {
+        return Misc.isInsideRoundedRect(x - getX(), y - getY(), width, height, arc / 2);
+    }
+
+    @Override
+    public boolean onMouseMove(int x, int y) {
+        return moved = Misc.isInsideRoundedRect(x - getX(), y - getY(), width, height, arc / 2);
+    }
+
+    @Override
+    public void tick() { }
+
+    @Override
+    public void render(Graphics2D graphics) {
+
+        graphics.setColor(main);
+        graphics.fillRoundRect(getX(), getY(), width, height, arc, arc);
+
+        graphics.setColor(moved && loop.getScheduledBoolean() || Jackal.getGameLoop().getSelectedObject() == this ? selected_bound : bound);
+        graphics.drawRoundRect(getX(), getY(), width, height, arc, arc);
+
+        // Draw text
+
+        if(text_offset < 0) {
+            int text_height = (int)font.createGlyphVector(graphics.getFontRenderContext(), "A").getPixelBounds(null, 0, 0).getHeight();
+            this.text_offset = (height + text_height) / 2;
+        }
+
+        graphics.setColor(bound);
+        graphics.setFont(font);
+
+        final boolean selected = Jackal.getGameLoop().getSelectedObject() == this;
+        final String text = typed.equalsIgnoreCase("") && !selected ? default_text : typed;
+        graphics.drawString(text + (selected && loop.getScheduledBoolean() ? "|" : ""),
+                getX() + (width - graphics.getFontMetrics().stringWidth(text)) / 2, getY() + text_offset);
+
+        // Draw text enter-validator
+        
+    }
+
+    public void accept(boolean clear) {
+        action.accept(typed);
+        if(clear) typed = "";
+    }
+
+    @Override
+    public void onKeyTyped(KeyEvent key) {
+
+        if(this != Jackal.getGameLoop().getSelectedObject()) return;
+
+        if(key.getKeyChar() == '\n') {
+            if(action != null)
+                action.accept(typed);
+            return;
+        }
+
+        if(key.getKeyChar() == '\b') {
+            if(typed.length() > 0)
+                typed = typed.substring(0, typed.length() - 1);
+            return;
+        }
+
+        if(key.getKeyChar() == '\u007F') {
+            if(typed.length() > 0)
+                typed = Misc.substringToSpace(typed);
+            return;
+        }
+
+        if(typed.length() + 1 > limit) return;
+        typed += key.getKeyChar();
+
+    }
+
+}

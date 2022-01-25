@@ -1,7 +1,7 @@
 package com.github.danirod12.jackal.client.protocol;
 
 import com.github.danirod12.jackal.client.Jackal;
-import com.github.danirod12.jackal.client.game.Player;
+import com.github.danirod12.jackal.client.objects.game.Player;
 import com.github.danirod12.jackal.client.objects.input.ChatObject;
 import com.github.danirod12.jackal.client.protocol.packet.Packet;
 import com.google.gson.Gson;

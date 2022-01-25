@@ -1,4 +1,4 @@
-package com.github.danirod12.jackal.client.game;
+package com.github.danirod12.jackal.client.util;
 
 import java.awt.*;
 

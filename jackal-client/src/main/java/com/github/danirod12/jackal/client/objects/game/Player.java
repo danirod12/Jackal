@@ -1,4 +1,6 @@
-package com.github.danirod12.jackal.client.game;
+package com.github.danirod12.jackal.client.objects.game;
+
+import com.github.danirod12.jackal.client.util.GameColor;
 
 public class Player {
 

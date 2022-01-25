@@ -19,4 +19,6 @@ public class Player {
         return money;
     }
 
+    public String getName() { return name; }
+
 }

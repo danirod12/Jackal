@@ -106,7 +106,7 @@ public class ClientSideConnection {
 
             case 1: {
 
-                System.out.println("Player joined the game: " + data.getData());
+                players.add(new Player(data.getData()));
                 return;
 
             }
@@ -118,6 +118,17 @@ public class ClientSideConnection {
                 if(chat != null) chat.addMessage(data.getData());
                 return;
 
+            }
+
+            case 3: {
+
+                players.removeIf(player -> player.getName().equalsIgnoreCase(data.getData()));
+                return;
+
+            }
+
+            case 4: {
+                throw new UnsupportedOperationException("Feature not available yet");
             }
 
             default: throw new IllegalArgumentException("Unknown packet ID - " + data.getID());

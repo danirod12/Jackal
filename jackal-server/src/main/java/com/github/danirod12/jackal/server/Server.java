@@ -1,6 +1,7 @@
 package com.github.danirod12.jackal.server;
 
 import com.github.danirod12.jackal.server.protocol.ServerSideConnection;
+import com.github.danirod12.jackal.server.protocol.packet.ClientboundPlayerRemovePacket;
 import com.github.danirod12.jackal.server.protocol.packet.Packet;
 
 import java.io.IOException;
@@ -62,6 +63,8 @@ public class Server {
 
     public void removeConnection(ServerSideConnection connection) {
         connections.remove(connection);
+        if(connection.isAuthorized())
+            this.broadcast(new ClientboundPlayerRemovePacket(connection));
     }
 
     public void broadcast(Packet packet) {

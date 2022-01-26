@@ -61,10 +61,10 @@ public class ButtonObject extends RenderObject implements MouseExecutor {
     @Override
     public void render(Graphics2D graphics) {
 
-        graphics.setColor(selected && loop.getScheduledBoolean() ? activated : main);
+        graphics.setColor(selected ? activated : main);
         graphics.fillRoundRect(getX(), getY(), width, height, arc, arc);
 
-        graphics.setColor(selected && loop.getScheduledBoolean() ? activated_bound : bound);
+        graphics.setColor(selected ? activated_bound : bound);
         graphics.drawRoundRect(getX(), getY(), width, height, arc, arc);
 
         if(text == null) return;

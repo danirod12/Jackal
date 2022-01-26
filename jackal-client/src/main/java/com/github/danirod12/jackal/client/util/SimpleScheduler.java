@@ -11,6 +11,12 @@ public class SimpleScheduler<T> {
         this.current = ticks;
     }
 
+    public SimpleScheduler(int ticks, T t) {
+        this.ticks = ticks;
+        this.current = ticks;
+        this.value = t;
+    }
+
     public void set(T t) {
         this.value = t;
     }

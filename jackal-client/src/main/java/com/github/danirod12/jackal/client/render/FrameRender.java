@@ -105,18 +105,18 @@ public class FrameRender extends Canvas {
                 small_text, Color.BLACK));
 
         handler.add(RenderLayer.LOBBY_SETTINGS, name = new TextInputBlobObject(width / 2 - 300, height / 2 - 135, 600, 60, 40,
-                new Color(0x83BFE0), new Color(0), new Color(0xBD2424), new Font("TimesRoman", Font.BOLD, 35), 16,
+                new Color(0x83BFE0), new Color(0), new Color(0x107FB4), new Color(0xBD2424), new Font("TimesRoman", Font.BOLD, 35), 16,
                 "Enter name", null));
 
         handler.add(RenderLayer.LOBBY_SETTINGS, new TextAlignedObject(width / 2, height / 2 - 5, true, true, "Game server IP:port",
                 small_text, Color.BLACK));
 
         handler.add(RenderLayer.LOBBY_SETTINGS, server = new TextInputBlobObject(width / 2 - 300, height / 2, 600, 60, 40,
-                new Color(0x83BFE0), new Color(0), new Color(0xBD2424), new Font("TimesRoman", Font.BOLD, 35), 30,
+                new Color(0x83BFE0), new Color(0), new Color(0x107FB4), new Color(0xBD2424), new Font("TimesRoman", Font.BOLD, 35), 30,
                 "Enter server IP", null));
 
         handler.add(RenderLayer.LOBBY_SETTINGS, new ButtonObject(width / 2 - 150, height / 2 + 150, 300, 50, 40,
-                new Color(0x42A0CC), new Color(0), new Color(0x107FB4), Color.RED, "Connect", small_text,
+                new Color(0x42A0CC), Color.BLACK, new Color(0x107FB4), Color.RED, "Connect", small_text,
                     () -> Jackal.getGameLoop().connect(name.getValue(), server.getValue())));
 
     }

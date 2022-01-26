@@ -17,7 +17,7 @@ public class TextInputBlobObject extends RenderObject implements MouseExecutor, 
     private final GameLoop loop = Jackal.getGameLoop();
 
     private final int width, height, arc, limit;
-    private final Color main, bound, selected_bound;
+    private final Color main, bound, selected, selected_bound;
     private final Consumer<String> action;
     private final Font font;
 
@@ -30,8 +30,8 @@ public class TextInputBlobObject extends RenderObject implements MouseExecutor, 
 
     public String getValue() { return typed; }
 
-    public TextInputBlobObject(int x, int y, int width, int height, int arc, Color main, Color bound, Color selected_bound,
-                               Font font, int limit, String default_text, Consumer<String> accept) {
+    public TextInputBlobObject(int x, int y, int width, int height, int arc, Color main, Color bound, Color selected,
+                               Color selected_bound, Font font, int limit, String default_text, Consumer<String> accept) {
         super(x, y);
         this.width = width;
         this.height = height;
@@ -39,6 +39,7 @@ public class TextInputBlobObject extends RenderObject implements MouseExecutor, 
         this.limit = limit;
         this.main = main;
         this.bound = bound;
+        this.selected = selected == null ? main : selected;
         this.selected_bound = selected_bound;
         this.action = accept;
         this.font = font;
@@ -62,10 +63,10 @@ public class TextInputBlobObject extends RenderObject implements MouseExecutor, 
     @Override
     public void render(Graphics2D graphics) {
 
-        graphics.setColor(main);
+        graphics.setColor(Jackal.getGameLoop().getSelectedObject() == this ? selected : main);
         graphics.fillRoundRect(getX(), getY(), width, height, arc, arc);
 
-        graphics.setColor(moved && loop.getScheduledBoolean() || Jackal.getGameLoop().getSelectedObject() == this ? selected_bound : bound);
+        graphics.setColor(moved || Jackal.getGameLoop().getSelectedObject() == this ? selected_bound : bound);
         graphics.drawRoundRect(getX(), getY(), width, height, arc, arc);
 
         // Draw text

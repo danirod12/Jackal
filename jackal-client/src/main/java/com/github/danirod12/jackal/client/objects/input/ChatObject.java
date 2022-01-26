@@ -6,6 +6,7 @@ import com.github.danirod12.jackal.client.controllers.SelectableObject;
 import com.github.danirod12.jackal.client.objects.RenderObject;
 import com.github.danirod12.jackal.client.protocol.packet.ServerboundChatPacket;
 import com.github.danirod12.jackal.client.render.GameLoop;
+import com.github.danirod12.jackal.client.util.ColorTheme;
 import com.github.danirod12.jackal.client.util.Misc;
 
 import java.awt.*;
@@ -110,7 +111,7 @@ public class ChatObject extends RenderObject implements KeyboardExecutor, Select
 
         if(input) {
 
-            graphics.setColor(Color.BLACK);
+            graphics.setColor(ColorTheme.INPUT_TEXT);
             graphics.drawString(value + (loop.getScheduledBoolean() ? "|" : ""), 2, getY() - 2);
 
         }

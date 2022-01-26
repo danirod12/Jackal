@@ -1,6 +1,7 @@
 package com.github.danirod12.jackal.client.render;
 
 import com.github.danirod12.jackal.client.Jackal;
+import com.github.danirod12.jackal.client.util.ColorTheme;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -59,11 +60,14 @@ public class ImageLoader {
 
         BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
         Graphics2D graphics = image.createGraphics();
+
+        // Not require ColorTheme. It is a corrupter image. But could be provided in the future
         graphics.setColor(Color.MAGENTA);
+
         graphics.fillRect(0, 0, width, height);
         graphics.dispose();
 
-        graphics.setColor(Color.WHITE);
+        graphics.setColor(ColorTheme.DEBUG_LIGHT);
         ThreadLocalRandom random = ThreadLocalRandom.current();
         for (int i = 0; i < width; i++) {
             for (int j = 0; j < height; j++) {
@@ -73,7 +77,7 @@ public class ImageLoader {
         }
 
         graphics = image.createGraphics();
-        graphics.setColor(Color.RED);
+        graphics.setColor(ColorTheme.DEBUG_DARK);
         graphics.drawLine(0, 0, width, height);
         graphics.drawLine(0, height, width, 0);
         graphics.dispose();

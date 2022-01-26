@@ -10,13 +10,13 @@ import com.github.danirod12.jackal.client.objects.bin.FadingOvalObject;
 import com.github.danirod12.jackal.client.objects.input.ChatObject;
 import com.github.danirod12.jackal.client.protocol.ClientSideConnection;
 import com.github.danirod12.jackal.client.protocol.packet.ServerboundLoginPacket;
+import com.github.danirod12.jackal.client.util.ColorTheme;
 import com.github.danirod12.jackal.client.util.Misc;
 import com.github.danirod12.jackal.client.util.SimpleScheduler;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.image.BufferStrategy;
-import java.io.IOException;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
@@ -119,7 +119,7 @@ public class GameLoop implements Runnable {
         this.handler.getRenderObjects().forEach(n -> n.render(graphics));
 
         if(render.displayFps()) {
-            graphics.setColor(Color.WHITE);
+            graphics.setColor(ColorTheme.DEBUG_LIGHT);
             graphics.setFont(system_font);
             graphics.drawString("FPS: " + fps, 4, 15);
         }
@@ -172,7 +172,7 @@ public class GameLoop implements Runnable {
     public void onMouseMove(int x, int y) {
 
         // TODO remove debug
-        handler.add(RenderLayer.HIGHEST, new FadingOvalObject(x, y, 4, (int)(tps * .2D), Color.RED));
+        handler.add(RenderLayer.HIGHEST, new FadingOvalObject(x, y, 4, (int)(tps * .2D), ColorTheme.DEBUG_DARK));
 
         handler.getMouseExecutors().forEach(n -> n.onMouseMove(x, y));
 

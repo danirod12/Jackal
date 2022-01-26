@@ -10,6 +10,7 @@ import com.github.danirod12.jackal.client.objects.bin.ImagesCollection;
 import com.github.danirod12.jackal.client.objects.input.ButtonObject;
 import com.github.danirod12.jackal.client.objects.input.ChatObject;
 import com.github.danirod12.jackal.client.objects.input.TextInputBlobObject;
+import com.github.danirod12.jackal.client.util.ColorTheme;
 import com.github.danirod12.jackal.client.util.Misc;
 
 import javax.swing.*;
@@ -102,21 +103,21 @@ public class FrameRender extends Canvas {
         Font small_text = new Font("TimesRoman", Font.BOLD, 30);
 
         handler.add(RenderLayer.LOBBY_SETTINGS, new TextAlignedObject(width / 2, height / 2 - 140, true, true, "Your ingame name",
-                small_text, Color.BLACK));
+                small_text, ColorTheme.INPUT_TEXT));
 
         handler.add(RenderLayer.LOBBY_SETTINGS, name = new TextInputBlobObject(width / 2 - 300, height / 2 - 135, 600, 60, 40,
-                new Color(0x83BFE0), new Color(0), new Color(0x107FB4), new Color(0xBD2424), new Font("TimesRoman", Font.BOLD, 35), 16,
-                "Enter name", null));
+                ColorTheme.NOT_ACTIVATED_FRAME, ColorTheme.NOT_ACTIVATED_BOUND, ColorTheme.ACTIVATED_FRAME, ColorTheme.ACTIVATED_BOUND,
+                new Font("TimesRoman", Font.BOLD, 35), 16, "Enter name", null));
 
         handler.add(RenderLayer.LOBBY_SETTINGS, new TextAlignedObject(width / 2, height / 2 - 5, true, true, "Game server IP:port",
-                small_text, Color.BLACK));
+                small_text, ColorTheme.INPUT_TEXT));
 
         handler.add(RenderLayer.LOBBY_SETTINGS, server = new TextInputBlobObject(width / 2 - 300, height / 2, 600, 60, 40,
-                new Color(0x83BFE0), new Color(0), new Color(0x107FB4), new Color(0xBD2424), new Font("TimesRoman", Font.BOLD, 35), 30,
-                "Enter server IP", null));
+                ColorTheme.NOT_ACTIVATED_FRAME, ColorTheme.NOT_ACTIVATED_BOUND, ColorTheme.ACTIVATED_FRAME, ColorTheme.ACTIVATED_BOUND,
+                new Font("TimesRoman", Font.BOLD, 35), 30, "Enter server IP", null));
 
         handler.add(RenderLayer.LOBBY_SETTINGS, new ButtonObject(width / 2 - 150, height / 2 + 150, 300, 50, 40,
-                new Color(0x42A0CC), Color.BLACK, new Color(0x107FB4), Color.RED, "Connect", small_text,
+                ColorTheme.NOT_ACTIVATED_BUTTON, ColorTheme.NOT_ACTIVATED_BOUND, ColorTheme.ACTIVATED_BUTTON, ColorTheme.ACTIVATED_BOUND, "Connect", small_text,
                     () -> Jackal.getGameLoop().connect(name.getValue(), server.getValue())));
 
     }

@@ -4,6 +4,8 @@ import java.awt.*;
 
 public class ColorTheme {
 
+    public static final Color CHAT_BACKGROUND = new Color(128, 128, 128);
+
     public static final Color NOT_ACTIVATED_FRAME = new Color(0x83BFE0);
 
     public static final Color NOT_ACTIVATED_BUTTON = new Color(0x42A0CC);

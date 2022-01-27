@@ -49,12 +49,12 @@ public class GameLoop implements Runnable {
 
         boolean_ticker.set(false);
 
-        thread = new Thread(this);
-        thread.start();
-
         this.render = render;
         this.render.registerControllers(this);
         this.handler = new ObjectsHandler();
+
+        thread = new Thread(this);
+        thread.start();
 
     }
 

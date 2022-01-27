@@ -8,7 +8,7 @@ public class ColorTheme {
 
     public static final Color NOT_ACTIVATED_BUTTON = new Color(0x42A0CC);
 
-    public static final Color NOT_ACTIVATED_BOUND = new Color(0);
+    public static final Color NOT_ACTIVATED_BOUND = new Color(0x000000);
 
     public static final Color ACTIVATED_FRAME = new Color(0x107FB4);
 
@@ -16,10 +16,12 @@ public class ColorTheme {
 
     public static final Color ACTIVATED_BOUND = new Color(0xBD2424);
 
-    public static final Color INPUT_TEXT = new Color(0);
+    public static final Color INPUT_TEXT = new Color(0x000000);
 
     public static final Color DEBUG_LIGHT = new Color(0xFFFFFF);
 
-    public static final Color DEBUG_DARK = new Color(255, 0, 0);
+    public static final Color DEBUG_DARK = new Color(0xFF0000);
+
+    public static final Color MONEY = new Color(0xCC8F07);
 
 }

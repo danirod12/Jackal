@@ -10,6 +10,8 @@ public enum RenderLayer {
 
     CHAT(800),
 
+    PLAYERS_PANEL(810),
+
     HIGHEST(1000);
 
     private final int layer;

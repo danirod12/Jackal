@@ -2,6 +2,7 @@ package com.github.danirod12.jackal.client;
 
 import com.github.danirod12.jackal.client.render.GameLoop;
 import com.github.danirod12.jackal.client.render.FrameRender;
+import com.github.danirod12.jackal.client.render.ImageLoader;
 
 public class Jackal {
 
@@ -11,8 +12,13 @@ public class Jackal {
     private GameLoop game_loop;
 
     public static void main(String[] args) {
+
+        // Force load static fields before frame
+        ImageLoader.class.getName();
+
         instance = new Jackal();
         instance.createGameLoop();
+
     }
 
     private void createGameLoop() {

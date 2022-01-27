@@ -7,6 +7,7 @@ import com.github.danirod12.jackal.client.handler.ObjectsHandler;
 import com.github.danirod12.jackal.client.handler.RenderLayer;
 import com.github.danirod12.jackal.client.objects.bar.TextAlignedObject;
 import com.github.danirod12.jackal.client.objects.bin.ImagesCollection;
+import com.github.danirod12.jackal.client.objects.game.PlayersPanel;
 import com.github.danirod12.jackal.client.objects.input.ButtonObject;
 import com.github.danirod12.jackal.client.objects.input.ChatObject;
 import com.github.danirod12.jackal.client.objects.input.TextInputBlobObject;
@@ -72,9 +73,9 @@ public class FrameRender extends Canvas {
 
     }
 
-    public int getWidth() { return width; }
+    public int getWidth() { return width - OFFSET_NORMAL_W; }
 
-    public int getHeight() { return height; }
+    public int getHeight() { return height - OFFSET_NORMAL_H; }
 
     public int getWidth(int size) {
         return Misc.percentage(getWidth(), size);
@@ -122,9 +123,12 @@ public class FrameRender extends Canvas {
 
     }
 
-    public void createChat(ObjectsHandler handler) {
+    public void createGame(ObjectsHandler handler) {
 
-        handler.add(RenderLayer.CHAT, new ChatObject(height - OFFSET_NORMAL_H, width / 3, new Font("TimesRoman", Font.PLAIN, 30)));
+        handler.add(RenderLayer.CHAT, new ChatObject(getHeight(), width / 3, new Font("TimesRoman", Font.PLAIN, 30)));
+
+        handler.add(RenderLayer.PLAYERS_PANEL, new PlayersPanel(Jackal.getGameLoop().getConnection().getPlayers(),
+                getWidth() - 270, 20, 250, 20, 4, new Font("TimesRoman", Font.BOLD, 20)));
 
     }
 

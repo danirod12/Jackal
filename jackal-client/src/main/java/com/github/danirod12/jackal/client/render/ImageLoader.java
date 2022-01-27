@@ -11,6 +11,14 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public class ImageLoader {
 
+    public final static BufferedImage COIN_16;
+
+    static {
+
+        COIN_16 = loadImage("coin16");
+
+    }
+
     public static BufferedImage repeatImage(BufferedImage origin, int width, int height) {
 
         BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
@@ -33,7 +41,7 @@ public class ImageLoader {
 
     public static BufferedImage multiply(BufferedImage origin, int amount) {
 
-        BufferedImage image = new BufferedImage(origin.getWidth() * amount, origin.getHeight() * amount, BufferedImage.TYPE_INT_RGB);
+        BufferedImage image = new BufferedImage(origin.getWidth() * amount, origin.getHeight() * amount, BufferedImage.TYPE_INT_ARGB);
         for (int i = 0; i < image.getWidth(); i++) {
             for (int j = 0; j < image.getHeight(); j++) {
                 image.setRGB(i, j, origin.getRGB(i / amount, j / amount));
@@ -41,6 +49,14 @@ public class ImageLoader {
         }
         return image;
 
+    }
+
+    public static BufferedImage resizeImage(BufferedImage originalImage, int width, int height) {
+        BufferedImage resizedImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+        Graphics2D graphics2D = resizedImage.createGraphics();
+        graphics2D.drawImage(originalImage, 0, 0, width, height, null);
+        graphics2D.dispose();
+        return resizedImage;
     }
 
     public static BufferedImage loadImage(String name) {
@@ -88,7 +104,7 @@ public class ImageLoader {
 
     public static BufferedImage generateImage(int width, int height, Color color) {
 
-        BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+        BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
         Graphics2D graphics = image.createGraphics();
         graphics.setColor(color);
         graphics.fillRect(0, 0, width, height);

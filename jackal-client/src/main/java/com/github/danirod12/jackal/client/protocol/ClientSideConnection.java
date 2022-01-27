@@ -1,6 +1,7 @@
 package com.github.danirod12.jackal.client.protocol;
 
 import com.github.danirod12.jackal.client.Jackal;
+import com.github.danirod12.jackal.client.handler.RenderLayer;
 import com.github.danirod12.jackal.client.objects.game.Player;
 import com.github.danirod12.jackal.client.objects.input.ChatObject;
 import com.github.danirod12.jackal.client.protocol.packet.Packet;
@@ -21,7 +22,7 @@ public class ClientSideConnection {
     private BufferedWriter writer;
     private BufferedReader reader;
 
-    private List<Player> players = new ArrayList<>();
+    private final List<Player> players = new ArrayList<>();
 
     public ClientSideConnection(Socket socket) {
 
@@ -150,8 +151,11 @@ public class ClientSideConnection {
             e.printStackTrace();
         }
 
+        players.clear();
         Jackal.getGameLoop().destroyConnection();
 
     }
+
+    public List<Player> getPlayers() { return players; }
 
 }

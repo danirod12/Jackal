@@ -113,6 +113,12 @@ public class ServerSideConnection implements Runnable {
                     Server.getInstance().broadcast(new ClientboundPlayerAddPacket(this));
                     Server.getInstance().broadcast(new ClientboundChatPacket(name + " joined the game"));
 
+                    for(ServerSideConnection connection : Server.getInstance().getConnections()) {
+                        if(connection == this) continue;
+                        sendPacket(new ClientboundPlayerAddPacket(connection));
+                        // TODO metadata packet ?
+                    }
+
                 } else {
                     sendPacket(new ClientboundDisconnectPacket("Client already authorized as " + name));
                 }

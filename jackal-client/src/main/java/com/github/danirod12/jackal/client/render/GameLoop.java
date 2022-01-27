@@ -7,6 +7,7 @@ import com.github.danirod12.jackal.client.handler.ObjectsHandler;
 import com.github.danirod12.jackal.client.handler.RenderLayer;
 import com.github.danirod12.jackal.client.objects.AppObject;
 import com.github.danirod12.jackal.client.objects.bin.FadingOvalObject;
+import com.github.danirod12.jackal.client.objects.game.PlayersPanel;
 import com.github.danirod12.jackal.client.objects.input.ChatObject;
 import com.github.danirod12.jackal.client.protocol.ClientSideConnection;
 import com.github.danirod12.jackal.client.protocol.packet.ServerboundLoginPacket;
@@ -19,6 +20,7 @@ import java.awt.event.KeyEvent;
 import java.awt.image.BufferStrategy;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.util.Iterator;
 
 public class GameLoop implements Runnable {
 
@@ -244,7 +246,7 @@ public class GameLoop implements Runnable {
         }
 
         getObjectsHandler().removeAll();
-        render.createChat(getObjectsHandler());
+        render.createGame(getObjectsHandler());
 
     }
 

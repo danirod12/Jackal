@@ -111,8 +111,14 @@ public class ChatObject extends RenderObject implements KeyboardExecutor, Select
 
         if(input) {
 
+            graphics.setColor(new Color(100, 100, 100, 184));
+            graphics.fillRect(2, getY() - 34, 1259, 31);
+
+            graphics.setColor(new Color(65, 65, 65, 184));
+            graphics.drawRect(2, getY() - 34, 1259, 31);
+
             graphics.setColor(ColorTheme.INPUT_TEXT);
-            graphics.drawString(value + (loop.getScheduledBoolean() ? "|" : ""), 2, getY() - 2);
+            graphics.drawString(value + (loop.getScheduledBoolean() ? "|" : ""), 4, getY() - 10);
 
         }
 
@@ -124,8 +130,11 @@ public class ChatObject extends RenderObject implements KeyboardExecutor, Select
 
             if(!message.render() && !input || current_y < 50) break;
 
+            graphics.setColor(new Color(100, 100, 100, input ? 128 : message.getAlpha() / 2));
+            graphics.fillRect(2, current_y - 24, 512, 30);
+
             graphics.setColor(new Color(0, 0, 0, input ? 255 : message.getAlpha()));
-            graphics.drawString(message.getMessage(), 2, current_y);
+            graphics.drawString(message.getMessage(), 2, current_y - 1);
 
             current_y -= 2 + height;
 

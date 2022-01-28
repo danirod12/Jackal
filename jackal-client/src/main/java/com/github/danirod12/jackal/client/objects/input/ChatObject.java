@@ -130,11 +130,11 @@ public class ChatObject extends RenderObject implements KeyboardExecutor, Select
 
             if(!message.render() && !input || current_y < 50) break;
 
-            graphics.setColor(new Color(100, 100, 100, input ? 128 : Math.min(message.getAlpha(), 128)));
-            graphics.fillRect(2, current_y - 25, 512, 30);
+            graphics.setColor(new Color(100, 100, 100, input ? 128 : message.getAlpha() / 2));
+            graphics.fillRect(2, current_y - 24, 512, 30);
 
             graphics.setColor(new Color(0, 0, 0, input ? 255 : message.getAlpha()));
-            graphics.drawString(message.getMessage(), 2, current_y);
+            graphics.drawString(message.getMessage(), 2, current_y - 1);
 
             current_y -= 2 + height;
 

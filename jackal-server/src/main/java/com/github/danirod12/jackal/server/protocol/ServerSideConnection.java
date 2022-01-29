@@ -131,7 +131,7 @@ public class ServerSideConnection implements Runnable {
             case 1: {
 
                 System.out.println("CHAT: [" + name + "] " + data.getData());
-                if(data.getData().length() > 0) {
+                if(data.getData().length() > 0 && data.getData().replaceAll("&[a-fA-F0-9]*", "").length() != 0) {
                     Server.getInstance().broadcast(new ClientboundChatPacket("[&" + color.getColorCode() + name + "&0] " + data.getData()));
                 }
                 return;

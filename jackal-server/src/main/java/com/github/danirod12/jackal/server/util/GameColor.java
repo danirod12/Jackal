@@ -2,7 +2,7 @@ package com.github.danirod12.jackal.server.util;
 
 public enum GameColor {
 
-    UNKNOWN('a'),
+    UNKNOWN('0'),
 
     WHITE('f'),
     RED('c'),

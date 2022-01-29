@@ -213,6 +213,7 @@ public class GameLoop implements Runnable {
         if(name.length() < 3 || name.length() > 16 || !Misc.PATTERN.matcher(name).matches()) {
             System.out.println("incorrect name");
             // TODO incorrect name
+            // handler.add(10, );
             return;
         }
 

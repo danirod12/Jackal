@@ -5,6 +5,7 @@ import com.github.danirod12.jackal.server.protocol.packet.ClientboundChatPacket;
 import com.github.danirod12.jackal.server.protocol.packet.ClientboundDisconnectPacket;
 import com.github.danirod12.jackal.server.protocol.packet.ClientboundPlayerAddPacket;
 import com.github.danirod12.jackal.server.protocol.packet.Packet;
+import com.github.danirod12.jackal.server.util.GameColor;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 
@@ -21,6 +22,7 @@ public class ServerSideConnection implements Runnable {
     private BufferedReader reader;
 
     private String name;
+    private GameColor color = GameColor.UNKNOWN;
 
     public ServerSideConnection(Socket socket) {
 
@@ -93,7 +95,7 @@ public class ServerSideConnection implements Runnable {
 
     public String getName() { return name; }
 
-    public void onDataReceive(NamedData data) throws Throwable {
+    public void onDataReceive(NamedData data) {
 
         switch(data.getID()) {
 
@@ -129,8 +131,8 @@ public class ServerSideConnection implements Runnable {
             case 1: {
 
                 System.out.println("CHAT: [" + name + "] " + data.getData());
-                if(data.getData().length() > 0) {
-                    Server.getInstance().broadcast(new ClientboundChatPacket("[" + name + "] " + data.getData()));
+                if(data.getData().length() > 0 && data.getData().replaceAll("&[a-fA-F0-9]*", "").length() != 0) {
+                    Server.getInstance().broadcast(new ClientboundChatPacket("[&" + color.getColorCode() + name + "&0] " + data.getData()));
                 }
                 return;
 

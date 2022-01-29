@@ -6,6 +6,7 @@ import com.github.danirod12.jackal.client.controllers.SelectableObject;
 import com.github.danirod12.jackal.client.objects.RenderObject;
 import com.github.danirod12.jackal.client.protocol.packet.ServerboundChatPacket;
 import com.github.danirod12.jackal.client.render.GameLoop;
+import com.github.danirod12.jackal.client.util.ChatColor;
 import com.github.danirod12.jackal.client.util.ColorTheme;
 import com.github.danirod12.jackal.client.util.Misc;
 
@@ -13,6 +14,7 @@ import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 public class ChatObject extends RenderObject implements KeyboardExecutor, SelectableObject {
 
@@ -20,8 +22,8 @@ public class ChatObject extends RenderObject implements KeyboardExecutor, Select
 
     private final int width;
     private final Font font;
-    private List<ChatMessage> messages = new ArrayList<>();
-    private List<String> queue = new ArrayList<>();
+    private final List<ChatMessage> messages = new ArrayList<>();
+    private final List<String> queue = new ArrayList<>();
 
     private int height = -1;
 
@@ -128,14 +130,29 @@ public class ChatObject extends RenderObject implements KeyboardExecutor, Select
 
             final ChatMessage message = messages.get(i);
 
-            if(!message.render() && !input || current_y < 50) break;
+            if (!message.render() && !input || current_y < 50) break;
 
             graphics.setColor(new Color(100, 100, 100, input ? 128 : message.getAlpha() / 2));
             graphics.fillRect(2, current_y - 24, 512, 30);
 
-            graphics.setColor(new Color(0, 0, 0, input ? 255 : message.getAlpha()));
-            graphics.drawString(message.getMessage(), 2, current_y - 1);
+            ChatColor colorCode = ChatColor.getDefaultColor();
+            int current_x = 2;
 
+            for (String word : message.getMessage().split("&")) {
+
+                if(word.length() == 0) continue;
+
+                ChatColor temp = ChatColor.parseColor(word.toLowerCase().toCharArray()[0]);
+                if(temp != null) {
+                    colorCode = temp;
+                    word = word.substring(1);
+                }
+                graphics.setColor(colorCode.getBuilder().build(input ? 255 : message.getAlpha()));
+
+                graphics.drawString(word, current_x, current_y - 1);
+                current_x += graphics.getFontMetrics().stringWidth(word);
+
+            }
             current_y -= 2 + height;
 
         }

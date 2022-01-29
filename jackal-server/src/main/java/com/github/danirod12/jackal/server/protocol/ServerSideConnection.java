@@ -66,7 +66,7 @@ public class ServerSideConnection implements Runnable {
                 System.out.println("Client \"" + (name == null ? "Unknown" : name) + "\" lost. [" + socket + "] (" + exception.getLocalizedMessage() + ")");
                 close();
                 break;
-            } catch (IOException exception) {
+            } catch (Throwable exception) {
                 exception.printStackTrace();
                 close();
                 break;

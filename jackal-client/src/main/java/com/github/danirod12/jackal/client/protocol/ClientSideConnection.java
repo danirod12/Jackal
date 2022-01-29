@@ -83,7 +83,7 @@ public class ClientSideConnection {
                 } catch(SocketException exception) {
                     exception.printStackTrace();
                     close();
-                } catch (IOException exception) {
+                } catch (Throwable exception) {
                     exception.printStackTrace();
                     close();
                 }
@@ -94,7 +94,7 @@ public class ClientSideConnection {
 
     }
 
-    private void onDataReceive(NamedData data) throws Throwable {
+    private void onDataReceive(NamedData data) {
 
         switch (data.getID()) {
 

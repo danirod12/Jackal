@@ -104,24 +104,22 @@ public class TextInputBlobObject extends RenderObject implements MouseExecutor, 
         if(this != Jackal.getGameLoop().getSelectedObject()) return;
 
         if(key.getKeyChar() == '\n') {
-            if(action != null)
+
+            if (action != null)
                 action.accept(typed);
             return;
-        }
 
-        if(key.getKeyChar() == '\b') {
-            if(typed.length() > 0)
+        } if(key.getKeyChar() == '\b') {
+
+            if (typed.length() > 0)
                 typed = typed.substring(0, typed.length() - 1);
-            return;
-        }
 
-        if(key.getKeyChar() == '\u007F') {
-            if(typed.length() > 0)
+        } else if(key.getKeyChar() == '\u007F') {
+
+            if (typed.length() > 0)
                 typed = Misc.substringToSpace(typed);
-            return;
-        }
 
-        if (key.getKeyChar() == KeyEvent.VK_TAB) {
+        } else if (key.getKeyChar() == KeyEvent.VK_TAB) {
 
             List<SelectableObject> textObjects = new ArrayList<>();
             handler.getLayerCopy(RenderLayer.LOBBY_SETTINGS).stream().filter(elem -> (elem instanceof TextInputBlobObject)).forEach(n -> textObjects.add((SelectableObject) n));
@@ -129,11 +127,11 @@ public class TextInputBlobObject extends RenderObject implements MouseExecutor, 
             if (textObjects.get(textObjects.size() - 1) == this) return;
 
             loop.selectObject(textObjects.get(textObjects.indexOf(this) + 1));
+
+        } else {
+
+            if (typed.length() + 1 > limit) return;
+            typed += key.getKeyChar();
         }
-
-        if(typed.length() + 1 > limit) return;
-        typed += key.getKeyChar();
-
     }
-
 }

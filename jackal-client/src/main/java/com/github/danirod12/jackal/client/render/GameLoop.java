@@ -1,6 +1,7 @@
 package com.github.danirod12.jackal.client.render;
 
 import com.github.danirod12.jackal.client.Jackal;
+import com.github.danirod12.jackal.client.controllers.KeyboardExecutor;
 import com.github.danirod12.jackal.client.controllers.MouseExecutor;
 import com.github.danirod12.jackal.client.controllers.SelectableObject;
 import com.github.danirod12.jackal.client.handler.ObjectsHandler;
@@ -191,6 +192,8 @@ public class GameLoop implements Runnable {
 
     public void onKeyTyped(KeyEvent key) {
 
+        final SelectableObject current_selected = selected;
+
         if (key.getKeyChar() == KeyEvent.VK_ENTER && selected instanceof TextInputBlobObject) {
             // this.connect(name, server);
 
@@ -215,7 +218,10 @@ public class GameLoop implements Runnable {
 
         }
 
-        handler.getKeyboardExecutors().forEach(n -> n.onKeyTyped(key));
+        for (KeyboardExecutor keyboardExecutor : handler.getKeyboardExecutors()) {
+            if(selected != current_selected) break;
+            keyboardExecutor.onKeyTyped(key);
+        }
 
     }
 
@@ -277,6 +283,6 @@ public class GameLoop implements Runnable {
     public void selectObject (SelectableObject object) {
         unselectObject();
         selected = object;
-
     }
+
 }

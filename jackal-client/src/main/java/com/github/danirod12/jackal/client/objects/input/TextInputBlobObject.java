@@ -15,6 +15,7 @@ import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 public class TextInputBlobObject extends RenderObject implements MouseExecutor, KeyboardExecutor, SelectableObject {
 
@@ -107,9 +108,8 @@ public class TextInputBlobObject extends RenderObject implements MouseExecutor, 
 
             if (action != null)
                 action.accept(typed);
-            return;
 
-        } if(key.getKeyChar() == '\b') {
+        } else if(key.getKeyChar() == '\b') {
 
             if (typed.length() > 0)
                 typed = typed.substring(0, typed.length() - 1);
@@ -121,17 +121,20 @@ public class TextInputBlobObject extends RenderObject implements MouseExecutor, 
 
         } else if (key.getKeyChar() == KeyEvent.VK_TAB) {
 
-            List<SelectableObject> textObjects = new ArrayList<>();
-            handler.getLayerCopy(RenderLayer.LOBBY_SETTINGS).stream().filter(elem -> (elem instanceof TextInputBlobObject)).forEach(n -> textObjects.add((SelectableObject) n));
+            List<SelectableObject> textObjects = handler.getLayerCopy(RenderLayer.LOBBY_SETTINGS).stream().filter(TextInputBlobObject.class::isInstance)
+                    .map(SelectableObject.class::cast).collect(Collectors.toList());
 
-            if (textObjects.get(textObjects.size() - 1) == this) return;
+            if (textObjects.size() <= 1) return;
 
-            loop.selectObject(textObjects.get(textObjects.indexOf(this) + 1));
+            int index = textObjects.indexOf(this) + 1;
+            loop.selectObject(textObjects.get(index == 0 || index == textObjects.size() ? 0 : index));
 
         } else {
 
             if (typed.length() + 1 > limit) return;
             typed += key.getKeyChar();
+
         }
+
     }
 }

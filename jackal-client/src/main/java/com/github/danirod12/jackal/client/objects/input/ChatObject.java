@@ -138,25 +138,29 @@ public class ChatObject extends RenderObject implements KeyboardExecutor, Select
             ChatColor colorCode = ChatColor.getDefaultColor();
             int current_x = 2;
 
-            for (String word : message.getMessage().split("&")) {
+            if (message.getMessage().contains("&")) {
+                for (String word : message.getMessage().split("&")) {
 
-                if(word.length() == 0) continue;
+                    if (word.length() == 0) continue;
 
-                ChatColor temp = ChatColor.parseColor(word.toLowerCase().toCharArray()[0]);
-                if(temp != null) {
-                    colorCode = temp;
-                    word = word.substring(1);
+                    ChatColor temp = ChatColor.parseColor(word.toLowerCase().toCharArray()[0]);
+                    if (temp != null) {
+                        colorCode = temp;
+                        word = word.substring(1);
+                    }
+                    graphics.setColor(colorCode.getBuilder().build(input ? 255 : message.getAlpha()));
+
+                    graphics.drawString(word, current_x, current_y - 1);
+                    current_x += graphics.getFontMetrics().stringWidth(word);
+
                 }
+                current_y -= 2 + height;
+            } else {
                 graphics.setColor(colorCode.getBuilder().build(input ? 255 : message.getAlpha()));
 
-                graphics.drawString(word, current_x, current_y - 1);
-                current_x += graphics.getFontMetrics().stringWidth(word);
-
+                graphics.drawString(message.getMessage(), current_x, current_y - 1);
             }
-            current_y -= 2 + height;
-
         }
-
     }
 
     @Override

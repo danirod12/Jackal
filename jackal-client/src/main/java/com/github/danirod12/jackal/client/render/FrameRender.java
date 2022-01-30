@@ -13,6 +13,7 @@ import com.github.danirod12.jackal.client.objects.input.ChatObject;
 import com.github.danirod12.jackal.client.objects.input.TextInputBlobObject;
 import com.github.danirod12.jackal.client.util.ColorTheme;
 import com.github.danirod12.jackal.client.util.Misc;
+import com.github.danirod12.jackal.client.util.Pair;
 
 import javax.swing.*;
 import java.awt.*;

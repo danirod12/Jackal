@@ -9,6 +9,7 @@ import com.github.danirod12.jackal.client.objects.AppObject;
 import com.github.danirod12.jackal.client.objects.bin.FadingOvalObject;
 import com.github.danirod12.jackal.client.objects.game.PlayersPanel;
 import com.github.danirod12.jackal.client.objects.input.ChatObject;
+import com.github.danirod12.jackal.client.objects.input.TextInputBlobObject;
 import com.github.danirod12.jackal.client.protocol.ClientSideConnection;
 import com.github.danirod12.jackal.client.protocol.packet.ServerboundLoginPacket;
 import com.github.danirod12.jackal.client.util.ColorTheme;
@@ -190,6 +191,14 @@ public class GameLoop implements Runnable {
 
     public void onKeyTyped(KeyEvent key) {
 
+        if (key.getKeyChar() == KeyEvent.VK_ENTER && selected instanceof TextInputBlobObject) {
+            // this.connect(name, server);
+
+            // TODO make a text inputs getter
+
+            return;
+        }
+
         if(key.getKeyChar() == '\u001B' && selected != null) {
             unselectObject();
             return;
@@ -265,4 +274,9 @@ public class GameLoop implements Runnable {
         selected = null;
     }
 
+    public void selectObject (SelectableObject object) {
+        unselectObject();
+        selected = object;
+
+    }
 }

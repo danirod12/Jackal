@@ -11,6 +11,7 @@ public class KeyboardHandler implements KeyListener {
 
     public KeyboardHandler(GameLoop loop) {
         this.loop = loop;
+        loop.getFrameRender().setFocusTraversalKeysEnabled(false);
     }
 
     @Override

@@ -118,7 +118,15 @@ public class GameLoop implements Runnable {
 
         Graphics2D graphics = (Graphics2D) bs.getDrawGraphics();
         graphics.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+
+        // Background
         this.render.render(graphics);
+
+        // Game
+        if(this.connection != null && this.connection.getBoard() != null)
+            this.connection.getBoard().render(graphics);
+
+        // Foreground
         this.handler.getRenderObjects().forEach(n -> n.render(graphics));
 
         if(render.displayFps()) {

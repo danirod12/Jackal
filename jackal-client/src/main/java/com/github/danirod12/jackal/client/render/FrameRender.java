@@ -88,6 +88,7 @@ public class FrameRender extends Canvas {
 
     public boolean displayFps() { return true; }
 
+    // Background
     public void render(Graphics2D graphics) {
 
         graphics.drawImage(background.getImage(), 0, 0, null);

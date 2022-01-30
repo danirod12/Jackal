@@ -17,6 +17,12 @@ public enum GameColor {
         this.color = color;
     }
 
+    public static GameColor parseColor(String name) {
+        for(GameColor color : values())
+            if(color.name().equalsIgnoreCase(name))
+                return color; return GameColor.UNKNOWN;
+    }
+
     public Color asRenderColor() {
         return color;
     }

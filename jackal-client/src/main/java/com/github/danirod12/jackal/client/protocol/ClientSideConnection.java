@@ -1,10 +1,14 @@
 package com.github.danirod12.jackal.client.protocol;
 
 import com.github.danirod12.jackal.client.Jackal;
-import com.github.danirod12.jackal.client.handler.RenderLayer;
+import com.github.danirod12.jackal.client.objects.game.GameBoard;
 import com.github.danirod12.jackal.client.objects.game.Player;
 import com.github.danirod12.jackal.client.objects.input.ChatObject;
+import com.github.danirod12.jackal.client.objects.tile.TileType;
 import com.github.danirod12.jackal.client.protocol.packet.Packet;
+import com.github.danirod12.jackal.client.util.GameColor;
+import com.github.danirod12.jackal.client.util.Pair;
+import com.github.danirod12.jackal.client.util.Triplet;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 
@@ -23,6 +27,11 @@ public class ClientSideConnection {
     private BufferedReader reader;
 
     private final List<Player> players = new ArrayList<>();
+    private GameBoard board;
+
+    public GameBoard getBoard() {
+        return board;
+    }
 
     public ClientSideConnection(Socket socket) {
 
@@ -40,7 +49,6 @@ public class ClientSideConnection {
     public void sendPacket(Packet packet) {
 
         try {
-            System.out.println("Sending packet " + packet.getClass().getSimpleName() + packet.build());
             writer.write(packet.build());
             writer.newLine();
             writer.flush();
@@ -98,6 +106,7 @@ public class ClientSideConnection {
 
         switch (data.getID()) {
 
+            // Disconnect packet
             case 0: {
 
                 System.out.println("Disconnected: " + data.getData());
@@ -105,6 +114,7 @@ public class ClientSideConnection {
 
             }
 
+            // Add player packet
             case 1: {
 
                 players.add(new Player(data.getData()));
@@ -112,15 +122,17 @@ public class ClientSideConnection {
 
             }
 
+            // Chat packet
             case 2: {
 
                 ChatObject chat = Jackal.getGameLoop().getObjectsHandler().getChat();
-                System.out.println("CHAT: " + data.getData());
                 if(chat != null) chat.addMessage(data.getData());
+                else System.out.println("CHAT: " + data.getData());
                 return;
 
             }
 
+            // Remove player packet
             case 3: {
 
                 players.removeIf(player -> player.getName().equalsIgnoreCase(data.getData()));
@@ -128,10 +140,48 @@ public class ClientSideConnection {
 
             }
 
+            // Player metadata packet
             case 4: {
-                throw new UnsupportedOperationException("Feature not available yet");
+
+                Triplet<Integer, String, String> parsed = SimpleDecoder.parseIdentifiedMarkedData(data.getData(), ":");
+                Player player = getPlayer(parsed.getB());
+                if(player == null) return;
+                switch (parsed.getA()) {
+                    // Update player color
+                    case 0: {
+                        player.setColor(GameColor.parseColor(parsed.getC()));
+                        return;
+                    }
+                    // Update player balance
+                    case 1: {
+                        player.setMoney(Integer.parseInt(parsed.getC()));
+                        return;
+                    }
+                    // Unknown metadata id
+                    default: throw new IllegalArgumentException("Unknown metadata ID - " + parsed.getA());
+                }
+
             }
 
+            // Create board packet
+            case 20: {
+
+                if(board != null) throw new UnsupportedOperationException("Board already exists");
+                board = new GameBoard(Integer.parseInt(data.getData().split(":")[0]), Integer.parseInt(data.getData().split(":")[1]));
+                return;
+
+            }
+
+            // Create tile packet
+            case 21: {
+
+                Pair<Pair<Integer, Integer>, TileType> parsed = SimpleDecoder.parseLocatedTileType(data.getData());
+                board.createTile(parsed.getKey().getA(), parsed.getKey().getB(), parsed.getValue());
+                return;
+
+            }
+
+            // Unknown packet id
             default: throw new IllegalArgumentException("Unknown packet ID - " + data.getID());
 
         }
@@ -153,6 +203,14 @@ public class ClientSideConnection {
 
         players.clear();
         Jackal.getGameLoop().destroyConnection();
+
+    }
+
+    public Player getPlayer(String name) {
+
+        for(Player player : getPlayers())
+            if(player.getName().equalsIgnoreCase(name))
+                return player; return null;
 
     }
 

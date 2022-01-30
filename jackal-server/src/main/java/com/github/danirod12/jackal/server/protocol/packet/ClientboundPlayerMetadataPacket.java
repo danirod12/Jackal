@@ -1,17 +1,18 @@
 package com.github.danirod12.jackal.server.protocol.packet;
 
 import com.github.danirod12.jackal.server.protocol.ServerSideConnection;
+import com.github.danirod12.jackal.server.util.MetaValue;
 
 public class ClientboundPlayerMetadataPacket extends NamedPacket {
 
-    public ClientboundPlayerMetadataPacket(ServerSideConnection connection) {
+    private final String data;
+
+    public ClientboundPlayerMetadataPacket(MetaValue meta, ServerSideConnection connection) {
         super(4);
-        throw new UnsupportedOperationException("Feature not available yet");
+        this.data = meta.build(connection);
     }
 
     @Override
-    public String data() {
-        throw new UnsupportedOperationException("Feature not available yet");
-    }
+    public String data() { return data; }
 
 }

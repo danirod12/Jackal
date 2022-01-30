@@ -10,6 +10,9 @@ public interface Packet {
     3 - remove player
     4 - metadata player
 
+    20 - board create
+    21 - tile create
+
      */
 
     /**

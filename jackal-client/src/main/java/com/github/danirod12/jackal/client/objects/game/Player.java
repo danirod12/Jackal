@@ -23,4 +23,12 @@ public class Player {
 
     public String getName() { return name; }
 
+    public void setColor(GameColor color) {
+        this.color = color;
+    }
+
+    public void setMoney(int money) {
+        this.money = money;
+    }
+
 }

@@ -1,6 +1,10 @@
 package com.github.danirod12.jackal.server;
 
+import com.github.danirod12.jackal.server.game.GameSession;
+import com.github.danirod12.jackal.server.game.GameStatus;
 import com.github.danirod12.jackal.server.protocol.ServerSideConnection;
+import com.github.danirod12.jackal.server.protocol.packet.ClientboundChatPacket;
+import com.github.danirod12.jackal.server.protocol.packet.ClientboundDisconnectPacket;
 import com.github.danirod12.jackal.server.protocol.packet.ClientboundPlayerRemovePacket;
 import com.github.danirod12.jackal.server.protocol.packet.Packet;
 
@@ -14,7 +18,9 @@ public class Server {
 
     private static Server instance;
     private final ServerSocket listener;
+
     private final List<ServerSideConnection> connections = new ArrayList<>();
+    private GameSession session;
 
     public static Server getInstance() { return instance; }
 
@@ -26,6 +32,13 @@ public class Server {
         } catch(Exception ignored) {}
 
         instance = new Server(port);
+        instance.restartGameSession();
+
+    }
+
+    private void restartGameSession() {
+
+        session = new GameSession();
         instance.startServer();
 
     }
@@ -44,6 +57,19 @@ public class Server {
                 System.out.println("A new connection from " + socket.getInetAddress().toString());
 
                 ServerSideConnection connection = new ServerSideConnection(socket);
+
+                if(getConnections().size() >= 4) {
+                    connection.sendPacket(new ClientboundDisconnectPacket("Server is full"));
+                    connection.close();
+                    continue;
+                }
+
+                if(session.getGameStatus() == GameStatus.INGAME) {
+                    connection.sendPacket(new ClientboundDisconnectPacket("Server already in game"));
+                    connection.close();
+                    continue;
+                }
+
                 Thread thread = new Thread(connection);
                 thread.start();
 
@@ -57,14 +83,24 @@ public class Server {
 
     }
 
+    public GameSession getGameSession() { return session; }
+
     public List<ServerSideConnection> getConnections() {
         return new ArrayList<>(connections);
     }
 
     public void removeConnection(ServerSideConnection connection) {
+
         connections.remove(connection);
         if(connection.isAuthorized())
             this.broadcast(new ClientboundPlayerRemovePacket(connection));
+
+        session.onPlayerRemove(connection);
+
+    }
+
+    public void broadcastMessage(String message) {
+        broadcast(new ClientboundChatPacket(message));
     }
 
     public void broadcast(Packet packet) {

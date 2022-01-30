@@ -23,6 +23,7 @@ public class ServerSideConnection implements Runnable {
 
     private String name;
     private GameColor color = GameColor.UNKNOWN;
+    private int money = 0;
 
     public ServerSideConnection(Socket socket) {
 
@@ -103,7 +104,6 @@ public class ServerSideConnection implements Runnable {
 
                 if(name == null) {
 
-                    this.name = data.getData();
                     for (ServerSideConnection connection : Server.getInstance().getConnections()) {
                         if(connection == this) continue;
                         if(connection.isAuthorized() && connection.getName().equalsIgnoreCase(name)) {
@@ -111,6 +111,10 @@ public class ServerSideConnection implements Runnable {
                             return;
                         }
                     }
+
+                    this.name = data.getData();
+                    Server.getInstance().getGameSession().onPlayerJoin(this);
+
                     System.out.println("Client " + socket.getInetAddress().toString() + " authorized as " + name);
                     Server.getInstance().broadcast(new ClientboundPlayerAddPacket(this));
                     Server.getInstance().broadcast(new ClientboundChatPacket(name + " joined the game"));
@@ -144,7 +148,7 @@ public class ServerSideConnection implements Runnable {
 
     }
 
-    private void close() {
+    public void close() {
 
         try {
 
@@ -156,9 +160,14 @@ public class ServerSideConnection implements Runnable {
         } catch (IOException e) {
             e.printStackTrace();
         }
-//        if(name != null) Server.getInstance().broadcast(new ClientboundChatPacket(name + " left the game"));
         Server.getInstance().removeConnection(this);
 
     }
+
+    public void setColor(GameColor color) { this.color = color; }
+
+    public GameColor getColor() { return this.color; }
+
+    public int getMoney() { return money; }
 
 }

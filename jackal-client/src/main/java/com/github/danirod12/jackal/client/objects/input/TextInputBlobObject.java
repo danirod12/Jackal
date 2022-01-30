@@ -4,17 +4,22 @@ import com.github.danirod12.jackal.client.Jackal;
 import com.github.danirod12.jackal.client.controllers.KeyboardExecutor;
 import com.github.danirod12.jackal.client.controllers.MouseExecutor;
 import com.github.danirod12.jackal.client.controllers.SelectableObject;
+import com.github.danirod12.jackal.client.handler.ObjectsHandler;
+import com.github.danirod12.jackal.client.handler.RenderLayer;
 import com.github.danirod12.jackal.client.objects.RenderObject;
 import com.github.danirod12.jackal.client.render.GameLoop;
 import com.github.danirod12.jackal.client.util.Misc;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Consumer;
 
 public class TextInputBlobObject extends RenderObject implements MouseExecutor, KeyboardExecutor, SelectableObject {
 
     private final GameLoop loop = Jackal.getGameLoop();
+    private final ObjectsHandler handler = Jackal.getGameLoop().getObjectsHandler();
 
     private final int width, height, arc, limit;
     private final Color main, bound, selected, selected_bound;
@@ -114,6 +119,16 @@ public class TextInputBlobObject extends RenderObject implements MouseExecutor, 
             if(typed.length() > 0)
                 typed = Misc.substringToSpace(typed);
             return;
+        }
+
+        if (key.getKeyChar() == KeyEvent.VK_TAB) {
+
+            List<SelectableObject> textObjects = new ArrayList<>();
+            handler.getLayerCopy(RenderLayer.LOBBY_SETTINGS).stream().filter(elem -> (elem instanceof TextInputBlobObject)).forEach(n -> textObjects.add((SelectableObject) n));
+
+            if (textObjects.get(textObjects.size() - 1) == this) return;
+
+            loop.selectObject(textObjects.get(textObjects.indexOf(this) + 1));
         }
 
         if(typed.length() + 1 > limit) return;

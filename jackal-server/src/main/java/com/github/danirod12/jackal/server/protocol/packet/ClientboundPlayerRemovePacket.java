@@ -6,6 +6,9 @@ public class ClientboundPlayerRemovePacket extends NamedPacket {
 
     private final String data;
 
+    /**
+     * Remove player data on client. Also, all metadata will be destroyed
+     */
     public ClientboundPlayerRemovePacket(ServerSideConnection connection) {
         super(3);
         this.data = connection.getName();

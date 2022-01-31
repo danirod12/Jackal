@@ -6,6 +6,11 @@ public class ClientboundPlayerAddPacket extends NamedPacket {
 
     private final String name;
 
+    /**
+     * Client will generate empty Player class with name from connection
+     * <p>
+     * You should send {@link ClientboundPlayerMetadataPacket} to update player data
+     */
     public ClientboundPlayerAddPacket(ServerSideConnection connection) {
         super(1);
         if(!connection.isAuthorized()) throw new UnsupportedOperationException("Cannot broadcast nullable player");

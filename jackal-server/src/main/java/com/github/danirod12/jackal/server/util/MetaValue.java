@@ -6,7 +6,7 @@ import java.util.function.Function;
 
 public enum MetaValue {
 
-    COLOR(0, n -> n.getColor().name()),
+    COLOR(0, n -> String.valueOf(n.getColor().getId())),
     MONEY(1, n -> String.valueOf(n.getMoney()));
 
     private final int id;

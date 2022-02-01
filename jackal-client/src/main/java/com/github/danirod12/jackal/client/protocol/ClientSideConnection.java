@@ -149,7 +149,7 @@ public class ClientSideConnection {
                 switch (parsed.getA()) {
                     // Update player color
                     case 0: {
-                        player.setColor(GameColor.parseColor(parsed.getC()));
+                        player.setColor(GameColor.parseColor(Integer.parseInt(parsed.getC())));
                         return;
                     }
                     // Update player balance

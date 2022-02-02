@@ -65,7 +65,9 @@ public class ButtonObject extends RenderObject implements MouseExecutor {
         graphics.fillRoundRect(getX(), getY(), width, height, arc, arc);
 
         graphics.setColor(selected ? activated_bound : bound);
+        graphics.setStroke(new BasicStroke(3));
         graphics.drawRoundRect(getX(), getY(), width, height, arc, arc);
+        graphics.setStroke(new BasicStroke(1));
 
         if(text == null) return;
 

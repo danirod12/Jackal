@@ -73,7 +73,9 @@ public class TextInputBlobObject extends RenderObject implements MouseExecutor, 
         graphics.fillRoundRect(getX(), getY(), width, height, arc, arc);
 
         graphics.setColor(moved || Jackal.getGameLoop().getSelectedObject() == this ? selected_bound : bound);
+        graphics.setStroke(new BasicStroke(5));
         graphics.drawRoundRect(getX(), getY(), width, height, arc, arc);
+        graphics.setStroke(new BasicStroke(1));
 
         // Draw text
 

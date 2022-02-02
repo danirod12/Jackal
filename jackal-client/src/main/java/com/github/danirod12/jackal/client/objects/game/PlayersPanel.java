@@ -15,6 +15,7 @@ import java.lang.management.PlatformLoggingMXBean;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Timer;
 import java.util.prefs.BackingStoreException;
 
 public class PlayersPanel extends RenderObject {
@@ -58,7 +59,7 @@ public class PlayersPanel extends RenderObject {
         FrameRender render = loop.getFrameRender();
         int frameCenter = render.getWidth() / 2;
         int current_x;
-        int current_y = 30;
+        int current_y = 20;
         int width = 300;
         int height = 30;
 
@@ -71,6 +72,17 @@ public class PlayersPanel extends RenderObject {
         for (Player player : players) {
 
             int nameLength = graphics.getFontMetrics().stringWidth(player.getName());
+
+            if (player.isWaitingForMove()) {
+
+                // TODO when move time data added
+
+                graphics.setColor(Color.RED);
+                graphics.fillRoundRect(current_x, current_y + 28, width, 6, arc, arc);
+
+                graphics.setColor(ColorTheme.NOT_ACTIVATED_BOUND);
+                graphics.drawRoundRect(current_x, current_y + 28, width, 6, arc, arc);
+            }
 
             graphics.setColor(ColorTheme.NOT_ACTIVATED_FRAME);
             graphics.fillRoundRect(current_x, current_y, width, height, arc, arc);

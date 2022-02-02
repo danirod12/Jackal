@@ -7,15 +7,18 @@ import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.awt.image.RasterFormatException;
+import java.nio.Buffer;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class ImageLoader {
 
     public final static BufferedImage COIN_16;
+    public final static BufferedImage COGWHEEL_16;
 
     static {
 
         COIN_16 = loadImage("coin16");
+        COGWHEEL_16 = loadImage("cogwheel16");
 
     }
 

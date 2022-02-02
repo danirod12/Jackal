@@ -8,6 +8,7 @@ public class Player {
 
     private GameColor color = GameColor.UNKNOWN;
     private int money = 0;
+    private boolean isWaitingForMove = false;
 
     public Player(String name) {
         this.name = name;
@@ -31,4 +32,11 @@ public class Player {
         this.money = money;
     }
 
+    public boolean isWaitingForMove() {
+        return isWaitingForMove;
+    }
+
+    public void setWaitingForMove(boolean waitingForMove) {
+        this.isWaitingForMove = waitingForMove;
+    }
 }

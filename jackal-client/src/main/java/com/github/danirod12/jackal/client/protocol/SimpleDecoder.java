@@ -8,15 +8,36 @@ public class SimpleDecoder {
 
     public static Pair<Integer, String> parseIdentifiedData(String string, String separator) {
 
-        String[] data = string.split(separator);
-        return new Pair<>(Integer.parseInt(data[0]), join(data, 1, separator));
+        String[] data = split(string, separator, 2);
+        return new Pair<>(Integer.parseInt(data[0]), data[1]);
 
     }
 
     public static Triplet<Integer, String, String> parseIdentifiedMarkedData(String string, String separator) {
 
-        String[] data = string.split(separator);
-        return new Triplet<>(Integer.parseInt(data[0]), data[1], join(data, 2, separator));
+        String[] data = split(string, separator, 3);
+        return new Triplet<>(Integer.parseInt(data[0]), data[1], data[2]);
+
+    }
+
+    public static String[] split(String data, String separator, int args) {
+
+        String[] parsed = new String[args];
+        String last = null;
+        int index = 0;
+        for(String string : data.split(separator)) {
+
+            if(index == parsed.length - 1) {
+                last = last == null ? string : last + separator + string;
+            } else {
+                parsed[index] = string;
+                index++;
+            }
+
+        }
+        if(index != parsed.length - 1 || last == null) throw new IllegalArgumentException("Incorrect data \"" + data + "\" (Required " + args + " args)");
+        parsed[index] = last;
+        return parsed;
 
     }
 

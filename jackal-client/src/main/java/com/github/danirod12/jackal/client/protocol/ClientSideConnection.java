@@ -163,6 +163,16 @@ public class ClientSideConnection {
 
             }
 
+            // Game object packet
+            case 10: {
+
+                // action:uuid:id:y:x:metadata
+                String[] parsed = SimpleDecoder.split(data.getData(), ":", 6);
+                board.onObjectUpdate(Integer.parseInt(parsed[0]), parsed[1], Integer.parseInt(parsed[2]), Integer.parseInt(parsed[3]), Integer.parseInt(parsed[4]), parsed[5]);
+                return;
+
+            }
+
             // Create board packet
             case 20: {
 
@@ -177,6 +187,29 @@ public class ClientSideConnection {
 
                 Pair<Pair<Integer, Integer>, TileType> parsed = SimpleDecoder.parseLocatedTileType(data.getData());
                 board.createTile(parsed.getKey().getA(), parsed.getKey().getB(), parsed.getValue());
+                return;
+
+            }
+
+            // Tile metadata packet
+            case 22: {
+
+                // TODO y:x:id:metadata
+                System.out.println("Tile metadata changed - " + data.getData());
+                return;
+
+            }
+
+            // Turn change packet
+            case 40: {
+
+                /* TODO name:cooldown:end_time_ms
+
+                Destroy select menu, insert time for awaiting player
+                If it is a self turn unlock EntityPlayer select
+
+                 */
+                System.out.println("Turn changed - " + data.getData());
                 return;
 
             }

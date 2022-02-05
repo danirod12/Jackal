@@ -8,9 +8,7 @@ import com.github.danirod12.jackal.client.handler.ObjectsHandler;
 import com.github.danirod12.jackal.client.handler.RenderLayer;
 import com.github.danirod12.jackal.client.objects.AppObject;
 import com.github.danirod12.jackal.client.objects.bin.FadingOvalObject;
-import com.github.danirod12.jackal.client.objects.game.PlayersPanel;
 import com.github.danirod12.jackal.client.objects.input.ChatObject;
-import com.github.danirod12.jackal.client.objects.input.TextInputBlobObject;
 import com.github.danirod12.jackal.client.protocol.ClientSideConnection;
 import com.github.danirod12.jackal.client.protocol.packet.ServerboundLoginPacket;
 import com.github.danirod12.jackal.client.util.ColorTheme;
@@ -22,7 +20,6 @@ import java.awt.event.KeyEvent;
 import java.awt.image.BufferStrategy;
 import java.net.Socket;
 import java.net.UnknownHostException;
-import java.util.Iterator;
 
 public class GameLoop implements Runnable {
 
@@ -178,6 +175,10 @@ public class GameLoop implements Runnable {
             } else if(selected == executor) selected = null;
 
         }
+        if(connection != null && connection.getBoard() != null) {
+            if(connection.getBoard().onMouseClick(x, y))
+                return connection.getBoard();
+        }
         return null;
 
     }
@@ -188,6 +189,8 @@ public class GameLoop implements Runnable {
         handler.add(RenderLayer.HIGHEST, new FadingOvalObject(x, y, 4, (int)(tps * .2D), ColorTheme.DEBUG_DARK));
 
         handler.getMouseExecutors().forEach(n -> n.onMouseMove(x, y));
+        if(connection != null && connection.getBoard() != null)
+            connection.getBoard().onMouseMove(x, y);
 
     }
 
@@ -195,13 +198,14 @@ public class GameLoop implements Runnable {
 
         final SelectableObject current_selected = selected;
 
-        if (key.getKeyChar() == KeyEvent.VK_ENTER && selected instanceof TextInputBlobObject) {
-            // this.connect(name, server);
-
-            // TODO make a text inputs getter
-
-            return;
-        }
+        // Modify TextInputBlobObject, add Runnable that will be performed on Enter press
+//        if (key.getKeyChar() == KeyEvent.VK_ENTER && selected instanceof TextInputBlobObject) {
+//            // this.connect(name, server);
+//
+//            // TODO make a text inputs getter
+//
+//            return;
+//        }
 
         if(key.getKeyChar() == '\u001B' && selected != null) {
             unselectObject();
@@ -257,8 +261,7 @@ public class GameLoop implements Runnable {
 
             Socket socket = new Socket(data[0], port);
 
-            this.connection = new ClientSideConnection(socket);
-            this.connection.sendPacket(new ServerboundLoginPacket(this.name));
+            this.connection = new ClientSideConnection(socket, this.name);
 
         } catch (UnknownHostException exception) {
             // TODO server not found

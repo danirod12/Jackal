@@ -6,6 +6,7 @@ import com.github.danirod12.jackal.client.objects.game.Player;
 import com.github.danirod12.jackal.client.objects.input.ChatObject;
 import com.github.danirod12.jackal.client.objects.tile.TileType;
 import com.github.danirod12.jackal.client.protocol.packet.Packet;
+import com.github.danirod12.jackal.client.protocol.packet.ServerboundLoginPacket;
 import com.github.danirod12.jackal.client.util.GameColor;
 import com.github.danirod12.jackal.client.util.Pair;
 import com.github.danirod12.jackal.client.util.Triplet;
@@ -23,9 +24,11 @@ public class ClientSideConnection {
     private final Gson gson = new Gson();
 
     private final Socket socket;
+    private final String name;
     private BufferedWriter writer;
     private BufferedReader reader;
 
+    private Player self = null;
     private final List<Player> players = new ArrayList<>();
     private GameBoard board;
 
@@ -33,7 +36,7 @@ public class ClientSideConnection {
         return board;
     }
 
-    public ClientSideConnection(Socket socket) {
+    public ClientSideConnection(Socket socket, String name) {
 
         this.socket = socket;
         try {
@@ -43,6 +46,7 @@ public class ClientSideConnection {
             close();
         }
         listenForPackets();
+        this.sendPacket(new ServerboundLoginPacket(this.name = name));
 
     }
 
@@ -117,7 +121,13 @@ public class ClientSideConnection {
             // Add player packet
             case 1: {
 
-                players.add(new Player(data.getData()));
+                if(getPlayer(data.getData()) != null) throw new IllegalArgumentException("Player " + data.getData() + " already exists");
+
+                Player new_player = new Player(data.getData());
+                players.add(new_player);
+                if(new_player.getName().equalsIgnoreCase(name))
+                    self = new_player;
+
                 return;
 
             }
@@ -209,7 +219,12 @@ public class ClientSideConnection {
                 If it is a self turn unlock EntityPlayer select
 
                  */
-                System.out.println("Turn changed - " + data.getData());
+                String name = data.getData().split(":")[0];
+                for(Player player : players) {
+                    player.setWaitingForMove(player.getName().equalsIgnoreCase(name));
+                }
+                assert board != null;
+                board.onTurnChange();
                 return;
 
             }
@@ -237,6 +252,10 @@ public class ClientSideConnection {
         players.clear();
         Jackal.getGameLoop().destroyConnection();
 
+    }
+
+    public Player getSelf() {
+        return self;
     }
 
     public Player getPlayer(String name) {

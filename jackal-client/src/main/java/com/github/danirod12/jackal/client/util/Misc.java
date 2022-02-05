@@ -23,12 +23,12 @@ public class Misc {
         if(pos1 >= arc && pos1 <= width - arc || pos2 >= arc && pos2 <= height - arc) return true;
 
         // arced zone
-        return getDirection(pos1, pos2, arc, arc) <= arc || getDirection(pos1, pos2, width - arc, arc) <= arc ||
-                getDirection(pos1, pos2, width - arc, height - arc) <= arc || getDirection(pos1, pos2, arc, height - arc) <= arc;
+        return getDistance(pos1, pos2, arc, arc) <= arc || getDistance(pos1, pos2, width - arc, arc) <= arc ||
+                getDistance(pos1, pos2, width - arc, height - arc) <= arc || getDistance(pos1, pos2, arc, height - arc) <= arc;
 
     }
 
-    public static double getDirection(int x1, int y1, int x2, int y2) {
+    public static double getDistance(int x1, int y1, int x2, int y2) {
         return Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
     }
 

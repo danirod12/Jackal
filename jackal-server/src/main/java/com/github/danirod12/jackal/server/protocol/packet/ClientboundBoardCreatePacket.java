@@ -7,9 +7,9 @@ public class ClientboundBoardCreatePacket extends NamedPacket {
     /**
      * Send board for first time
      */
-    public ClientboundBoardCreatePacket(int width, int height) {
+    public ClientboundBoardCreatePacket(int height, int width) {
         super(20);
-        this.data = width + ":" + height;
+        this.data = height + ":" + width;
     }
 
     @Override

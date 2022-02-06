@@ -2,14 +2,27 @@ package com.github.danirod12.jackal.server.game;
 
 import com.github.danirod12.jackal.server.Server;
 import com.github.danirod12.jackal.server.game.generator.MapGenerator;
+import com.github.danirod12.jackal.server.game.item.GameObject;
+import com.github.danirod12.jackal.server.game.item.PlayerEntity;
+import com.github.danirod12.jackal.server.game.item.TeamBoat;
+import com.github.danirod12.jackal.server.game.move.DirectionManager;
+import com.github.danirod12.jackal.server.game.move.MoveDirection;
+import com.github.danirod12.jackal.server.game.tile.ArrowTile;
 import com.github.danirod12.jackal.server.game.tile.GameTile;
+import com.github.danirod12.jackal.server.game.tile.TileType;
+import com.github.danirod12.jackal.server.game.tile.VoidTile;
 import com.github.danirod12.jackal.server.protocol.ServerSideConnection;
 import com.github.danirod12.jackal.server.protocol.packet.*;
 import com.github.danirod12.jackal.server.util.GameColor;
 import com.github.danirod12.jackal.server.util.MetaValue;
+import com.github.danirod12.jackal.server.util.Pair;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.stream.Collectors;
 
 public class GameSession implements Runnable {
 
@@ -20,7 +33,15 @@ public class GameSession implements Runnable {
     private long timer = 0;
 
     private GameStatus status = GameStatus.WAITING;
+
+    // GameTile[y][x]
     private GameTile[][] board;
+    private HashMap<GameColor, TeamBoat> boats;
+
+    public static final long ACTION_AWAIT_DEFAULT = 200L; // 10 seconds
+
+    private long action_await = ACTION_AWAIT_DEFAULT;
+    private ServerSideConnection current = null;
 
     public GameSession() {
 
@@ -74,6 +95,27 @@ public class GameSession implements Runnable {
 
         if(status != GameStatus.INGAME) return;
         // TODO ingame logic
+        action_await--;
+        if(action_await < 0)
+            nextTurn();
+
+    }
+
+    private void nextTurn() {
+
+        action_await = ACTION_AWAIT_DEFAULT;
+
+        List<ServerSideConnection> connections = Server.getInstance().getConnections();
+        if(connections.size() < 2) return;
+
+        int index = connections.indexOf(this.current) + 1;
+
+        this.current = connections.get(index >= connections.size() ? 0 : index);
+        Server.getInstance().broadcast(new ClientboundTurnChangePacket(this.current, ACTION_AWAIT_DEFAULT, -1L));
+
+        ClientboundChatPacket packet = new ClientboundChatPacket(PREFIX + "Next turn - &" + current.getColor().getColorCode() + current.getName());
+        for (ServerSideConnection connection : Server.getInstance().getConnections())
+            connection.sendPacket(connection.getName().equalsIgnoreCase(current.getName()) ? new ClientboundChatPacket(PREFIX + "Your turn &c[!]") : packet);
 
     }
 
@@ -85,6 +127,7 @@ public class GameSession implements Runnable {
         }
         status = GameStatus.INGAME;
         timer = 0;
+        action_await = 60L;
 
         List<ServerSideConnection> connections = Server.getInstance().getConnections();
 
@@ -113,7 +156,29 @@ public class GameSession implements Runnable {
 
         // Generate map
         this.board = MapGenerator.generateMap(6, 6, connections.size());
-        // TODO insert boats
+        this.boats = MapGenerator.connectBoats(this.board, connections.stream().map(ServerSideConnection::getColor).collect(Collectors.toList()));
+
+        // TODO remove
+        {
+
+            board[6][7] = new ArrowTile(TileType.SAND, MoveDirection.UP_LEFT);
+            board[5][6] = new ArrowTile(TileType.SAND, MoveDirection.UP_LEFT, MoveDirection.UP);
+            board[4][6] = new ArrowTile(TileType.GRASS, MoveDirection.UP);
+
+            TeamBoat boat = boats.get(GameColor.RED);
+            GameTile tile = boat.getRelatedTile(board);
+
+            tile.removeItem(boat);
+            tile = board[7][7];
+
+            tile.addItem(boat);
+
+            for(PlayerEntity player : boat.getPlayers()) {
+                player.getRelatedTile(board).removeItem(player);
+                tile.addItem(player);
+            }
+
+        }
 
         // [PACKETS] Send init packets
         for(ServerSideConnection connection : connections) {
@@ -130,9 +195,25 @@ public class GameSession implements Runnable {
         Server.getInstance().broadcast(new ClientboundBoardCreatePacket(board.length, board[0].length));
 
         // Send map
-        for(int x = 0; x < board.length; ++x) {
-            for(int y = 0; y < board[0].length; ++y) {
-                Server.getInstance().broadcast(new ClientboundTileCreatePacket(x, y, board[x][y].getType()));
+        for(int y = 0; y < board.length; ++y) {
+            for(int x = 0; x < board[0].length; ++x) {
+                GameTile tile = board[y][x];
+                Server.getInstance().broadcast(new ClientboundTileCreatePacket(y, x, tile.getType()));
+
+                if(tile instanceof VoidTile) {
+
+                    TeamBoat boat = ((VoidTile) tile).getBoat();
+                    if(boat == null) continue;
+
+                    // Send team boat
+                    Server.getInstance().broadcast(boat.getUpdatePacket(0, y, x));
+
+                    // Send default team players
+                    for(PlayerEntity object : boat.getPlayers())
+                        Server.getInstance().broadcast(object.getUpdatePacket(0, y, x));
+
+                }
+
             }
         }
         // [PACKETS] Send init packets
@@ -185,6 +266,91 @@ public class GameSession implements Runnable {
 
     public GameStatus getGameStatus() {
         return status;
+    }
+
+    public List<String> getAvailableActions(UUID uuid, GameColor filter) {
+
+        for(int y = 0; y < board.length; ++y) {
+
+            for(int x = 0; x < board[0].length; ++x) {
+
+                GameTile tile = board[y][x];
+                for(GameObject object : tile.getItems()) {
+
+                    if(!object.getUuid().equals(uuid)) continue;
+                    if(filter != null && object.getColor() != filter) continue;
+
+                    return DirectionManager.getAvailableMovements(board, y, x, object.getColor());
+
+                }
+
+            }
+
+        }
+        return null;
+
+    }
+
+    public void onPlayerAction(GameColor color, String uuid, int moveY, int moveX) {
+
+        for(int y = 0; y < board.length; ++y) {
+
+            for(int x = 0; x < board[0].length; ++x) {
+
+                GameTile tile = board[y][x];
+                for(GameObject object : tile.getItems()) {
+
+                    if(!object.getUuid().toString().equalsIgnoreCase(uuid)) continue;
+                    if(object.getColor() != color) continue;
+
+                    for(String path : DirectionManager.getAvailableMovements(board, y, x, object.getColor())) {
+
+                        if(path.endsWith("." + moveY + ":" + moveX)) {
+                            // Move player
+
+                            object.getRelatedTile(board).removeItem(object);
+                            GameTile moveTile = board[moveY][moveX];
+
+                            for(GameObject item : new ArrayList<>(moveTile.getItems())) {
+
+                                // Kill enemy
+                                if(item instanceof PlayerEntity) {
+
+                                    PlayerEntity exists = ((PlayerEntity) item);
+                                    if(exists.getColor() != color) {
+
+                                        Pair<Integer, Integer> boat = boats.get(exists.getColor()).getRelatedTileYX(board);
+                                        moveTile.removeItem(item);
+                                        board[boat.getKey()][boat.getValue()].addItem(item);
+                                        Server.getInstance().broadcast(item.getUpdatePacket(0, boat.getKey(), boat.getValue()));
+
+                                    }
+                                    //continue;
+
+                                }
+
+                            }
+
+                            moveTile.addItem(object);
+
+                            Server.getInstance().broadcast(object.getUpdatePacket(0, moveY, moveX));
+                            nextTurn();
+
+                            return;
+                        }
+
+                    }
+                    throw new UnsupportedOperationException("Cannot move " + uuid + " for "
+                            + color.name() + " to (y: " + moveY + ", x: " + moveX + ") - Path not exists");
+
+                }
+
+            }
+
+        }
+        throw new UnsupportedOperationException("Cannot move " + uuid + " for "
+                + color.name() + " to (y: " + moveY + ", x: " + moveX + ") - Entity not exists");
+
     }
 
 }

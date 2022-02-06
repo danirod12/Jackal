@@ -1,10 +1,9 @@
 package com.github.danirod12.jackal.server.protocol;
 
 import com.github.danirod12.jackal.server.Server;
-import com.github.danirod12.jackal.server.protocol.packet.ClientboundChatPacket;
-import com.github.danirod12.jackal.server.protocol.packet.ClientboundDisconnectPacket;
-import com.github.danirod12.jackal.server.protocol.packet.ClientboundPlayerAddPacket;
-import com.github.danirod12.jackal.server.protocol.packet.Packet;
+import com.github.danirod12.jackal.server.game.GameSession;
+import com.github.danirod12.jackal.server.game.GameStatus;
+import com.github.danirod12.jackal.server.protocol.packet.*;
 import com.github.danirod12.jackal.server.util.GameColor;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
@@ -12,6 +11,8 @@ import com.google.gson.JsonSyntaxException;
 import java.io.*;
 import java.net.Socket;
 import java.net.SocketException;
+import java.util.List;
+import java.util.UUID;
 
 public class ServerSideConnection implements Runnable {
 
@@ -44,8 +45,9 @@ public class ServerSideConnection implements Runnable {
             try {
 
                 final String line = reader.readLine();
+                System.out.println("INC " + name + ": " + line);
                 if(line == null) {
-                    System.out.println("Client \"" + (name == null ? "Unknown" : name) + "\" lost. [" + socket + "]");
+                    System.out.println("Client \"" + (name == null ? "Unknown" : name) + "\" lost. [" + socket + "] (Null packet)");
                     close();
                     return;
                 }
@@ -80,7 +82,9 @@ public class ServerSideConnection implements Runnable {
     public void sendPacket(Packet packet) {
 
         try {
-            writer.write(packet.build());
+            String data = packet.build();
+            System.out.println("OUT " + name + ": " + data);
+            writer.write(data);
             writer.newLine();
             writer.flush();
         } catch (Exception exception) {
@@ -100,6 +104,7 @@ public class ServerSideConnection implements Runnable {
 
         switch(data.getID()) {
 
+            // Login packet
             case 0: {
 
                 if(name == null) {
@@ -132,12 +137,40 @@ public class ServerSideConnection implements Runnable {
 
             }
 
+            // Chat packet
             case 1: {
 
                 System.out.println("CHAT: [" + name + "] " + data.getData());
                 if(data.getData().length() > 0 && data.getData().replaceAll("&[a-fA-F0-9]*", "").length() != 0) {
                     Server.getInstance().broadcast(new ClientboundChatPacket("[&" + color.getColorCode() + name + "&0] " + data.getData()));
                 }
+                return;
+
+            }
+
+            // Request actions packet
+            case 10: {
+
+                GameSession session = Server.getInstance().getGameSession();
+                if(session.getGameStatus() != GameStatus.INGAME) return;
+
+                UUID uuid = UUID.fromString(data.getData());
+                List<String> actions = session.getAvailableActions(uuid, color);
+                if(actions == null) return;
+
+                sendPacket(new ClientboundActionsPacket(uuid, actions));
+                return;
+
+            }
+
+            // Select action packet
+            case 11: {
+
+                GameSession session = Server.getInstance().getGameSession();
+                if(session.getGameStatus() != GameStatus.INGAME) return;
+
+                String[] parsed = data.getData().split(":");
+                session.onPlayerAction(color, parsed[0], Integer.parseInt(parsed[1]), Integer.parseInt(parsed[2]));
                 return;
 
             }

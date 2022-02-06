@@ -9,14 +9,13 @@ import com.github.danirod12.jackal.client.objects.tile.GameTile;
 import com.github.danirod12.jackal.client.objects.tile.TileType;
 import com.github.danirod12.jackal.client.objects.tile.VoidTile;
 import com.github.danirod12.jackal.client.protocol.packet.ServerboundRequestActionsPacket;
+import com.github.danirod12.jackal.client.protocol.packet.ServerboundSelectActionPacket;
 import com.github.danirod12.jackal.client.render.GameLoop;
 import com.github.danirod12.jackal.client.util.*;
 
 import java.awt.*;
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.*;
 import java.util.List;
-import java.util.UUID;
 
 public class GameBoard implements MouseExecutor {
 
@@ -27,6 +26,9 @@ public class GameBoard implements MouseExecutor {
     private final HashMap<GameColor, TeamBoat> boats = new HashMap<>();
     private final List<EntityPlayer> players = new ArrayList<>();
 
+    /**
+     * Reset all for next turn
+     */
     public void onTurnChange() {
         selected_player = null;
     }
@@ -44,6 +46,9 @@ public class GameBoard implements MouseExecutor {
 
     }
 
+    /**
+     * Render board
+     */
     public void render(Graphics2D graphics) {
 
         int renderX = 100, renderY = 100;
@@ -99,10 +104,16 @@ public class GameBoard implements MouseExecutor {
 
             graphics.setColor(player.getColor().asRenderColor());
             graphics.fillOval(renderX + player.getSubTile().getOffsetX() + 4, renderY + player.getSubTile().getOffsetY() + 4, 20, 20);
+            if(selected_player != null && selected_player.getKey() == player) {
+                graphics.setStroke(new BasicStroke(5));
+                graphics.setColor(ColorTheme.AVAILABLE_ACTIONS);
+                graphics.drawOval(renderX + player.getSubTile().getOffsetX() + 4, renderY + player.getSubTile().getOffsetY() + 4, 20, 20);
+                graphics.setStroke(new BasicStroke(1));
+            }
 
         }
 
-        // TODO render available actions
+        // TODO introduce an option to draw lines or not
         actions: {
             if(selected_player != null) {
 
@@ -114,17 +125,15 @@ public class GameBoard implements MouseExecutor {
 
                     String[] path = target.split("\\.");
                     renderX = -1;
-                    for(int index = 0; index < path.length; ++index) {
-
-                        String tile = path[index];
+                    for (String tile : path) {
 
                         int temp1 = renderX;
                         int temp2 = renderY;
 
-                        renderX = 100 + 64 * Integer.parseInt(tile.split(":")[0]);
-                        renderY = 100 + 64 * Integer.parseInt(tile.split(":")[1]);
+                        renderY = 100 + 64 * Integer.parseInt(tile.split(":")[0]);
+                        renderX = 100 + 64 * Integer.parseInt(tile.split(":")[1]);
 
-                        if(temp1 >= 0) {
+                        if (temp1 >= 0) {
                             graphics.drawLine(temp1 + 32, temp2 + 32, renderX + 32, renderY + 32);
                         }
 
@@ -139,6 +148,9 @@ public class GameBoard implements MouseExecutor {
 
     }
 
+    /**
+     * Object packet handler
+     */
     public void onObjectUpdate(int action, String uuid, int id, int y, int x, String metadata) {
 
         if(action == 1) {
@@ -197,6 +209,7 @@ public class GameBoard implements MouseExecutor {
                     List<SubTile> subtiles = new ArrayList<>();
                     for(EntityPlayer object : players) {
                         if(object == player || player.getColor() != object.getColor()) continue;
+                        if(object.getX() != x || object.getY() != y) continue;
                         subtiles.add(object.getSubTile());
                     }
 
@@ -218,10 +231,16 @@ public class GameBoard implements MouseExecutor {
 
     }
 
+    /**
+     * Get tile by location
+     */
     public GameTile getTile(int y, int x) {
         return board[y][x];
     }
 
+    /**
+     * Create a tile for first time
+     */
     public void createTile(int y, int x, TileType type) {
 
         if(!type.isTerrain()) {
@@ -239,6 +258,28 @@ public class GameBoard implements MouseExecutor {
         // TODO check player selection
         Player self = loop.getConnection().getSelf();
         if(!self.isWaitingForMove()) return false;
+
+        if(selected_player != null && selected_player.getValue() != null) {
+
+            for(String path : selected_player.getValue()) {
+
+                String[] data = path.split("\\.");
+                int offsetY = Integer.parseInt(data[data.length - 1].split(":")[0]) - (y - 100) / 64;
+                int offsetX = Integer.parseInt(data[data.length - 1].split(":")[1]) - (x - 100) / 64;
+
+                if(offsetY == 0 && offsetX == 0) {
+
+                    // click to tile
+                    loop.getConnection().sendPacket(new ServerboundSelectActionPacket(selected_player.getKey().getUuid(), data[data.length - 1]));
+                    selected_player = null;
+                    return true;
+
+                }
+
+            }
+
+        }
+
         for(EntityPlayer player : players) {
             if(player.getColor() != self.getColor()) continue;
 
@@ -263,6 +304,16 @@ public class GameBoard implements MouseExecutor {
     @Override
     public boolean onMouseMove(int x, int y) {
         return false;
+    }
+
+    /**
+     * Insert available movements
+     */
+    public void setAvailableMovements(String[] parsed) {
+
+        if(selected_player == null || !selected_player.getKey().getUuid().toString().equalsIgnoreCase(parsed[0])) return;
+        selected_player.setValue(Arrays.asList(parsed).subList(1, parsed.length));
+
     }
 
 }

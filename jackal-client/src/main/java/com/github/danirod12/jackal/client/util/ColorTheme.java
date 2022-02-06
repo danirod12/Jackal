@@ -26,6 +26,6 @@ public class ColorTheme {
 
     public static final Color MONEY = new Color(0xCC8F07);
 
-    public static final Color AVAILABLE_ACTIONS = new Color(0x5CCC67);
+    public static final Color AVAILABLE_ACTIONS = new Color(0x660E80);
 
 }

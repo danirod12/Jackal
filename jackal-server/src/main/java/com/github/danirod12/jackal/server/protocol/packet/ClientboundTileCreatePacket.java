@@ -9,9 +9,9 @@ public class ClientboundTileCreatePacket extends NamedPacket {
     /**
      * Send tile for first time
      */
-    public ClientboundTileCreatePacket(int x, int y, TileType type) {
+    public ClientboundTileCreatePacket(int y, int x, TileType type) {
         super(21);
-        this.data = x + ":" + y + ":" + type.getId();
+        this.data = y + ":" + x + ":" + type.getId();
     }
 
     @Override

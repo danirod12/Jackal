@@ -1,6 +1,9 @@
 package com.github.danirod12.jackal.client.util;
 
 import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public enum SubTile {
 
@@ -21,9 +24,9 @@ public enum SubTile {
 
     public static SubTile findEmpty(List<SubTile> subtiles) {
 
-        for(SubTile tile : values())
-            if(!subtiles.contains(tile)) return tile;
-        throw new RuntimeException("No empty tiles");
+        List<SubTile> tiles = Stream.of(values()).filter(n -> !subtiles.contains(n)).collect(Collectors.toList());
+        if(tiles.size() <= 0) throw new RuntimeException("No empty tiles");
+        return tiles.get(ThreadLocalRandom.current().nextInt(tiles.size()));
 
     }
 

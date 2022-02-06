@@ -229,6 +229,15 @@ public class ClientSideConnection {
 
             }
 
+            // Available action
+            case 41: {
+
+                String[] parsed = data.getData().split(";");
+                board.setAvailableMovements(parsed);
+                return;
+
+            }
+
             // Unknown packet id
             default: throw new IllegalArgumentException("Unknown packet ID - " + data.getID());
 

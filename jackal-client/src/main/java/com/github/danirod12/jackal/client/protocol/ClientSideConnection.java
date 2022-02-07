@@ -17,6 +17,7 @@ import java.io.*;
 import java.net.Socket;
 import java.net.SocketException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class ClientSideConnection {
@@ -219,9 +220,12 @@ public class ClientSideConnection {
                 If it is a self turn unlock EntityPlayer select
 
                  */
-                String name = data.getData().split(":")[0];
+
+                List<String> parsedData = Arrays.asList(data.getData().split(":"));
+
                 for(Player player : players) {
-                    player.setWaitingForMove(player.getName().equalsIgnoreCase(name));
+                    player.setWaitingForMove(player.getName().equalsIgnoreCase(parsedData.get(0)));
+                    player.setMoveData(new Triplet<>(parsedData.get(0), Integer.parseInt(parsedData.get(1)), Long.parseLong(parsedData.get(2))));
                 }
                 assert board != null;
                 board.onTurnChange();

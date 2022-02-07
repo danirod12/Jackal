@@ -8,10 +8,12 @@ import com.github.danirod12.jackal.client.render.ImageLoader;
 import com.github.danirod12.jackal.client.util.ColorTheme;
 import com.github.danirod12.jackal.client.util.Misc;
 import com.github.danirod12.jackal.client.util.Pair;
+import com.github.danirod12.jackal.client.util.Triplet;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.lang.management.PlatformLoggingMXBean;
+import java.net.ServerSocket;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -75,10 +77,25 @@ public class PlayersPanel extends RenderObject {
 
             if (player.isWaitingForMove()) {
 
-                // TODO when move time data added
+                Triplet<String, Integer, Long> moveData = player.getMoveData();
+
+                int cooldown = moveData.getB() * 50; // in msecs
+                long endTime = moveData.getC();
+                long startTime = endTime - cooldown;
+
+                if(System.currentTimeMillis() == endTime) {
+                    break;
+                }
+
+                graphics.setColor(ColorTheme.NOT_ACTIVATED_FRAME);
+                graphics.fillRoundRect(current_x, current_y + 28, width, 6, arc, arc);
+
+                int timeUsed = (int)(System.currentTimeMillis() - startTime);
+                int fillPercentage = Misc.percentageOf(timeUsed, cooldown);
+                int calculatedWidth = Misc.percentage(width, fillPercentage);
 
                 graphics.setColor(Color.RED);
-                graphics.fillRoundRect(current_x, current_y + 28, width, 6, arc, arc);
+                graphics.fillRoundRect(current_x, current_y + 28, calculatedWidth, 6, arc, arc);
 
                 graphics.setColor(ColorTheme.NOT_ACTIVATED_BOUND);
                 graphics.drawRoundRect(current_x, current_y + 28, width, 6, arc, arc);

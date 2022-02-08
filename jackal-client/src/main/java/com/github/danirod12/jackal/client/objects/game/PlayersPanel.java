@@ -11,14 +11,8 @@ import com.github.danirod12.jackal.client.util.Pair;
 import com.github.danirod12.jackal.client.util.Triplet;
 
 import java.awt.*;
-import java.awt.image.BufferedImage;
-import java.lang.management.PlatformLoggingMXBean;
-import java.net.ServerSocket;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Timer;
-import java.util.prefs.BackingStoreException;
 
 public class PlayersPanel extends RenderObject {
 

@@ -221,11 +221,11 @@ public class ClientSideConnection {
 
                  */
 
-                List<String> parsedData = Arrays.asList(data.getData().split(":"));
+                String[] parsedData = data.getData().split(":");
 
                 for(Player player : players) {
-                    player.setWaitingForMove(player.getName().equalsIgnoreCase(parsedData.get(0)));
-                    player.setMoveData(new Triplet<>(parsedData.get(0), Integer.parseInt(parsedData.get(1)), Long.parseLong(parsedData.get(2))));
+                    player.setWaitingForMove(player.getName().equalsIgnoreCase(parsedData[0]));
+                    player.setMoveData(new Triplet<>(parsedData[0], Integer.parseInt(parsedData[1]), Long.parseLong(parsedData[2])));
                 }
                 assert board != null;
                 board.onTurnChange();

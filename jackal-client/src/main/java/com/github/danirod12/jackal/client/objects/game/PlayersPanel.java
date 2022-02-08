@@ -2,14 +2,15 @@ package com.github.danirod12.jackal.client.objects.game;
 
 import com.github.danirod12.jackal.client.Jackal;
 import com.github.danirod12.jackal.client.objects.RenderObject;
+import com.github.danirod12.jackal.client.render.FrameRender;
 import com.github.danirod12.jackal.client.render.GameLoop;
 import com.github.danirod12.jackal.client.render.ImageLoader;
 import com.github.danirod12.jackal.client.util.ColorTheme;
 import com.github.danirod12.jackal.client.util.Misc;
 import com.github.danirod12.jackal.client.util.Pair;
+import com.github.danirod12.jackal.client.util.Triplet;
 
 import java.awt.*;
-import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,9 +19,7 @@ public class PlayersPanel extends RenderObject {
     // Current GameLoop session
     private final GameLoop loop = Jackal.getGameLoop();
 
-    private final int BLOB_INFO = 16;
-
-    private final int width, arc, bound_offset;
+    private final int arc;
     private final Font font;
 
     // List URL, will be updated from another class
@@ -29,24 +28,22 @@ public class PlayersPanel extends RenderObject {
 
     /**
      * Generate RenderObject for players frame
-     * @param players Current players list ( [!] Not copy )
-     * @param x X location
-     * @param y Y location
-     * @param width Frame width
-     * @param bound_offset Bound offsets
-     * @param font Font for text
+     *
+     * @param players      Current players list ( [!] Not copy )
+     * @param x            X location
+     * @param y            Y location
+     * @param font         Font for text
      */
-    public PlayersPanel(List<Player> players, int x, int y, int width, int arc, int bound_offset, Font font) {
+    public PlayersPanel(List<Player> players, int x, int y, int arc, Font font) {
         super(x, y);
-        this.width = width;
         this.arc = arc;
-        this.bound_offset = bound_offset;
         this.font = font;
         this.players = players;
     }
 
     @Override
-    public void tick() { }
+    public void tick() {
+    }
 
     @Override
     public void render(Graphics2D graphics) {
@@ -55,41 +52,75 @@ public class PlayersPanel extends RenderObject {
             text_data = Misc.getStringParams("Ag]", font, graphics);
         }
 
-        int height = players.size() * (text_data.getValue() + bound_offset * 4 + BLOB_INFO) + bound_offset;
-
-        graphics.setColor(ColorTheme.NOT_ACTIVATED_FRAME);
+        FrameRender render = loop.getFrameRender();
+        int frameCenter = render.getWidth() / 2;
+        int current_x;
+        int current_y = 20;
+        int width = 300;
+        int height = 30;
 
         List<Player> players = new ArrayList<>(this.players);
 
-        graphics.fillRoundRect(super.getX(), super.getY(), width, height, arc, arc);
-
-        graphics.setColor(ColorTheme.NOT_ACTIVATED_BOUND);
-        graphics.drawRoundRect(super.getX(), super.getY(), width, height, arc, arc);
-
-        height = super.getY() + bound_offset;
-
         graphics.setFont(font);
-        for(Player player : players) {
+
+        current_x = players.size() % 2 == 0 ? frameCenter - 5 - width : frameCenter - width / 2;
+
+        for (Player player : players) {
+
+            int nameLength = graphics.getFontMetrics().stringWidth(player.getName());
+
+            if (player.isWaitingForMove()) {
+
+                Triplet<String, Integer, Long> moveData = player.getMoveData();
+
+                int cooldown = moveData.getB() * 50; // in msecs
+                long endTime = moveData.getC();
+                long startTime = endTime - cooldown;
+
+                if(System.currentTimeMillis() == endTime) {
+                    break;
+                }
+
+                graphics.setColor(ColorTheme.NOT_ACTIVATED_FRAME);
+                graphics.fillRoundRect(current_x, current_y + 28, width, 6, arc, arc);
+
+                int timeUsed = (int)(System.currentTimeMillis() - startTime);
+                int fillPercentage = Misc.percentageOf(timeUsed, cooldown);
+                int calculatedWidth = Misc.percentage(width, fillPercentage);
+
+                graphics.setColor(Color.RED);
+                graphics.fillRoundRect(current_x, current_y + 28, calculatedWidth, 6, arc, arc);
+
+                graphics.setColor(ColorTheme.NOT_ACTIVATED_BOUND);
+                graphics.drawRoundRect(current_x, current_y + 28, width, 6, arc, arc);
+            }
+
+            graphics.setColor(ColorTheme.NOT_ACTIVATED_FRAME);
+            graphics.fillRoundRect(current_x, current_y, width, height, arc, arc);
 
             graphics.setColor(ColorTheme.NOT_ACTIVATED_BOUND);
-            graphics.drawRoundRect(super.getX() + bound_offset, height, width - 2 * bound_offset, text_data.getValue() + bound_offset * 3 + BLOB_INFO, arc, arc);
+            graphics.drawRoundRect(current_x, current_y, width, height, arc, arc);
 
-            height += text_data.getValue();
+            int gLineX = current_x + width - width / 8;
+
+            graphics.drawLine(gLineX, current_y, gLineX, current_y + height);
 
             graphics.setColor(player.getColor().asRenderColor());
-            graphics.drawString(player.getName(), super.getX() + (width - graphics.getFontMetrics().stringWidth(player.getName())) / 2, height);
+            graphics.drawString(player.getName(), current_x + (width - nameLength) / 2, current_y + 22);
 
-            height += bound_offset * 2;
-            graphics.drawImage(ImageLoader.COIN_16, super.getX() + width / 4, height, null);
+            graphics.drawImage(ImageLoader.COIN_16, gLineX + 4, current_y + 8, null);
             graphics.setColor(ColorTheme.MONEY);
+            graphics.drawString(String.valueOf(player.getMoney()), gLineX + 24, current_y + 23);
 
-            // TODO custom font                                                                     TODO center text
-            graphics.drawString(String.valueOf(player.getMoney()), super.getX() + width / 4 + 20, height + 14);
+            if (player.isWaitingForMove()) {
+                graphics.drawImage(ImageLoader.multiply(ImageLoader.COGWHEEL_16, 2), current_x, current_y, null);
+            }
 
-            height += bound_offset * 2 + BLOB_INFO;
-
+            if (players.size() % 2 == 0) {
+                current_x = current_x != frameCenter + 15 + width ? current_x + 10 + width : frameCenter - 15 - 2 * width;
+            } else {
+                current_x = current_x < frameCenter + 10 + width / 2 ? current_x + 10 + width : frameCenter - 10 - width - width / 2;
+            }
         }
-
     }
-
 }

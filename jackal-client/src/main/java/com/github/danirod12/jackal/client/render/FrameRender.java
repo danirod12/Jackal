@@ -130,7 +130,7 @@ public class FrameRender extends Canvas {
         handler.add(RenderLayer.CHAT, new ChatObject(getHeight(), width / 3, new Font("TimesRoman", Font.PLAIN, 30)));
 
         handler.add(RenderLayer.PLAYERS_PANEL, new PlayersPanel(Jackal.getGameLoop().getConnection().getPlayers(),
-                getWidth() - 270, 20, 250, 20, 4, new Font("TimesRoman", Font.BOLD, 20)));
+                getWidth() - 270, 20, 4, new Font("TimesRoman", Font.BOLD, 20)));
 
     }
 

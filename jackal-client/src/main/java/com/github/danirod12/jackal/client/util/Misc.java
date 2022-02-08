@@ -14,6 +14,10 @@ public class Misc {
 
     }
 
+    public static int percentageOf(int firstNum, int secondNum) {
+        return (firstNum * 100) / secondNum;
+    }
+
     public static boolean isInsideRoundedRect(int pos1, int pos2, int width, int height, int arc) {
 
         // bound

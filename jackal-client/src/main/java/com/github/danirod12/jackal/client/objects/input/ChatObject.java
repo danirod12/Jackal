@@ -149,17 +149,17 @@ public class ChatObject extends RenderObject implements KeyboardExecutor, Select
                         word = word.substring(1);
                     }
                     graphics.setColor(colorCode.getBuilder().build(input ? 255 : message.getAlpha()));
-
                     graphics.drawString(word, current_x, current_y - 1);
+
                     current_x += graphics.getFontMetrics().stringWidth(word);
 
                 }
-                current_y -= 2 + height;
             } else {
                 graphics.setColor(colorCode.getBuilder().build(input ? 255 : message.getAlpha()));
 
                 graphics.drawString(message.getMessage(), current_x, current_y - 1);
             }
+            current_y -= 2 + height;
         }
     }
 

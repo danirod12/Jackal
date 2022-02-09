@@ -95,7 +95,7 @@ public class GameBoard implements MouseExecutor {
         // TODO render items
 
         // Render players
-        for(EntityPlayer player : players) {
+        for(EntityPlayer player : new ArrayList<>(players)) {
 
             if(player.getSubTile() == null) continue;
 

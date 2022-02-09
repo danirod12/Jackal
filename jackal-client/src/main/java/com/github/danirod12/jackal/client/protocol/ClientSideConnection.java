@@ -214,19 +214,11 @@ public class ClientSideConnection {
             // Turn change packet
             case 40: {
 
-                /* TODO name:cooldown:end_time_ms
-
-                Destroy select menu, insert time for awaiting player
-                If it is a self turn unlock EntityPlayer select
-
-                 */
-
                 String[] parsedData = data.getData().split(":");
 
-                for(Player player : players) {
-                    player.setWaitingForMove(player.getName().equalsIgnoreCase(parsedData[0]));
-                    player.setMoveData(new Triplet<>(parsedData[0], Integer.parseInt(parsedData[1]), Long.parseLong(parsedData[2])));
-                }
+                for(Player player : players)
+                    player.setTurnData(player.getName().equalsIgnoreCase(parsedData[0])
+                            ? new Pair<>(Long.parseLong(parsedData[1]), Long.parseLong(parsedData[2])) : null);
                 assert board != null;
                 board.onTurnChange();
                 return;

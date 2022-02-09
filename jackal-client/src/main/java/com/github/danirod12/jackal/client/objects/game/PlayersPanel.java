@@ -8,7 +8,6 @@ import com.github.danirod12.jackal.client.render.ImageLoader;
 import com.github.danirod12.jackal.client.util.ColorTheme;
 import com.github.danirod12.jackal.client.util.Misc;
 import com.github.danirod12.jackal.client.util.Pair;
-import com.github.danirod12.jackal.client.util.Triplet;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -71,10 +70,8 @@ public class PlayersPanel extends RenderObject {
 
             if (player.isWaitingForMove()) {
 
-                Triplet<String, Integer, Long> moveData = player.getMoveData();
-
-                int cooldown = moveData.getB() * 50; // in msecs
-                long endTime = moveData.getC();
+                long cooldown = player.getTurnData().getA() * 50; // in ms
+                long endTime = player.getTurnData().getB();
                 long startTime = endTime - cooldown;
 
                 if(System.currentTimeMillis() == endTime) {
@@ -84,8 +81,7 @@ public class PlayersPanel extends RenderObject {
                 graphics.setColor(ColorTheme.NOT_ACTIVATED_FRAME);
                 graphics.fillRoundRect(current_x, current_y + 28, width, 6, arc, arc);
 
-                int timeUsed = (int)(System.currentTimeMillis() - startTime);
-                int fillPercentage = Misc.percentageOf(timeUsed, cooldown);
+                int fillPercentage = Misc.percentageOf(System.currentTimeMillis() - startTime, cooldown);
                 int calculatedWidth = Misc.percentage(width, fillPercentage);
 
                 graphics.setColor(Color.RED);

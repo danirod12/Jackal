@@ -1,7 +1,7 @@
 package com.github.danirod12.jackal.client.objects.game;
 
 import com.github.danirod12.jackal.client.util.GameColor;
-import com.github.danirod12.jackal.client.util.Triplet;
+import com.github.danirod12.jackal.client.util.Pair;
 
 public class Player {
 
@@ -9,8 +9,7 @@ public class Player {
 
     private GameColor color = GameColor.UNKNOWN;
     private int money = 0;
-    private boolean isWaitingForMove = false;
-    private Triplet<String, Integer, Long> moveData;
+    private Pair<Long, Long> turnData;
 
     public Player(String name) {
         this.name = name;
@@ -35,18 +34,15 @@ public class Player {
     }
 
     public boolean isWaitingForMove() {
-        return this.isWaitingForMove;
+        return this.turnData != null;
     }
 
-    public void setWaitingForMove(boolean waitingForMove) {
-        this.isWaitingForMove = waitingForMove;
+    public Pair<Long, Long> getTurnData() {
+        return turnData;
     }
 
-    public void setMoveData(Triplet<String, Integer, Long> moveData) {
-        this.moveData = moveData;
+    public void setTurnData(Pair<Long, Long> turnData) {
+        this.turnData = turnData;
     }
 
-    public Triplet<String, Integer, Long> getMoveData() {
-        return moveData;
-    }
 }

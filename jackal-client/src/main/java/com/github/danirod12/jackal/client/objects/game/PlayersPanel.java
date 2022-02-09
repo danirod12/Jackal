@@ -82,7 +82,7 @@ public class PlayersPanel extends RenderObject {
                 graphics.fillRoundRect(current_x, current_y + 28, width, 6, arc, arc);
 
                 int fillPercentage = Misc.percentageOf(System.currentTimeMillis() - startTime, cooldown);
-                int calculatedWidth = Misc.percentage(width, fillPercentage);
+                int calculatedWidth = Misc.percentage(width, 100 - fillPercentage);
 
                 graphics.setColor(Color.RED);
                 graphics.fillRoundRect(current_x, current_y + 28, calculatedWidth, 6, arc, arc);

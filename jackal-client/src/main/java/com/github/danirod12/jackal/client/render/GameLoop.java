@@ -10,7 +10,6 @@ import com.github.danirod12.jackal.client.objects.AppObject;
 import com.github.danirod12.jackal.client.objects.bin.FadingOvalObject;
 import com.github.danirod12.jackal.client.objects.input.ChatObject;
 import com.github.danirod12.jackal.client.protocol.ClientSideConnection;
-import com.github.danirod12.jackal.client.protocol.packet.ServerboundLoginPacket;
 import com.github.danirod12.jackal.client.util.ColorTheme;
 import com.github.danirod12.jackal.client.util.Misc;
 import com.github.danirod12.jackal.client.util.SimpleScheduler;
@@ -85,11 +84,7 @@ public class GameLoop implements Runnable {
             delta += (now - lastTime) / ns;
             lastTime = now;
             while(delta >= 1) {
-                try {
-                    tick();
-                } catch(Exception ex) {
-                    ex.printStackTrace();
-                }
+                tick();
                 delta--;
             }
             if(running) render();
@@ -108,41 +103,57 @@ public class GameLoop implements Runnable {
 
     private void render() {
 
-        BufferStrategy bs = render.getBufferStrategy();
-        if(bs == null) {
-            render.createBufferStrategy(3);
-            return;
+        try {
+
+            BufferStrategy bs = render.getBufferStrategy();
+            if(bs == null) {
+                render.createBufferStrategy(3);
+                return;
+            }
+
+            Graphics2D graphics = (Graphics2D) bs.getDrawGraphics();
+            graphics.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+            graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+            // Background
+            this.render.render(graphics);
+
+            // Game
+            if(this.connection != null && this.connection.getBoard() != null)
+                this.connection.getBoard().render(graphics);
+
+            // Foreground
+            this.handler.getRenderObjects().forEach(n -> n.render(graphics));
+
+            if(render.displayFps()) {
+                graphics.setColor(ColorTheme.DEBUG_LIGHT);
+                graphics.setFont(system_font);
+                graphics.drawString("FPS: " + fps, 4, 15);
+            }
+
+            graphics.dispose();
+            bs.show();
+
+        } catch(Throwable throwable) {
+            throwable.printStackTrace();
+            log(throwable);
         }
-
-        Graphics2D graphics = (Graphics2D) bs.getDrawGraphics();
-        graphics.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
-        graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-
-        // Background
-        this.render.render(graphics);
-
-        // Game
-        if(this.connection != null && this.connection.getBoard() != null)
-            this.connection.getBoard().render(graphics);
-
-        // Foreground
-        this.handler.getRenderObjects().forEach(n -> n.render(graphics));
-
-        if(render.displayFps()) {
-            graphics.setColor(ColorTheme.DEBUG_LIGHT);
-            graphics.setFont(system_font);
-            graphics.drawString("FPS: " + fps, 4, 15);
-        }
-
-        graphics.dispose();
-        bs.show();
 
     }
 
     private void tick() {
-        if(boolean_ticker.tick()) boolean_ticker.set(!boolean_ticker.get());
-        render.tick();
-        handler.forEach(AppObject::tick);
+
+        try {
+
+            if(boolean_ticker.tick()) boolean_ticker.set(!boolean_ticker.get());
+            render.tick();
+            handler.forEach(AppObject::tick);
+
+        } catch (Throwable throwable) {
+            throwable.printStackTrace();
+            log(throwable);
+        }
+
     }
 
     public synchronized void stop() {
@@ -252,7 +263,7 @@ public class GameLoop implements Runnable {
         int port = -1;
         try {
             port = Integer.parseInt(data[1]);
-        } catch (Exception exception) {}
+        } catch (Exception ignored) {}
         if(port < 0) port = Jackal.DEFAULT_PORT;
 
         System.out.println("Connecting to \"" + data[0] + ":" + port + "\" using name \"" + this.name + "\"...");
@@ -266,10 +277,12 @@ public class GameLoop implements Runnable {
         } catch (UnknownHostException exception) {
             // TODO server not found
             exception.printStackTrace();
+            log(exception);
             return;
-        } catch(Exception exception) {
+        } catch(Throwable throwable) {
             // TODO other exception
-            exception.printStackTrace();
+            throwable.printStackTrace();
+            log(throwable);
             return;
         }
 
@@ -287,6 +300,33 @@ public class GameLoop implements Runnable {
     public void selectObject (SelectableObject object) {
         unselectObject();
         selected = object;
+    }
+
+    private ErrFrame errLogger;
+
+    public void log(Throwable throwable) {
+
+        if(errLogger == null || errLogger.isClosed()) errLogger = new ErrFrame();
+
+        errLogger.log(throwable.getClass().getName() + " - " + throwable.getLocalizedMessage());
+        int last_printed = -1;
+        StackTraceElement[] elements = throwable.getStackTrace();
+
+        for(int i = 0; i < elements.length; ++i) {
+
+            String message = elements[i].toString();
+            if(message.startsWith("com.github.danirod12.jackal")) {
+                while (last_printed <= i) {
+                    last_printed++;
+                    errLogger.log("   at  " + elements[last_printed].toString());
+                }
+            }
+
+        }
+        for(int i = last_printed; i < elements.length && i < last_printed + 3; i++)
+            errLogger.log("   at  " + elements[i].toString());
+        errLogger.log("      And " + (elements.length - last_printed - 4) + " more...");
+
     }
 
 }

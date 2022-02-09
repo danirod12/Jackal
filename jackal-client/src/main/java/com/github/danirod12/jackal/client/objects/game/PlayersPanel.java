@@ -83,7 +83,7 @@ public class PlayersPanel extends RenderObject {
 
                 int fillPercentage = Misc.percentageOf(System.currentTimeMillis() - startTime, cooldown);
 
-                if(fillPercentage <= 0) {
+                if(fillPercentage <= 0 || fillPercentage >= 100) {
 
                     player.setTurnData(null);
 

@@ -82,13 +82,23 @@ public class PlayersPanel extends RenderObject {
                 graphics.fillRoundRect(current_x, current_y + 28, width, 6, arc, arc);
 
                 int fillPercentage = Misc.percentageOf(System.currentTimeMillis() - startTime, cooldown);
-                int calculatedWidth = Misc.percentage(width, 100 - fillPercentage);
 
-                graphics.setColor(Color.RED);
-                graphics.fillRoundRect(current_x, current_y + 28, calculatedWidth, 6, arc, arc);
+                if(fillPercentage <= 0) {
 
-                graphics.setColor(ColorTheme.NOT_ACTIVATED_BOUND);
-                graphics.drawRoundRect(current_x, current_y + 28, width, 6, arc, arc);
+                    player.setTurnData(null);
+
+                } else {
+
+                    int calculatedWidth = Misc.percentage(width, 100 - fillPercentage);
+
+                    graphics.setColor(Color.RED);
+                    graphics.fillRoundRect(current_x, current_y + 28, calculatedWidth, 6, arc, arc);
+
+                    graphics.setColor(ColorTheme.NOT_ACTIVATED_BOUND);
+                    graphics.drawRoundRect(current_x, current_y + 28, width, 6, arc, arc);
+
+                }
+
             }
 
             graphics.setColor(ColorTheme.NOT_ACTIVATED_FRAME);

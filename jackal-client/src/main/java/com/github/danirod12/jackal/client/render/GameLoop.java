@@ -325,7 +325,9 @@ public class GameLoop implements Runnable {
         }
         for(int i = last_printed; i < elements.length && i < last_printed + 3; i++)
             errLogger.log("   at  " + elements[i].toString());
-        errLogger.log("      And " + (elements.length - last_printed - 4) + " more...");
+
+        if(elements.length - last_printed - 4 > 0)
+            errLogger.log("      And " + (elements.length - last_printed - 4) + " more...");
 
     }
 

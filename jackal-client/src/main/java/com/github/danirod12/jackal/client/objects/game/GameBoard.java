@@ -79,7 +79,7 @@ public class GameBoard implements MouseExecutor {
         }
 
         // Render boats
-        for(TeamBoat boat : boats.values()) {
+        for(TeamBoat boat : new ArrayList<>(boats.values())) {
 
             renderX = 100 + boat.getX() * 64;
             renderY = 100 + boat.getY() * 64;

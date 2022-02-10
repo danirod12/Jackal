@@ -7,19 +7,28 @@ import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.awt.image.RasterFormatException;
-import java.nio.Buffer;
 import java.util.concurrent.ThreadLocalRandom;
+
+import static java.awt.image.BufferedImage.TYPE_INT_RGB;
 
 public class ImageLoader {
 
     public final static BufferedImage COIN_16;
     public final static BufferedImage COGWHEEL_32;
+    public final static BufferedImage GRASS;
+    public final static BufferedImage SAND;
+    public final static BufferedImage ROCK;
 
     static {
 
+        BufferedImage tileset = loadImage("background_tileset");
+
+        SAND = getTile(tileset, 64, 64, 0, 1);
+        GRASS = getTile(tileset, 64, 64, 1, 1);
+        ROCK = getTile(tileset, 64, 64, 2, 1);
+
         COIN_16 = loadImage("coin16");
         COGWHEEL_32 = multiply(loadImage("cogwheel16"), 2);
-
     }
 
     public static BufferedImage repeatImage(BufferedImage origin, int width, int height) {

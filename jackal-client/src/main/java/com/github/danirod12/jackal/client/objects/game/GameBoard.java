@@ -11,9 +11,11 @@ import com.github.danirod12.jackal.client.objects.tile.VoidTile;
 import com.github.danirod12.jackal.client.protocol.packet.ServerboundRequestActionsPacket;
 import com.github.danirod12.jackal.client.protocol.packet.ServerboundSelectActionPacket;
 import com.github.danirod12.jackal.client.render.GameLoop;
+import com.github.danirod12.jackal.client.render.ImageLoader;
 import com.github.danirod12.jackal.client.util.*;
 
 import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.util.*;
 import java.util.List;
 
@@ -66,8 +68,11 @@ public class GameBoard implements MouseExecutor {
                 GameTile tile = gameTiles[x];
                 // render
                 if (tile.getTileType() != TileType.EMPTY) {
-                    graphics.setColor(tile.getTileType().getAssociatedColor());
-                    graphics.fillRect(renderX, renderY, 64, 64);
+
+//                    graphics.setColor(Color.RED);
+//                    graphics.drawRect(renderX, renderY, 64, 64);
+
+                    graphics.drawImage(tile.getTexture(), renderX, renderY, null);
                 }
 
                 renderX += 64;
@@ -248,7 +253,23 @@ public class GameBoard implements MouseExecutor {
                 board[y][x] = new VoidTile();
             return;
         }
-        board[y][x] = new ClosedTile(type);
+
+        ClosedTile tile = new ClosedTile(type);
+        BufferedImage texture = ImageLoader.generateImage(64, 64, Color.GRAY);
+
+        switch (type.getId()) {
+            case 1: {texture = ImageLoader.SAND; break;}
+            case 2: {texture = ImageLoader.GRASS; break;}
+            case 3: {texture = ImageLoader.ROCK; break;}
+        }
+
+        // TODO insert random number generator instead of a set multipler
+
+        texture = ImageLoader.rotateImage(texture, 2);
+
+        tile.setTexture(texture);
+
+        board[y][x] = tile;
         
     }
 

@@ -15,7 +15,7 @@ public abstract class GameTile {
         this.image = image;
     }
 
-    public BufferedImage getImage() {
+    public BufferedImage getTexture() {
         return image;
     }
 

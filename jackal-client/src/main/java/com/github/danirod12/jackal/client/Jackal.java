@@ -22,7 +22,7 @@ public class Jackal {
     }
 
     private void createGameLoop() {
-        this.game_loop = new GameLoop(new FrameRender(this, "Jackal", 1280, 720));
+        this.game_loop = new GameLoop(new FrameRender("Jackal", 1280, 720));
         this.game_loop.reset();
     }
 

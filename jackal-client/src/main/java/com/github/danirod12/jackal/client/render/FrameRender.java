@@ -13,7 +13,6 @@ import com.github.danirod12.jackal.client.objects.input.ChatObject;
 import com.github.danirod12.jackal.client.objects.input.TextInputBlobObject;
 import com.github.danirod12.jackal.client.util.ColorTheme;
 import com.github.danirod12.jackal.client.util.Misc;
-import com.github.danirod12.jackal.client.util.Pair;
 
 import javax.swing.*;
 import java.awt.*;
@@ -23,15 +22,11 @@ public class FrameRender extends Canvas {
 
     public final static int OFFSET_NORMAL_W = 16, OFFSET_NORMAL_H = 39;
 
-    private final JFrame frame;
     private final int width, height;
-    private final Jackal instance;
 
     private final ImagesCollection background;
 
-    public FrameRender(Jackal instance, String title, int w, int h) {
-
-        this.instance = instance;
+    public FrameRender(String title, int w, int h) {
 
         this.width = w;
         this.height = h < 0 ? w * 9 / 12 : h;
@@ -39,7 +34,7 @@ public class FrameRender extends Canvas {
         if(this.width < 10 || this.height < 10) throw new IllegalArgumentException("Frame is too small");
         System.out.println("Loading frame with dimension (w: " + width + ", h:" + height + ")");
 
-        this.frame = new JFrame();
+        JFrame frame = new JFrame();
         frame.setTitle(title);
 
         Dimension dimension = new Dimension(width, height);
@@ -117,7 +112,7 @@ public class FrameRender extends Canvas {
 
         handler.add(RenderLayer.LOBBY_SETTINGS, server = new TextInputBlobObject(width / 2 - 300, height / 2, 600, 60, 40,
                 ColorTheme.NOT_ACTIVATED_FRAME, ColorTheme.NOT_ACTIVATED_BOUND, ColorTheme.ACTIVATED_FRAME, ColorTheme.ACTIVATED_BOUND,
-                new Font("TimesRoman", Font.BOLD, 35), 30, "Enter server IP", null));
+                new Font("TimesRoman", Font.BOLD, 35), 30, "Enter server IP", (string) -> Jackal.getGameLoop().connect(name.getValue(), string)));
 
         handler.add(RenderLayer.LOBBY_SETTINGS, new ButtonObject(width / 2 - 150, height / 2 + 150, 300, 50, 40,
                 ColorTheme.NOT_ACTIVATED_BUTTON, ColorTheme.NOT_ACTIVATED_BOUND, ColorTheme.ACTIVATED_BUTTON, ColorTheme.ACTIVATED_BOUND, "Connect", small_text,

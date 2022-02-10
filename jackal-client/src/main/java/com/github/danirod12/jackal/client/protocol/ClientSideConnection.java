@@ -17,7 +17,6 @@ import java.io.*;
 import java.net.Socket;
 import java.net.SocketException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class ClientSideConnection {
@@ -177,6 +176,8 @@ public class ClientSideConnection {
             // Game object packet
             case 10: {
 
+                if(board == null) throw new UnsupportedOperationException("Board not exists");
+
                 // action:uuid:id:y:x:metadata
                 String[] parsed = SimpleDecoder.split(data.getData(), ":", 6);
                 board.onObjectUpdate(Integer.parseInt(parsed[0]), parsed[1], Integer.parseInt(parsed[2]), Integer.parseInt(parsed[3]), Integer.parseInt(parsed[4]), parsed[5]);
@@ -188,6 +189,7 @@ public class ClientSideConnection {
             case 20: {
 
                 if(board != null) throw new UnsupportedOperationException("Board already exists");
+
                 board = new GameBoard(Integer.parseInt(data.getData().split(":")[0]), Integer.parseInt(data.getData().split(":")[1]));
                 return;
 
@@ -195,6 +197,8 @@ public class ClientSideConnection {
 
             // Create tile packet
             case 21: {
+
+                if(board == null) throw new UnsupportedOperationException("Board not exists");
 
                 Pair<Pair<Integer, Integer>, TileType> parsed = SimpleDecoder.parseLocatedTileType(data.getData());
                 board.createTile(parsed.getKey().getA(), parsed.getKey().getB(), parsed.getValue());
@@ -205,6 +209,8 @@ public class ClientSideConnection {
             // Tile metadata packet
             case 22: {
 
+                if(board == null) throw new UnsupportedOperationException("Board not exists");
+
                 // TODO y:x:id:metadata
                 System.out.println("Tile metadata changed - " + data.getData());
                 return;
@@ -214,12 +220,13 @@ public class ClientSideConnection {
             // Turn change packet
             case 40: {
 
+                if(board == null) throw new UnsupportedOperationException("Board not exists");
+
                 String[] parsedData = data.getData().split(":");
 
                 for(Player player : players)
                     player.setTurnData(player.getName().equalsIgnoreCase(parsedData[0])
                             ? new Pair<>(Long.parseLong(parsedData[1]), Long.parseLong(parsedData[2])) : null);
-                assert board != null;
                 board.onTurnChange();
                 return;
 
@@ -227,6 +234,8 @@ public class ClientSideConnection {
 
             // Available action
             case 41: {
+
+                if(board == null) throw new UnsupportedOperationException("Board not exists");
 
                 String[] parsed = data.getData().split(";");
                 board.setAvailableMovements(parsed);

@@ -13,12 +13,12 @@ import java.util.concurrent.ThreadLocalRandom;
 public class ImageLoader {
 
     public final static BufferedImage COIN_16;
-    public final static BufferedImage COGWHEEL_16;
+    public final static BufferedImage COGWHEEL_32;
 
     static {
 
         COIN_16 = loadImage("coin16");
-        COGWHEEL_16 = loadImage("cogwheel16");
+        COGWHEEL_32 = multiply(loadImage("cogwheel16"), 2);
 
     }
 

@@ -70,24 +70,19 @@ public class PlayersPanel extends RenderObject {
 
             if (player.isWaitingForMove()) {
 
-                long cooldown = player.getTurnData().getA() * 50; // in ms
-                long endTime = player.getTurnData().getB();
-                long startTime = endTime - cooldown;
+                final long cooldown = player.getTurnData().getA() * 50; // convert from ticks to ms
+                int fillPercentage = Misc.percentageOf(System.currentTimeMillis() - player.getTurnData().getB() + cooldown, cooldown);
 
-                if(System.currentTimeMillis() == endTime) {
-                    break;
-                }
-
-                graphics.setColor(ColorTheme.NOT_ACTIVATED_FRAME);
-                graphics.fillRoundRect(current_x, current_y + 28, width, 6, arc, arc);
-
-                int fillPercentage = Misc.percentageOf(System.currentTimeMillis() - startTime, cooldown);
-
-                if(fillPercentage <= 0 || fillPercentage >= 100) {
+                if(fillPercentage >= 100) {
 
                     player.setTurnData(null);
 
                 } else {
+
+                    if(fillPercentage <= 0) fillPercentage = 0;
+
+                    graphics.setColor(ColorTheme.NOT_ACTIVATED_FRAME);
+                    graphics.fillRoundRect(current_x, current_y + 28, width, 6, arc, arc);
 
                     int calculatedWidth = Misc.percentage(width, 100 - fillPercentage);
 
@@ -118,15 +113,17 @@ public class PlayersPanel extends RenderObject {
             graphics.setColor(ColorTheme.MONEY);
             graphics.drawString(String.valueOf(player.getMoney()), gLineX + 24, current_y + 23);
 
-            if (player.isWaitingForMove()) {
-                graphics.drawImage(ImageLoader.multiply(ImageLoader.COGWHEEL_16, 2), current_x, current_y, null);
-            }
+            if (player.isWaitingForMove())
+                graphics.drawImage(ImageLoader.COGWHEEL_32, current_x, current_y, null);
 
             if (players.size() % 2 == 0) {
                 current_x = current_x != frameCenter + 15 + width ? current_x + 10 + width : frameCenter - 15 - 2 * width;
             } else {
                 current_x = current_x < frameCenter + 10 + width / 2 ? current_x + 10 + width : frameCenter - 10 - width - width / 2;
             }
+
         }
+
     }
+
 }

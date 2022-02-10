@@ -198,7 +198,7 @@ public class ClientSideConnection {
             // Create tile packet
             case 21: {
 
-                if(board == null) throw new UnsupportedOperationException("Board not exists");
+                if(board == null) throw new UnsupportedOperationException("Board does not exist");
 
                 Pair<Pair<Integer, Integer>, TileType> parsed = SimpleDecoder.parseLocatedTileType(data.getData());
                 board.createTile(parsed.getKey().getA(), parsed.getKey().getB(), parsed.getValue());

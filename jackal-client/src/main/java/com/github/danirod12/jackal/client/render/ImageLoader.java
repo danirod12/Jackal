@@ -33,7 +33,7 @@ public class ImageLoader {
 
     public static BufferedImage repeatImage(BufferedImage origin, int width, int height) {
 
-        BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+        BufferedImage image = new BufferedImage(width, height, TYPE_INT_RGB);
         Graphics2D graphics = image.createGraphics();
 
         int x = 0;
@@ -86,7 +86,7 @@ public class ImageLoader {
 
     public static BufferedImage generateCorruptedImage(int width, int height) {
 
-        BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+        BufferedImage image = new BufferedImage(width, height, TYPE_INT_RGB);
         Graphics2D graphics = image.createGraphics();
 
         // Not require ColorTheme. It is a corrupter image. But could be provided in the future
@@ -127,7 +127,7 @@ public class ImageLoader {
 
     public static BufferedImage getTile(BufferedImage origin, int tileWidth, int tileHeight, int x, int y) {
         try {
-            return origin.getSubimage((tileWidth - 1) * x, (tileHeight - 1) * y, tileWidth, tileHeight);
+            return origin.getSubimage(tileWidth * x, tileHeight * y, tileWidth, tileHeight);
         } catch(RasterFormatException exception) {
             exception.printStackTrace();
             System.out.println("Cannot crop image [(" + (tileWidth - 1) * x + "," + (tileHeight - 1) * y + ")," + tileWidth + "," + tileHeight
@@ -144,7 +144,7 @@ public class ImageLoader {
         BufferedImage[] images = new BufferedImage[tiles.length];
         for (int i = 0; i < tiles.length; i++) {
 
-            BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+            BufferedImage image = new BufferedImage(width, height, TYPE_INT_RGB);
             Graphics2D graphics = image.createGraphics();
 
             int x = 0;
@@ -182,6 +182,65 @@ public class ImageLoader {
         graphics.dispose();
         return origin;
 
+    }
+
+    /**
+     *
+     * @param origin a {@link BufferedImage} object, only square images work
+     * @param multiplier an {@link Integer}, describes how many times to rotate the image 90 degrees
+     * @return a rotated object of {@link BufferedImage} class
+     */
+
+    public static BufferedImage rotateImage(BufferedImage origin, Integer multiplier) {
+        if (multiplier == 0 || origin.getHeight() != origin.getWidth()) return origin;
+
+        BufferedImage result = origin;
+
+        for (int i = 0; i < multiplier; i++) {
+            result = rotateImage(result);
+        }
+        return result;
+    }
+
+    public static BufferedImage rotateImage(BufferedImage origin) {
+        int size = origin.getHeight() - 1;
+
+        BufferedImage result = new BufferedImage(origin.getWidth(), origin.getHeight(), TYPE_INT_RGB);
+
+        for (int x = 0; x <= size; x++) {
+            for (int y = 0; y <= size; y++) {
+                result.setRGB(size - y, x, origin.getRGB(x, y));
+            }
+        }
+        return result;
+    }
+
+    public static BufferedImage mirrorImageHorizontal(BufferedImage origin) {
+        int height = origin.getHeight();
+        int width = origin.getWidth();
+
+        BufferedImage result = new BufferedImage(width, height, TYPE_INT_RGB);
+
+        for (int x = 0; x < width; x++) {
+            for (int y = 0; y < height; y++) {
+                result.setRGB(width - x, y, origin.getRGB(x, y));
+            }
+        }
+        return result;
+    }
+
+    public static BufferedImage mirrorImageVertical(BufferedImage origin) {
+        int height = origin.getHeight();
+        int width = origin.getWidth();
+
+        BufferedImage result = new BufferedImage(width, height, TYPE_INT_RGB);
+
+        for (int x = 0; x < width; x++) {
+            for (int y = 0; y < height; y++) {
+                result.setRGB(x, height - y, origin.getRGB(x, y));
+            }
+        }
+        return result;
     }
 
 }

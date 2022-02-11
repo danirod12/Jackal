@@ -16,8 +16,9 @@ import com.github.danirod12.jackal.client.util.*;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.util.*;
 import java.util.List;
+import java.util.*;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class GameBoard implements MouseExecutor {
 
@@ -263,9 +264,9 @@ public class GameBoard implements MouseExecutor {
             case 3: {texture = ImageLoader.ROCK; break;}
         }
 
-        // TODO insert random number generator instead of a set multipler
+        // TODO insert random number generator instead of a set multiplier
 
-        texture = ImageLoader.rotateImage(texture, 2);
+        texture = ImageLoader.rotateImage(texture, ThreadLocalRandom.current().nextInt(0, 5));
 
         tile.setTexture(texture);
 

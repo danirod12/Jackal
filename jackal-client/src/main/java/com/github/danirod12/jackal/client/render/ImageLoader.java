@@ -130,7 +130,7 @@ public class ImageLoader {
             return origin.getSubimage(tileWidth * x, tileHeight * y, tileWidth, tileHeight);
         } catch(RasterFormatException exception) {
             exception.printStackTrace();
-            System.out.println("Cannot crop image [(" + (tileWidth - 1) * x + "," + (tileHeight - 1) * y + ")," + tileWidth + "," + tileHeight
+            System.out.println("Cannot crop image [(" + tileWidth * x + "," + tileHeight * y + ")," + tileWidth + "," + tileHeight
                     + "]. Image size " + origin.getWidth() + "x" + origin.getHeight());
             return generateCorruptedImage(tileWidth, tileHeight);
         }
@@ -190,9 +190,8 @@ public class ImageLoader {
      * @param multiplier an {@link Integer}, describes how many times to rotate the image 90 degrees
      * @return a rotated object of {@link BufferedImage} class
      */
-
-    public static BufferedImage rotateImage(BufferedImage origin, Integer multiplier) {
-        if (multiplier == 0 || origin.getHeight() != origin.getWidth()) return origin;
+    public static BufferedImage rotateImage(BufferedImage origin, int multiplier) {
+        if (multiplier <= 0 || origin.getHeight() != origin.getWidth()) return origin;
 
         BufferedImage result = origin;
 

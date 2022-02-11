@@ -185,6 +185,7 @@ public class ImageLoader {
     }
 
     /**
+     * This method rotates an inputted image a desired amount of times by 90 degrees clockwise.
      *
      * @param origin a {@link BufferedImage} object, only square images work
      * @param multiplier an {@link Integer}, describes how many times to rotate the image 90 degrees
@@ -201,6 +202,12 @@ public class ImageLoader {
         return result;
     }
 
+    /**
+     * This method rotates an inputted image 90 degrees clockwise.
+     *
+     * @param origin a {@link BufferedImage} object to be rotated, only square images work
+     * @return a rotated 90 degrees object of {@link BufferedImage} class
+     */
     public static BufferedImage rotateImage(BufferedImage origin) {
         int size = origin.getHeight() - 1;
 
@@ -214,6 +221,12 @@ public class ImageLoader {
         return result;
     }
 
+    /**
+     * This method mirrors an inputted image horizontally.
+     *
+     * @param origin an object of {@link BufferedImage} class
+     * @return a mirrored object of {@link BufferedImage} class
+     */
     public static BufferedImage mirrorImageHorizontal(BufferedImage origin) {
         int height = origin.getHeight();
         int width = origin.getWidth();
@@ -228,6 +241,12 @@ public class ImageLoader {
         return result;
     }
 
+    /**
+     * This method mirrors an inputted image vertically.
+     *
+     * @param origin an object of {@link BufferedImage} class
+     * @return a mirrored object of {@link BufferedImage} class
+     */
     public static BufferedImage mirrorImageVertical(BufferedImage origin) {
         int height = origin.getHeight();
         int width = origin.getWidth();

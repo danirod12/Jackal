@@ -18,6 +18,9 @@ public class ImageLoader {
     public final static BufferedImage GRASS;
     public final static BufferedImage SAND;
     public final static BufferedImage ROCK;
+    public final static BufferedImage OPEN_GRASS;
+    public final static BufferedImage OPEN_SAND;
+    public final static BufferedImage OPEN_ROCK;
 
     static {
 
@@ -26,6 +29,10 @@ public class ImageLoader {
         SAND = getTile(tileset, 64, 64, 0, 1);
         GRASS = getTile(tileset, 64, 64, 1, 1);
         ROCK = getTile(tileset, 64, 64, 2, 1);
+
+        OPEN_SAND = getTile(tileset, 64, 64, 0, 0);
+        OPEN_GRASS = getTile(tileset, 64, 64, 1, 0);
+        OPEN_ROCK = getTile(tileset, 64, 64, 1, 0);
 
         COIN_16 = loadImage("coin16");
         COGWHEEL_32 = multiply(loadImage("cogwheel16"), 2);

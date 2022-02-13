@@ -256,18 +256,9 @@ public class GameBoard implements MouseExecutor {
         }
 
         ClosedTile tile = new ClosedTile(type);
-        BufferedImage texture = ImageLoader.generateImage(64, 64, Color.GRAY);
+        BufferedImage texture = type.getTexture(true);
 
-        switch (type.getId()) {
-            case 1: {texture = ImageLoader.SAND; break;}
-            case 2: {texture = ImageLoader.GRASS; break;}
-            case 3: {texture = ImageLoader.ROCK; break;}
-        }
-
-        // TODO insert random number generator instead of a set multiplier
-
-        texture = ImageLoader.rotateImage(texture, ThreadLocalRandom.current().nextInt(0, 5));
-
+        texture = ImageLoader.rotateImage(texture, ThreadLocalRandom.current().nextInt(0, 4));
         tile.setTexture(texture);
 
         board[y][x] = tile;

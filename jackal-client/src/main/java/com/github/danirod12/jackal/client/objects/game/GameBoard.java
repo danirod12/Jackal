@@ -11,11 +11,14 @@ import com.github.danirod12.jackal.client.objects.tile.VoidTile;
 import com.github.danirod12.jackal.client.protocol.packet.ServerboundRequestActionsPacket;
 import com.github.danirod12.jackal.client.protocol.packet.ServerboundSelectActionPacket;
 import com.github.danirod12.jackal.client.render.GameLoop;
+import com.github.danirod12.jackal.client.render.ImageLoader;
 import com.github.danirod12.jackal.client.util.*;
 
 import java.awt.*;
-import java.util.*;
+import java.awt.image.BufferedImage;
 import java.util.List;
+import java.util.*;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class GameBoard implements MouseExecutor {
 
@@ -66,8 +69,11 @@ public class GameBoard implements MouseExecutor {
                 GameTile tile = gameTiles[x];
                 // render
                 if (tile.getTileType() != TileType.EMPTY) {
-                    graphics.setColor(tile.getTileType().getAssociatedColor());
-                    graphics.fillRect(renderX, renderY, 64, 64);
+
+//                    graphics.setColor(Color.RED);
+//                    graphics.drawRect(renderX, renderY, 64, 64);
+
+                    graphics.drawImage(tile.getTexture(), renderX, renderY, null);
                 }
 
                 renderX += 64;
@@ -248,7 +254,14 @@ public class GameBoard implements MouseExecutor {
                 board[y][x] = new VoidTile();
             return;
         }
-        board[y][x] = new ClosedTile(type);
+
+        ClosedTile tile = new ClosedTile(type);
+        BufferedImage texture = type.getTexture(true);
+
+        texture = ImageLoader.rotateImage(texture, ThreadLocalRandom.current().nextInt(0, 4));
+        tile.setTexture(texture);
+
+        board[y][x] = tile;
         
     }
 

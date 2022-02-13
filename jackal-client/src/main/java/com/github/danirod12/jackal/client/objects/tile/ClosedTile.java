@@ -6,7 +6,7 @@ public class ClosedTile extends GameTile {
 
         super(style);
 
-        if(!style.isTerrain()) throw new IllegalArgumentException(style.name() + " not a terrain");
+        if(!style.isTerrain()) throw new IllegalArgumentException(style.name() + " not terrain");
 
     }
 

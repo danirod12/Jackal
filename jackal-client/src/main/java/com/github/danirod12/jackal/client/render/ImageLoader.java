@@ -7,24 +7,40 @@ import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.awt.image.RasterFormatException;
-import java.nio.Buffer;
 import java.util.concurrent.ThreadLocalRandom;
+
+import static java.awt.image.BufferedImage.TYPE_INT_RGB;
 
 public class ImageLoader {
 
     public final static BufferedImage COIN_16;
     public final static BufferedImage COGWHEEL_32;
+    public final static BufferedImage GRASS;
+    public final static BufferedImage SAND;
+    public final static BufferedImage ROCK;
+    public final static BufferedImage OPEN_GRASS;
+    public final static BufferedImage OPEN_SAND;
+    public final static BufferedImage OPEN_ROCK;
 
     static {
 
+        BufferedImage tileset = loadImage("background_tileset");
+
+        SAND = getTile(tileset, 64, 64, 0, 1);
+        GRASS = getTile(tileset, 64, 64, 1, 1);
+        ROCK = getTile(tileset, 64, 64, 2, 1);
+
+        OPEN_SAND = getTile(tileset, 64, 64, 0, 0);
+        OPEN_GRASS = getTile(tileset, 64, 64, 1, 0);
+        OPEN_ROCK = getTile(tileset, 64, 64, 1, 0);
+
         COIN_16 = loadImage("coin16");
         COGWHEEL_32 = multiply(loadImage("cogwheel16"), 2);
-
     }
 
     public static BufferedImage repeatImage(BufferedImage origin, int width, int height) {
 
-        BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+        BufferedImage image = new BufferedImage(width, height, TYPE_INT_RGB);
         Graphics2D graphics = image.createGraphics();
 
         int x = 0;
@@ -77,7 +93,7 @@ public class ImageLoader {
 
     public static BufferedImage generateCorruptedImage(int width, int height) {
 
-        BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+        BufferedImage image = new BufferedImage(width, height, TYPE_INT_RGB);
         Graphics2D graphics = image.createGraphics();
 
         // Not require ColorTheme. It is a corrupter image. But could be provided in the future
@@ -118,10 +134,10 @@ public class ImageLoader {
 
     public static BufferedImage getTile(BufferedImage origin, int tileWidth, int tileHeight, int x, int y) {
         try {
-            return origin.getSubimage((tileWidth - 1) * x, (tileHeight - 1) * y, tileWidth, tileHeight);
+            return origin.getSubimage(tileWidth * x, tileHeight * y, tileWidth, tileHeight);
         } catch(RasterFormatException exception) {
             exception.printStackTrace();
-            System.out.println("Cannot crop image [(" + (tileWidth - 1) * x + "," + (tileHeight - 1) * y + ")," + tileWidth + "," + tileHeight
+            System.out.println("Cannot crop image [(" + tileWidth * x + "," + tileHeight * y + ")," + tileWidth + "," + tileHeight
                     + "]. Image size " + origin.getWidth() + "x" + origin.getHeight());
             return generateCorruptedImage(tileWidth, tileHeight);
         }
@@ -135,7 +151,7 @@ public class ImageLoader {
         BufferedImage[] images = new BufferedImage[tiles.length];
         for (int i = 0; i < tiles.length; i++) {
 
-            BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+            BufferedImage image = new BufferedImage(width, height, TYPE_INT_RGB);
             Graphics2D graphics = image.createGraphics();
 
             int x = 0;
@@ -173,6 +189,83 @@ public class ImageLoader {
         graphics.dispose();
         return origin;
 
+    }
+
+    /**
+     * This method rotates an inputted image a desired amount of times by 90 degrees clockwise.
+     *
+     * @param origin a {@link BufferedImage} object, only square images work
+     * @param multiplier an {@link Integer}, describes how many times to rotate the image 90 degrees
+     * @return a rotated object of {@link BufferedImage} class
+     */
+    public static BufferedImage rotateImage(BufferedImage origin, int multiplier) {
+        if (multiplier <= 0 || origin.getHeight() != origin.getWidth()) return origin;
+
+        BufferedImage result = origin;
+
+        for (int i = 0; i < multiplier; i++) {
+            result = rotateImage(result);
+        }
+        return result;
+    }
+
+    /**
+     * This method rotates an inputted image 90 degrees clockwise.
+     *
+     * @param origin a {@link BufferedImage} object to be rotated, only square images work
+     * @return a rotated 90 degrees object of {@link BufferedImage} class
+     */
+    public static BufferedImage rotateImage(BufferedImage origin) {
+        int size = origin.getHeight() - 1;
+
+        BufferedImage result = new BufferedImage(origin.getWidth(), origin.getHeight(), TYPE_INT_RGB);
+
+        for (int x = 0; x <= size; x++) {
+            for (int y = 0; y <= size; y++) {
+                result.setRGB(size - y, x, origin.getRGB(x, y));
+            }
+        }
+        return result;
+    }
+
+    /**
+     * This method mirrors an inputted image horizontally.
+     *
+     * @param origin an object of {@link BufferedImage} class
+     * @return a mirrored object of {@link BufferedImage} class
+     */
+    public static BufferedImage mirrorImageHorizontal(BufferedImage origin) {
+        int height = origin.getHeight();
+        int width = origin.getWidth();
+
+        BufferedImage result = new BufferedImage(width, height, TYPE_INT_RGB);
+
+        for (int x = 0; x < width; x++) {
+            for (int y = 0; y < height; y++) {
+                result.setRGB(width - x, y, origin.getRGB(x, y));
+            }
+        }
+        return result;
+    }
+
+    /**
+     * This method mirrors an inputted image vertically.
+     *
+     * @param origin an object of {@link BufferedImage} class
+     * @return a mirrored object of {@link BufferedImage} class
+     */
+    public static BufferedImage mirrorImageVertical(BufferedImage origin) {
+        int height = origin.getHeight();
+        int width = origin.getWidth();
+
+        BufferedImage result = new BufferedImage(width, height, TYPE_INT_RGB);
+
+        for (int x = 0; x < width; x++) {
+            for (int y = 0; y < height; y++) {
+                result.setRGB(x, height - y, origin.getRGB(x, y));
+            }
+        }
+        return result;
     }
 
 }

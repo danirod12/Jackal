@@ -1,6 +1,9 @@
 package com.github.danirod12.jackal.client.objects.tile;
 
+import com.github.danirod12.jackal.client.render.ImageLoader;
+
 import java.awt.*;
+import java.awt.image.BufferedImage;
 
 public enum TileType {
 
@@ -22,6 +25,33 @@ public enum TileType {
 
     public Color getAssociatedColor() {
         return debug;
+    }
+
+    /**
+     * Returns a texture of this tile type
+     *
+     * @param closed a {@link Boolean} that represents the state of the needed texture
+     * @return a texture of a corresponding tile type
+     */
+    public BufferedImage getTexture(boolean closed) {
+        BufferedImage texture;
+
+        if (closed) {
+            switch (this.getId()) {
+                case 1: {texture = ImageLoader.SAND; break;}
+                case 2: {texture = ImageLoader.GRASS; break;}
+                case 3: {texture = ImageLoader.ROCK; break;}
+                default: {texture = ImageLoader.generateImage(64, 64, Color.GRAY); break;}
+            }
+        } else {
+            switch (this.getId()) {
+                case 1: {texture = ImageLoader.OPEN_SAND; break;}
+                case 2: {texture = ImageLoader.OPEN_GRASS; break;}
+                case 3: {texture = ImageLoader.OPEN_ROCK; break;}
+                default: {texture = ImageLoader.generateImage(64, 64, Color.LIGHT_GRAY); break;}
+            }
+        }
+        return texture;
     }
 
     public static TileType parse(int id) {

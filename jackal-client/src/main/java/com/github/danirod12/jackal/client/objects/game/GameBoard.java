@@ -302,7 +302,10 @@ public class GameBoard implements MouseExecutor {
             if(Misc.getDistance(x, y, middleX, middleY) <= 20) {
 
                 // clicked to player
-                if(selected_player != null && selected_player.getKey() == player) return false;
+                if(selected_player != null && selected_player.getKey() == player) {
+                    selected_player = null;
+                    return true;
+                }
                 selected_player = new Pair<>(player, null);
                 loop.getConnection().sendPacket(new ServerboundRequestActionsPacket(player.getUuid()));
                 return true;

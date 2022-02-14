@@ -2,6 +2,7 @@ package com.github.danirod12.jackal.server;
 
 import com.github.danirod12.jackal.server.game.GameSession;
 import com.github.danirod12.jackal.server.game.GameStatus;
+import com.github.danirod12.jackal.server.protocol.ConsoleListener;
 import com.github.danirod12.jackal.server.protocol.ServerSideConnection;
 import com.github.danirod12.jackal.server.protocol.packet.ClientboundChatPacket;
 import com.github.danirod12.jackal.server.protocol.packet.ClientboundDisconnectPacket;
@@ -18,6 +19,7 @@ public class Server {
 
     private static Server instance;
     private final ServerSocket listener;
+    private ConsoleListener consoleListener;
 
     private final List<ServerSideConnection> connections = new ArrayList<>();
     private GameSession session;
@@ -32,7 +34,14 @@ public class Server {
         } catch(Exception ignored) {}
 
         instance = new Server(port);
+        instance.startConsoleListener();
         instance.restartGameSession();
+
+    }
+
+    private void startConsoleListener() {
+
+        consoleListener = new ConsoleListener(instance);
 
     }
 
@@ -110,4 +119,15 @@ public class Server {
         }
     }
 
+    //TODO implement server stopping
+//    public void stop() {
+//        try {
+//            session.destroy();
+//            consoleListener.destroy();
+//
+//            this.listener.close();
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//    }
 }

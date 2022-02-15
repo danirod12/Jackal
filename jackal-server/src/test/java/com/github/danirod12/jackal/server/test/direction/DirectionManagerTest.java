@@ -40,7 +40,7 @@ public class DirectionManagerTest {
 
         List<String> movements = DirectionManager.getAvailableMovements(map, y, x, GameColor.WHITE);
 
-        System.out.println("Available tiles from (3, 3): " + movements.size());
+        System.out.println("Available tiles from (y: " + y + ", x: " + x + "): " + movements.size());
         System.out.println();
 
         System.out.println(movements);

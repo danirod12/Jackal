@@ -312,7 +312,7 @@ public class GameSession implements Runnable {
                                             board[pair.getA()][pair.getB()].addItem(item);
                                             Server.getInstance().broadcast(item.getUpdatePacket(0, pair.getA(), pair.getB()));
 
-                                        } else {
+                                        } else if(item != object) {
 
                                             System.out.println("WARNING: Item " + item.getClass().getSimpleName() + " found, " +
                                                     "but should be only " + PlayerEntity.class.getSimpleName());

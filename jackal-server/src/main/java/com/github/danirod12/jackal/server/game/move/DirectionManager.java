@@ -25,6 +25,12 @@ public class DirectionManager {
         return getAvailableMovements(map, y, x, color, null, new ArrayList<>());
     }
 
+    /**
+     * Boat should be presented at (y,x)
+     * @param map Generated map [y][x]
+     * @param y Start location y
+     * @param x Start location x
+     */
     public static List<String> getAvailableBoatMovements(GameTile[][] map, int y, int x) {
         long limit = map[y][x].getItems().stream().filter(PlayerEntity.class::isInstance).count();
         if(limit == 0) return new ArrayList<>();

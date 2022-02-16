@@ -3,6 +3,7 @@ package com.github.danirod12.jackal.client.objects.game;
 import com.github.danirod12.jackal.client.Jackal;
 import com.github.danirod12.jackal.client.controllers.MouseExecutor;
 import com.github.danirod12.jackal.client.objects.item.EntityPlayer;
+import com.github.danirod12.jackal.client.objects.item.GameObject;
 import com.github.danirod12.jackal.client.objects.item.TeamBoat;
 import com.github.danirod12.jackal.client.objects.tile.ClosedTile;
 import com.github.danirod12.jackal.client.objects.tile.GameTile;
@@ -33,10 +34,10 @@ public class GameBoard implements MouseExecutor {
      * Reset all for next turn
      */
     public void onTurnChange() {
-        selected_player = null;
+        selected_entity = null;
     }
 
-    private Pair<EntityPlayer, List<String>> selected_player = null;
+    private Pair<GameObject, List<String>> selected_entity = null;
 
     public GameBoard(int height, int width) {
 
@@ -93,6 +94,13 @@ public class GameBoard implements MouseExecutor {
             graphics.setColor(Color.BLACK);
             graphics.fillRect(renderX, renderY, 64, 64);
 
+            if(selected_entity != null && selected_entity.getKey() == boat) {
+                graphics.setColor(ColorTheme.AVAILABLE_ACTIONS);
+                graphics.setStroke(new BasicStroke(5));
+                graphics.drawRect(renderX, renderY, 64, 64);
+                graphics.setStroke(new BasicStroke(1));
+                continue;
+            }
             graphics.setColor(boat.getColor().asRenderColor());
             graphics.drawRect(renderX, renderY, 64, 64);
 
@@ -110,7 +118,7 @@ public class GameBoard implements MouseExecutor {
 
             graphics.setColor(player.getColor().asRenderColor());
             graphics.fillOval(renderX + player.getSubTile().getOffsetX() + 4, renderY + player.getSubTile().getOffsetY() + 4, 20, 20);
-            if(selected_player != null && selected_player.getKey() == player) {
+            if(selected_entity != null && selected_entity.getKey() == player) {
                 graphics.setStroke(new BasicStroke(5));
                 graphics.setColor(ColorTheme.AVAILABLE_ACTIONS);
                 graphics.drawOval(renderX + player.getSubTile().getOffsetX() + 4, renderY + player.getSubTile().getOffsetY() + 4, 20, 20);
@@ -121,13 +129,13 @@ public class GameBoard implements MouseExecutor {
 
         // TODO introduce an option to draw lines or not
         actions: {
-            if(selected_player != null) {
+            if(selected_entity != null) {
 
-                if(selected_player.getValue() == null) break actions;
+                if(selected_entity.getValue() == null) break actions;
 
                 graphics.setColor(ColorTheme.AVAILABLE_ACTIONS);
                 graphics.setStroke(new BasicStroke(4));
-                for(String target : selected_player.getValue()) {
+                for(String target : selected_entity.getValue()) {
 
                     String[] path = target.split("\\.");
                     renderX = -1;
@@ -272,28 +280,8 @@ public class GameBoard implements MouseExecutor {
         Player self = loop.getConnection().getSelf();
         if(!self.isWaitingForMove()) return false;
 
-        if(selected_player != null && selected_player.getValue() != null) {
-
-            for(String path : selected_player.getValue()) {
-
-                String[] data = path.split("\\.");
-                int offsetY = Integer.parseInt(data[data.length - 1].split(":")[0]) - (y - 100) / 64;
-                int offsetX = Integer.parseInt(data[data.length - 1].split(":")[1]) - (x - 100) / 64;
-
-                if(offsetY == 0 && offsetX == 0) {
-
-                    // click to tile
-                    loop.getConnection().sendPacket(new ServerboundSelectActionPacket(selected_player.getKey().getUuid(), data[data.length - 1]));
-                    selected_player = null;
-                    return true;
-
-                }
-
-            }
-
-        }
-
         for(EntityPlayer player : players) {
+
             if(player.getColor() != self.getColor()) continue;
 
             int middleX = 100 + player.getX() * 64 + player.getSubTile().getOffsetX() + 14;
@@ -302,8 +290,11 @@ public class GameBoard implements MouseExecutor {
             if(Misc.getDistance(x, y, middleX, middleY) <= 20) {
 
                 // clicked to player
-                if(selected_player != null && selected_player.getKey() == player) return false;
-                selected_player = new Pair<>(player, null);
+                if(selected_entity != null && selected_entity.getKey() == player) {
+                    selected_entity = null;
+                    return true;
+                }
+                selected_entity = new Pair<>(player, null);
                 loop.getConnection().sendPacket(new ServerboundRequestActionsPacket(player.getUuid()));
                 return true;
 
@@ -311,7 +302,41 @@ public class GameBoard implements MouseExecutor {
 
         }
 
+        if(selected_entity != null && selected_entity.getValue() != null) {
+
+            for(String path : selected_entity.getValue()) {
+
+                String[] data = path.split("\\.");
+                int offsetY = Integer.parseInt(data[data.length - 1].split(":")[0]) - (y - 100) / 64;
+                int offsetX = Integer.parseInt(data[data.length - 1].split(":")[1]) - (x - 100) / 64;
+
+                if(offsetY == 0 && offsetX == 0) {
+
+                    // click to tile
+                    loop.getConnection().sendPacket(new ServerboundSelectActionPacket(selected_entity.getKey().getUuid(), data[data.length - 1]));
+                    selected_entity = null;
+                    return true;
+
+                }
+
+            }
+
+        }
+
+        TeamBoat boat = boats.get(self.getColor());
+        int offsetX = x - 100 - boat.getX() * 64;
+        int offsetY = y - 100 - boat.getY() * 64;
+        if(offsetY >= 0 && offsetX >= 0 && offsetY <= 64 && offsetX <= 64) {
+
+            // click to boat
+            selected_entity = new Pair<>(boat, null);
+            loop.getConnection().sendPacket(new ServerboundRequestActionsPacket(boat.getUuid()));
+            return true;
+
+        }
+
         return false;
+
     }
 
     @Override
@@ -324,8 +349,8 @@ public class GameBoard implements MouseExecutor {
      */
     public void setAvailableMovements(String[] parsed) {
 
-        if(selected_player == null || !selected_player.getKey().getUuid().toString().equalsIgnoreCase(parsed[0])) return;
-        selected_player.setValue(Arrays.asList(parsed).subList(1, parsed.length));
+        if(selected_entity == null || !selected_entity.getKey().getUuid().toString().equalsIgnoreCase(parsed[0])) return;
+        selected_entity.setValue(Arrays.asList(parsed).subList(1, parsed.length));
 
     }
 

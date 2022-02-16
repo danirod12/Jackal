@@ -158,28 +158,6 @@ public class GameSession implements Runnable {
         this.board = MapGenerator.generateMap(6, 6, connections.size());
         this.boats = MapGenerator.connectBoats(this.board, connections.stream().map(ServerSideConnection::getColor).collect(Collectors.toList()));
 
-        // TODO remove
-        {
-
-            board[6][7] = new ArrowTile(TileType.SAND, MoveDirection.UP_LEFT);
-            board[5][6] = new ArrowTile(TileType.SAND, MoveDirection.UP_LEFT, MoveDirection.UP);
-            board[4][6] = new ArrowTile(TileType.GRASS, MoveDirection.UP);
-
-            TeamBoat boat = boats.get(GameColor.RED);
-            GameTile tile = boat.getRelatedTile(board);
-
-            tile.removeItem(boat);
-            tile = board[7][7];
-
-            tile.addItem(boat);
-
-            for(PlayerEntity player : boat.getPlayers()) {
-                player.getRelatedTile(board).removeItem(player);
-                tile.addItem(player);
-            }
-
-        }
-
         // [PACKETS] Send init packets
         for(ServerSideConnection connection : connections) {
 
@@ -280,7 +258,11 @@ public class GameSession implements Runnable {
                     if(!object.getUuid().equals(uuid)) continue;
                     if(filter != null && object.getColor() != filter) continue;
 
-                    return DirectionManager.getAvailableMovements(board, y, x, object.getColor());
+                    if(object instanceof PlayerEntity)
+                        return DirectionManager.getAvailableMovements(board, y, x, object.getColor());
+                    else if(object instanceof TeamBoat)
+                        return DirectionManager.getAvailableBoatMovements(board, y, x);
+                    else return null;
 
                 }
 
@@ -293,6 +275,7 @@ public class GameSession implements Runnable {
 
     public void onPlayerAction(GameColor color, String uuid, int moveY, int moveX) {
 
+        final boolean boat_move = boats.get(color).getUuid().toString().equalsIgnoreCase(uuid);
         for(int y = 0; y < board.length; ++y) {
 
             for(int x = 0; x < board[0].length; ++x) {
@@ -303,40 +286,87 @@ public class GameSession implements Runnable {
                     if(!object.getUuid().toString().equalsIgnoreCase(uuid)) continue;
                     if(object.getColor() != color) continue;
 
-                    for(String path : DirectionManager.getAvailableMovements(board, y, x, object.getColor())) {
+                    if(boat_move) {
 
-                        if(path.endsWith("." + moveY + ":" + moveX)) {
-                            // Move player
+                        for(String path : DirectionManager.getAvailableBoatMovements(board, y, x)) {
 
-                            object.getRelatedTile(board).removeItem(object);
-                            GameTile moveTile = board[moveY][moveX];
+                            if(path.endsWith("." + moveY + ":" + moveX)) {
+                                // Move boat
 
-                            for(GameObject item : new ArrayList<>(moveTile.getItems())) {
+                                tile.removeItem(object);
+                                GameTile moveTile = board[moveY][moveX];
+                                moveTile.addItem(object);
+                                Server.getInstance().broadcast(object.getUpdatePacket(0, moveY, moveX));
 
-                                // Kill enemy
-                                if(item instanceof PlayerEntity) {
+                                String[] steps = path.split("\\.");
+                                for (String s : steps) {
 
-                                    PlayerEntity exists = ((PlayerEntity) item);
-                                    if(exists.getColor() != color) {
+                                    GameTile step = board[Integer.parseInt(s.split(":")[0])][Integer.parseInt(s.split(":")[1])];
+                                    // Kill player entity
+                                    for (GameObject item : new ArrayList<>(step.getItems())) {
 
-                                        Pair<Integer, Integer> boat = boats.get(exists.getColor()).getRelatedTileYX(board);
-                                        moveTile.removeItem(item);
-                                        board[boat.getKey()][boat.getValue()].addItem(item);
-                                        Server.getInstance().broadcast(item.getUpdatePacket(0, boat.getKey(), boat.getValue()));
+                                        if (item instanceof PlayerEntity) {
+
+                                            step.removeItem(item);
+                                            Pair<Integer, Integer> pair = boats.get(item.getColor()).getRelatedTileYX(board);
+                                            board[pair.getA()][pair.getB()].addItem(item);
+                                            Server.getInstance().broadcast(item.getUpdatePacket(0, pair.getA(), pair.getB()));
+
+                                        } else {
+
+                                            System.out.println("WARNING: Item " + item.getClass().getSimpleName() + " found, " +
+                                                    "but should be only " + PlayerEntity.class.getSimpleName());
+
+                                        }
 
                                     }
-                                    //continue;
 
                                 }
+                                nextTurn();
+                                return;
 
                             }
 
-                            moveTile.addItem(object);
+                        }
 
-                            Server.getInstance().broadcast(object.getUpdatePacket(0, moveY, moveX));
-                            nextTurn();
+                    } else {
 
-                            return;
+                        for(String path : DirectionManager.getAvailableMovements(board, y, x, object.getColor())) {
+
+                            if(path.endsWith("." + moveY + ":" + moveX)) {
+                                // Move player
+
+                                tile.removeItem(object);
+                                GameTile moveTile = board[moveY][moveX];
+
+                                for(GameObject item : new ArrayList<>(moveTile.getItems())) {
+
+                                    // Kill enemy
+                                    if(item instanceof PlayerEntity) {
+
+                                        PlayerEntity exists = ((PlayerEntity) item);
+                                        if(exists.getColor() != color) {
+
+                                            Pair<Integer, Integer> boat = boats.get(exists.getColor()).getRelatedTileYX(board);
+                                            moveTile.removeItem(item);
+                                            board[boat.getKey()][boat.getValue()].addItem(item);
+                                            Server.getInstance().broadcast(item.getUpdatePacket(0, boat.getKey(), boat.getValue()));
+
+                                        }
+                                        //continue;
+
+                                    }
+
+                                }
+
+                                moveTile.addItem(object);
+
+                                Server.getInstance().broadcast(object.getUpdatePacket(0, moveY, moveX));
+                                nextTurn();
+
+                                return;
+                            }
+
                         }
 
                     }

@@ -13,16 +13,13 @@ import static java.awt.image.BufferedImage.TYPE_INT_RGB;
 
 public class ImageLoader {
 
-    public final static BufferedImage COIN_16;
-    public final static BufferedImage COGWHEEL_32;
-    public final static BufferedImage GRASS;
-    public final static BufferedImage SAND;
-    public final static BufferedImage ROCK;
-    public final static BufferedImage OPEN_GRASS;
-    public final static BufferedImage OPEN_SAND;
-    public final static BufferedImage OPEN_ROCK;
+    public static BufferedImage COIN_16;
+    public static BufferedImage COGWHEEL_32;
 
-    static {
+    public static BufferedImage GRASS, SAND, ROCK;
+    public static BufferedImage OPEN_GRASS, OPEN_SAND, OPEN_ROCK;
+
+    public static void reload() {
 
         BufferedImage tileset = loadImage("background_tileset");
 
@@ -36,6 +33,7 @@ public class ImageLoader {
 
         COIN_16 = loadImage("coin16");
         COGWHEEL_32 = multiply(loadImage("cogwheel16"), 2);
+
     }
 
     public static BufferedImage repeatImage(BufferedImage origin, int width, int height) {

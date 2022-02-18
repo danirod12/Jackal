@@ -13,8 +13,7 @@ public class Jackal {
 
     public static void main(String[] args) {
 
-        // Force load static fields before frame
-        ImageLoader.class.getName();
+        ImageLoader.reload();
 
         instance = new Jackal();
         instance.createGameLoop();

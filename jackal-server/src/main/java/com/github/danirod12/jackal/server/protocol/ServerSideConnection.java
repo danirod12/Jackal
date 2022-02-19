@@ -1,6 +1,8 @@
 package com.github.danirod12.jackal.server.protocol;
 
 import com.github.danirod12.jackal.server.Server;
+import com.github.danirod12.jackal.server.commands.CommandsHandler;
+import com.github.danirod12.jackal.server.commands.sender.CommandSender;
 import com.github.danirod12.jackal.server.game.GameSession;
 import com.github.danirod12.jackal.server.game.GameStatus;
 import com.github.danirod12.jackal.server.protocol.packet.*;
@@ -14,7 +16,7 @@ import java.net.SocketException;
 import java.util.List;
 import java.util.UUID;
 
-public class ServerSideConnection implements Runnable {
+public class ServerSideConnection implements Runnable, CommandSender {
 
     private final Gson gson = new Gson();
 
@@ -79,6 +81,11 @@ public class ServerSideConnection implements Runnable {
 
     }
 
+    @Override
+    public void sendMessage(String message) {
+        sendPacket(new ClientboundChatPacket(message));
+    }
+
     public void sendPacket(Packet packet) {
 
         try {
@@ -140,6 +147,11 @@ public class ServerSideConnection implements Runnable {
             // Chat packet
             case 1: {
 
+                if(data.getData().startsWith("/")) {
+                    System.out.println("COMMAND: [" + name + "] " + data.getData());
+                    CommandsHandler.onCommand(this, data.getData());
+                    return;
+                }
                 System.out.println("CHAT: [" + name + "] " + data.getData());
                 if(data.getData().length() > 0 && data.getData().replaceAll("&[a-fA-F0-9]*", "").length() != 0) {
                     Server.getInstance().broadcast(new ClientboundChatPacket("[&" + color.getColorCode() + name + "&0] " + data.getData()));

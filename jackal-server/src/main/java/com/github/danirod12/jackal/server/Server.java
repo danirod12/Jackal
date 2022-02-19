@@ -1,5 +1,7 @@
 package com.github.danirod12.jackal.server;
 
+import com.github.danirod12.jackal.server.commands.CommandsHandler;
+import com.github.danirod12.jackal.server.commands.sender.ConsoleSender;
 import com.github.danirod12.jackal.server.game.GameSession;
 import com.github.danirod12.jackal.server.game.GameStatus;
 import com.github.danirod12.jackal.server.protocol.ConsoleListener;
@@ -21,6 +23,8 @@ public class Server {
     private final ServerSocket listener;
     private ConsoleListener consoleListener;
 
+    public static final ConsoleSender CONSOLE_SENDER = new ConsoleSender();
+
     private final List<ServerSideConnection> connections = new ArrayList<>();
     private GameSession session;
 
@@ -34,6 +38,8 @@ public class Server {
         } catch(Exception ignored) {}
 
         instance = new Server(port);
+        CommandsHandler.registerDefaultCommands();
+
         instance.startConsoleListener();
         instance.restartGameSession();
 
@@ -41,7 +47,7 @@ public class Server {
 
     private void startConsoleListener() {
 
-        consoleListener = new ConsoleListener(instance);
+        consoleListener = new ConsoleListener();
 
     }
 

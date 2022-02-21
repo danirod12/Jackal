@@ -1,12 +1,14 @@
 package com.github.danirod12.jackal.client.render;
 
 import com.github.danirod12.jackal.client.Jackal;
+import com.github.danirod12.jackal.client.objects.game.MoveDirection;
 import com.github.danirod12.jackal.client.util.ColorTheme;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.awt.image.RasterFormatException;
+import java.nio.Buffer;
 import java.util.concurrent.ThreadLocalRandom;
 
 import static java.awt.image.BufferedImage.TYPE_INT_RGB;
@@ -19,6 +21,14 @@ public class ImageLoader {
     public static BufferedImage GRASS, SAND, ROCK;
     public static BufferedImage OPEN_GRASS, OPEN_SAND, OPEN_ROCK;
 
+    public static BufferedImage ARROW_B_VERTICAL, ARROW_B_DIAGONAL;
+    public static BufferedImage ARROW_B_U, ARROW_B_UR, ARROW_B_R, ARROW_B_RD,
+            ARROW_B_D, ARROW_B_DL, ARROW_B_L, ARROW_B_LU;
+
+    public static BufferedImage ARROW_E_VERTICAL, ARROW_E_DIAGONAL;
+    public static BufferedImage ARROW_E_U, ARROW_E_UR, ARROW_E_R, ARROW_E_RD,
+            ARROW_E_D, ARROW_E_DL, ARROW_E_L, ARROW_E_LU;
+
     public static void reload() {
 
         BufferedImage tileset = loadImage("background_tileset");
@@ -30,6 +40,32 @@ public class ImageLoader {
         OPEN_SAND = getTile(tileset, 64, 64, 0, 0);
         OPEN_GRASS = getTile(tileset, 64, 64, 1, 0);
         OPEN_ROCK = getTile(tileset, 64, 64, 1, 0);
+
+        tileset = loadImage("arrows_tileset");
+
+        ARROW_B_VERTICAL = getTile(tileset, 64, 64, 0, 1);
+        ARROW_B_DIAGONAL = getTile(tileset, 64, 64, 1, 1);
+
+        ARROW_B_U = ARROW_B_VERTICAL;
+        ARROW_B_UR = ARROW_B_DIAGONAL;
+        ARROW_B_R = rotateImage(ARROW_B_VERTICAL);
+        ARROW_B_RD = rotateImage(ARROW_B_DIAGONAL);
+        ARROW_B_D = rotateImage(ARROW_B_VERTICAL, 2);
+        ARROW_B_DL = rotateImage(ARROW_B_DIAGONAL, 2);
+        ARROW_B_L = rotateImage(ARROW_B_VERTICAL, 3);
+        ARROW_B_LU = rotateImage(ARROW_B_DIAGONAL, 3);
+
+        ARROW_E_VERTICAL = getTile(tileset, 64, 64, 0, 0);
+        ARROW_E_DIAGONAL = getTile(tileset, 64, 64, 1, 0);
+
+        ARROW_E_U = ARROW_E_VERTICAL;
+        ARROW_E_UR = ARROW_E_DIAGONAL;
+        ARROW_E_R = rotateImage(ARROW_E_VERTICAL);
+        ARROW_E_RD = rotateImage(ARROW_E_DIAGONAL);
+        ARROW_E_D = rotateImage(ARROW_E_VERTICAL, 2);
+        ARROW_E_DL = rotateImage(ARROW_E_DIAGONAL, 2);
+        ARROW_E_L = rotateImage(ARROW_E_VERTICAL, 3);
+        ARROW_E_LU = rotateImage(ARROW_E_DIAGONAL, 3);
 
         COIN_16 = loadImage("coin16");
         COGWHEEL_32 = multiply(loadImage("cogwheel16"), 2);
@@ -266,4 +302,52 @@ public class ImageLoader {
         return result;
     }
 
+    /**
+     * This method allows merging two {@link BufferedImage} objects of the same size
+     * @param origin the base image on which the second image should be drawn
+     * @param overlay the overlay image that will be drawn over the base
+     * @return a merged {@link BufferedImage} object
+     */
+    public static BufferedImage overlayImage(BufferedImage origin, BufferedImage overlay) {
+        int height = origin.getHeight();
+        int width = origin.getWidth();
+
+        BufferedImage result = new BufferedImage(width, height, TYPE_INT_RGB);
+
+        for (int x = 0; x < width; x++) {
+            for (int y = 0; y < height; y++) {
+                if (overlay.getRGB(x, y) >> 24 == 0x00) {continue;}
+                result.setRGB(x, y, overlay.getRGB(x, y));
+            }
+        }
+        return result;
+    }
+
+    /**
+     * This method draws arrows onto a base texture according to given directions
+     * @param origin an original tile texture
+     * @param directions a set of {@link MoveDirection} objects
+     * @return an image with drawn-on arrows
+     */
+    public static BufferedImage drawOrientedArrow(BufferedImage origin, MoveDirection... directions) {
+        //TODO maybe should be recoded
+
+        BufferedImage result = origin;
+
+        for (MoveDirection direction : directions) {
+            switch (direction.getId()) {
+                case 1: {result = overlayImage(result, ARROW_E_D); break;}
+                case 4: {result = overlayImage(result, ARROW_E_L); break;}
+                case 0: {result = overlayImage(result, ARROW_E_U); break;}
+                case 3: {result = overlayImage(result, ARROW_E_R); break;}
+                case 5: {result = overlayImage(result, ARROW_E_UR); break;}
+                case 6: {result = overlayImage(result, ARROW_E_LU); break;}
+                case 7: {result = overlayImage(result, ARROW_E_RD); break;}
+                case 8: {result = overlayImage(result, ARROW_E_DL); break;}
+                default: {}
+            }
+        }
+
+        return result;
+    }
 }

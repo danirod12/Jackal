@@ -6,10 +6,7 @@ import com.github.danirod12.jackal.server.game.item.GameObject;
 import com.github.danirod12.jackal.server.game.item.PlayerEntity;
 import com.github.danirod12.jackal.server.game.item.TeamBoat;
 import com.github.danirod12.jackal.server.game.move.DirectionManager;
-import com.github.danirod12.jackal.server.game.move.MoveDirection;
-import com.github.danirod12.jackal.server.game.tile.ArrowTile;
 import com.github.danirod12.jackal.server.game.tile.GameTile;
-import com.github.danirod12.jackal.server.game.tile.TileType;
 import com.github.danirod12.jackal.server.game.tile.VoidTile;
 import com.github.danirod12.jackal.server.protocol.ServerSideConnection;
 import com.github.danirod12.jackal.server.protocol.packet.*;
@@ -58,7 +55,6 @@ public class GameSession implements Runnable {
         final double ns = 1000000000D / 20D;
         double delta = 0;
 
-        long last = System.currentTimeMillis();
         while(running) {
 
             long now = System.nanoTime();
@@ -115,7 +111,12 @@ public class GameSession implements Runnable {
 
         ClientboundChatPacket packet = new ClientboundChatPacket(PREFIX + "Next turn - &" + current.getColor().getColorCode() + current.getName());
         for (ServerSideConnection connection : Server.getInstance().getConnections())
-            connection.sendPacket(connection.getName().equalsIgnoreCase(current.getName()) ? new ClientboundChatPacket(PREFIX + "Your turn &c[!]") : packet);
+            connection.sendPacket(
+                    connection.getName().equalsIgnoreCase(current.getName())
+                            ?
+                            new ClientboundChatPacket(PREFIX + "&c[ ! ]  &0Your turn  &c[ ! ]")
+                            :
+                            packet);
 
     }
 

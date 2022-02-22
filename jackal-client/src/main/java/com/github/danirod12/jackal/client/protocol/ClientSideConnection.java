@@ -18,6 +18,7 @@ import java.net.Socket;
 import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 public class ClientSideConnection {
 
@@ -224,10 +225,25 @@ public class ClientSideConnection {
 
                 String[] parsedData = data.getData().split(":");
 
-                for(Player player : players)
-                    player.setTurnData(player.getName().equalsIgnoreCase(parsedData[0])
-                            ? new Pair<>(Long.parseLong(parsedData[1]), Long.parseLong(parsedData[2])) : null);
-                board.onTurnChange();
+                board.resetSelectedEntity();
+
+                for(Player player : players) {
+                    if(player.getName().equalsIgnoreCase(parsedData[0])) {
+                        boolean self = parsedData.length > 3 && name.equalsIgnoreCase(parsedData[0]);
+                        player.setTurnData(
+                                new Triplet<>(
+                                        Long.parseLong(parsedData[1]),
+                                        Long.parseLong(parsedData[2]),
+                                        self ? parsedData[3] : null
+                                )
+                        );
+
+                        if(self && !parsedData[3].contains(",")) {
+                            board.forceSelect(UUID.fromString(parsedData[3]));
+                        }
+
+                    } else player.setTurnData(null);
+                }
                 return;
 
             }

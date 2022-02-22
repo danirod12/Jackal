@@ -31,9 +31,9 @@ public class GameBoard implements MouseExecutor {
     private final List<EntityPlayer> players = new ArrayList<>();
 
     /**
-     * Reset all for next turn
+     * Reset selected entity for next turn
      */
-    public void onTurnChange() {
+    public void resetSelectedEntity() {
         selected_entity = null;
     }
 
@@ -290,11 +290,15 @@ public class GameBoard implements MouseExecutor {
 
                 // clicked to player
                 if(selected_entity != null && selected_entity.getKey() == player) {
-                    selected_entity = null;
+                    if(!self.isOnlyFilter(selected_entity.getA().getUuid()))
+                        selected_entity = null;
                     return true;
                 }
-                selected_entity = new Pair<>(player, null);
-                loop.getConnection().sendPacket(new ServerboundRequestActionsPacket(player.getUuid()));
+
+                if(self.getTurnData().getC() == null || self.isFilter(player.getUuid())) {
+                    selected_entity = new Pair<>(player, null);
+                    loop.getConnection().sendPacket(new ServerboundRequestActionsPacket(player.getUuid()));
+                }
                 return true;
 
             }
@@ -314,6 +318,7 @@ public class GameBoard implements MouseExecutor {
                     // click to tile
                     loop.getConnection().sendPacket(new ServerboundSelectActionPacket(selected_entity.getKey().getUuid(), data[data.length - 1]));
                     selected_entity = null;
+                    self.setTurnData(null);
                     return true;
 
                 }
@@ -329,11 +334,15 @@ public class GameBoard implements MouseExecutor {
 
             // click to boat
             if(selected_entity != null && selected_entity.getKey() == boat) {
-                selected_entity = null;
+                if(!self.isOnlyFilter(selected_entity.getA().getUuid()))
+                    selected_entity = null;
                 return true;
             }
-            selected_entity = new Pair<>(boat, null);
-            loop.getConnection().sendPacket(new ServerboundRequestActionsPacket(boat.getUuid()));
+
+            if(self.getTurnData().getC() == null || self.isFilter(boat.getUuid())) {
+                selected_entity = new Pair<>(boat, null);
+                loop.getConnection().sendPacket(new ServerboundRequestActionsPacket(boat.getUuid()));
+            }
             return true;
 
         }
@@ -354,6 +363,40 @@ public class GameBoard implements MouseExecutor {
 
         if(selected_entity == null || !selected_entity.getKey().getUuid().toString().equalsIgnoreCase(parsed[0])) return;
         selected_entity.setValue(Arrays.asList(parsed).subList(1, parsed.length));
+
+    }
+
+    /**
+     * Force player to select an object
+     * @param uuid Object {@link UUID} to be selected
+     */
+    public void forceSelect(UUID uuid) {
+
+        GameObject entity = getInteractableEntity(uuid);
+        if(entity == null) /*  :(  */ return;
+
+        selected_entity = new Pair<>(entity, null);
+        loop.getConnection().sendPacket(new ServerboundRequestActionsPacket(uuid));
+
+    }
+
+    /**
+     * Find interactable entity by UUID
+     * @param uuid Entity UUID
+     * @return Nullable entity
+     */
+    private GameObject getInteractableEntity(UUID uuid) {
+
+        // Find player
+        for(EntityPlayer player : players)
+            if(player.getUuid().equals(uuid)) return player;
+
+        // Find boat
+        for(TeamBoat boat : boats.values())
+            if(boat.getUuid().equals(uuid)) return boat;
+
+        // Not found
+        return null;
 
     }
 

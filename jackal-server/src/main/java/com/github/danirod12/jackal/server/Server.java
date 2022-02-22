@@ -4,7 +4,7 @@ import com.github.danirod12.jackal.server.commands.CommandsHandler;
 import com.github.danirod12.jackal.server.commands.sender.ConsoleSender;
 import com.github.danirod12.jackal.server.game.GameSession;
 import com.github.danirod12.jackal.server.game.GameStatus;
-import com.github.danirod12.jackal.server.protocol.ConsoleListener;
+import com.github.danirod12.jackal.server.commands.ConsoleListener;
 import com.github.danirod12.jackal.server.protocol.ServerSideConnection;
 import com.github.danirod12.jackal.server.protocol.packet.ClientboundChatPacket;
 import com.github.danirod12.jackal.server.protocol.packet.ClientboundDisconnectPacket;

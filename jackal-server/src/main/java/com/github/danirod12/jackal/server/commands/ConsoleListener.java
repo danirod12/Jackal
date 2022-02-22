@@ -1,4 +1,4 @@
-package com.github.danirod12.jackal.server.protocol;
+package com.github.danirod12.jackal.server.commands;
 
 import com.github.danirod12.jackal.server.Server;
 import com.github.danirod12.jackal.server.commands.CommandsHandler;

@@ -276,7 +276,6 @@ public class GameBoard implements MouseExecutor {
     @Override
     public boolean onMouseClick(int x, int y) {
 
-        // TODO check player selection
         Player self = loop.getConnection().getSelf();
         if(!self.isWaitingForMove()) return false;
 
@@ -329,6 +328,10 @@ public class GameBoard implements MouseExecutor {
         if(offsetY >= 0 && offsetX >= 0 && offsetY <= 64 && offsetX <= 64) {
 
             // click to boat
+            if(selected_entity != null && selected_entity.getKey() == boat) {
+                selected_entity = null;
+                return true;
+            }
             selected_entity = new Pair<>(boat, null);
             loop.getConnection().sendPacket(new ServerboundRequestActionsPacket(boat.getUuid()));
             return true;

@@ -18,7 +18,10 @@ import java.util.concurrent.ThreadLocalRandom;
 public class MapGenerator {
 
     /**
-     * @return GameTile[y][x]. Generated map. First index for Y, second index for X
+     * @param sizeY Height (Size Y)
+     * @param sizeX Width (Size X)
+     * @param players Players amount that will play on this map
+     * @return GameTile[y][x]. Generated cuboid map. First index for Y, second index for X
      */
     public static GameTile[][] generateMap(int sizeY, int sizeX, int players) {
 
@@ -39,6 +42,9 @@ public class MapGenerator {
 
     /**
      * Insert team boats
+     * @param map Generated cuboid map
+     * @param colors Colors to be inserted
+     * @return Assigned colors and created boats
      */
     public static HashMap<GameColor, TeamBoat> connectBoats(GameTile[][] map, List<GameColor> colors) {
 
@@ -78,7 +84,11 @@ public class MapGenerator {
 
     /**
      * Get tile shores (List(Pair(y, x)))
+     * @param map Generated cuboid map
      * @param shortest True - only up, down, right and left. False - all directions
+     * @param y Y start location
+     * @param x X start location
+     * @return Tile shores
      */
     public static List<Pair<Integer, Integer>> getShores(GameTile[][] map, boolean shortest, int y, int x) {
 
@@ -99,8 +109,12 @@ public class MapGenerator {
 
     /**
      * Get tile shores (List(Pair(y, x)))
+     * @param map Generated cuboid map
      * @param shortest True - only up, down, right and left. False - all directions
      * @param shores_shortest True - only up, down, right and left. False - all directions
+     * @param y Y start location
+     * @param x X start location
+     * @return Tile shores
      */
     public static List<Pair<Integer, Integer>> getShoresRelatedArea(GameTile[][] map, boolean shortest, boolean shores_shortest, int y, int x) {
 

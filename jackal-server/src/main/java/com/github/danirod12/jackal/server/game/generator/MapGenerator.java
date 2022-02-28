@@ -13,6 +13,7 @@ import com.github.danirod12.jackal.server.util.Pair;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class MapGenerator {
@@ -25,6 +26,7 @@ public class MapGenerator {
      */
     public static GameTile[][] generateMap(int sizeY, int sizeX, int players) {
 
+        // TODO generate map
         return new GameTile[][] {
 
                 { new VoidTile(), new VoidTile(), new VoidTile(), new VoidTile(), new VoidTile(), new VoidTile(), new VoidTile(), new VoidTile(), new VoidTile() },
@@ -46,9 +48,9 @@ public class MapGenerator {
      * @param colors Colors to be inserted
      * @return Assigned colors and created boats
      */
-    public static HashMap<GameColor, TeamBoat> connectBoats(GameTile[][] map, List<GameColor> colors) {
+    public static Map<GameColor, TeamBoat> connectBoats(GameTile[][] map, List<GameColor> colors) {
 
-        HashMap<GameColor, TeamBoat> boats = new HashMap<>();
+        Map<GameColor, TeamBoat> boats = new HashMap<>();
 
         List<VoidTile> tiles = new ArrayList<>();
         for (int y = 0; y < map.length; y++) {
@@ -95,12 +97,12 @@ public class MapGenerator {
         List<Pair<Integer, Integer>> list = new ArrayList<>();
         for(MoveDirection direction : shortest ? MoveDirection.getAllShortestDirections() : MoveDirection.getAllShortDirections()) {
 
-            int new_y = y + direction.getY();
-            int new_x = x + direction.getX();
+            int newY = y + direction.getY();
+            int newX = x + direction.getX();
 
-            if(new_x < 0 || new_y < 0 || new_y >= map.length || new_x >= map[0].length) continue;
-            if(!(map[new_y][new_x] instanceof VoidTile))
-                list.add(new Pair<>(new_y, new_x));
+            if(newX < 0 || newY < 0 || newY >= map.length || newX >= map[0].length) continue;
+            if(!(map[newY][newX] instanceof VoidTile))
+                list.add(new Pair<>(newY, newX));
 
         }
         return list;
@@ -121,12 +123,12 @@ public class MapGenerator {
         List<Pair<Integer, Integer>> list = new ArrayList<>();
         for(MoveDirection direction : shortest ? MoveDirection.getAllShortestDirections() : MoveDirection.getAllShortDirections()) {
 
-            int new_y = y + direction.getY();
-            int new_x = x + direction.getX();
+            int newY = y + direction.getY();
+            int newX = x + direction.getX();
 
-            if(new_x < 0 || new_y < 0 || new_y >= map.length || new_x >= map[0].length) continue;
-            if(map[new_y][new_x] instanceof VoidTile && getShores(map, shores_shortest, new_y, new_x).size() != 0)
-                list.add(new Pair<>(new_y, new_x));
+            if(newX < 0 || newY < 0 || newY >= map.length || newX >= map[0].length) continue;
+            if(map[newY][newX] instanceof VoidTile && getShores(map, shores_shortest, newY, newX).size() != 0)
+                list.add(new Pair<>(newY, newX));
 
         }
         return list;

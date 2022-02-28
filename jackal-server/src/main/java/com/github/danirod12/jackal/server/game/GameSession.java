@@ -14,10 +14,7 @@ import com.github.danirod12.jackal.server.util.GameColor;
 import com.github.danirod12.jackal.server.util.MetaValue;
 import com.github.danirod12.jackal.server.util.Pair;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 
@@ -33,7 +30,7 @@ public class GameSession implements Runnable {
 
     // GameTile[y][x]
     private GameTile[][] board;
-    private HashMap<GameColor, TeamBoat> boats;
+    private Map<GameColor, TeamBoat> boats;
 
     public static final long ACTION_AWAIT_DEFAULT = 200L; // 10 seconds
 

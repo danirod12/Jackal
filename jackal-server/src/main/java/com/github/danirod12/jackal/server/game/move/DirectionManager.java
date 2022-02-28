@@ -88,23 +88,23 @@ public class DirectionManager {
         if(!tile.isAccessible(color)) return actions;
         // TODO check if tile closed
 
-        final String new_prefix = (prefix == null ? "" : prefix + ".") + y + ":" + x;
+        final String newPrefix = (prefix == null ? "" : prefix + ".") + y + ":" + x;
 
         final MoveDirection[] directions = prefix == null ? MoveDirection.getAllShortDirections() : tile.getRedirections();
         for(MoveDirection direction : directions) {
-            int new_y = y + direction.getY();
-            int new_x = x + direction.getX();
-            if(map[new_y][new_x] instanceof VoidTile && prefix == null) {
-                TeamBoat boat = ((VoidTile) map[new_y][new_x]).getBoat();
+            int newY = y + direction.getY();
+            int newX = x + direction.getX();
+            if(map[newY][newX] instanceof VoidTile && prefix == null) {
+                TeamBoat boat = ((VoidTile) map[newY][newX]).getBoat();
                 if(boat != null && boat.getColor() == color)
-                    actions.add(new_prefix + "." + new_y + ":" + new_x);
+                    actions.add(newPrefix + "." + newY + ":" + newX);
                 continue;
             }
-            actions.addAll(getAvailableMovements(map, new_y, new_x, color, new_prefix, skip));
+            actions.addAll(getAvailableMovements(map, newY, newX, color, newPrefix, skip));
         }
 
         if(directions.length == 0)
-            actions.add(new_prefix);
+            actions.add(newPrefix);
         return actions;
 
     }

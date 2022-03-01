@@ -20,6 +20,7 @@ import java.awt.image.BufferedImage;
 import java.util.List;
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.stream.Collectors;
 
 public class GameBoard implements MouseExecutor {
 
@@ -70,11 +71,9 @@ public class GameBoard implements MouseExecutor {
                 GameTile tile = gameTiles[x];
                 // render
                 if (tile.getTileType() != TileType.EMPTY) {
-
-//                    graphics.setColor(Color.RED);
-//                    graphics.drawRect(renderX, renderY, 64, 64);
-
-                    graphics.drawImage(tile.getTexture(), renderX, renderY, null);
+                    BufferedImage texture = tile.getTexture();
+//                    texture = ImageLoader.drawOrientedArrow(tile.getTexture(), MoveDirection.UP); // debug
+                    graphics.drawImage(texture, renderX, renderY, null);
                 }
 
                 renderX += 64;

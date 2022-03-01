@@ -9,6 +9,7 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.awt.image.RasterFormatException;
 import java.nio.Buffer;
+import java.util.Arrays;
 import java.util.concurrent.ThreadLocalRandom;
 
 import static java.awt.image.BufferedImage.TYPE_INT_RGB;
@@ -330,9 +331,21 @@ public class ImageLoader {
      * @return an image with drawn-on arrows
      */
     public static BufferedImage drawOrientedArrow(BufferedImage origin, MoveDirection... directions) {
-        //TODO maybe should be recoded
 
+        int yOffsetAvg = (int)Math.ceil((double)Arrays.stream(directions).mapToInt(MoveDirection::getY).sum() / directions.length);
+        int xOffsetAvg = (int)Math.ceil((double)Arrays.stream(directions).mapToInt(MoveDirection::getX).sum() / directions.length);
         BufferedImage result = origin;
+
+        switch (MoveDirection.parseMoveDirection(xOffsetAvg, yOffsetAvg).get(0).getId()) {
+            case 1: {result = overlayImage(result, ARROW_B_D); break;}
+            case 4: {result = overlayImage(result, ARROW_B_L); break;}
+            case 0: {result = overlayImage(result, ARROW_B_U); break;}
+            case 3: {result = overlayImage(result, ARROW_B_R); break;}
+            case 5: {result = overlayImage(result, ARROW_B_UR); break;}
+            case 6: {result = overlayImage(result, ARROW_B_LU); break;}
+            case 7: {result = overlayImage(result, ARROW_B_RD); break;}
+            case 8: {result = overlayImage(result, ARROW_B_DL); break;}
+        }
 
         for (MoveDirection direction : directions) {
             switch (direction.getId()) {

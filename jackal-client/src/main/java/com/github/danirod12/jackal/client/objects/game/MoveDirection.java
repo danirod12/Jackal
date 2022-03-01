@@ -1,5 +1,9 @@
 package com.github.danirod12.jackal.client.objects.game;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+
 public enum MoveDirection {
 
     UP(0, 0, -1),
@@ -31,6 +35,16 @@ public enum MoveDirection {
 
     private static final MoveDirection[] SHORT_DIRECTIONS = { UP, DOWN, RIGHT, LEFT, UP_RIGHT, UP_LEFT, DOWN_RIGHT, DOWN_LEFT };
     private static final MoveDirection[] SHORTEST_DIRECTIONS = { UP, DOWN, RIGHT, LEFT };
+
+    /**
+     * This method allows to get a {@link MoveDirection} enum corresponding to x and y offsets
+     * @param xOffset x offset ranging from -1 to 1. Negative left, positive right
+     * @param yOffset y offset ranging from -1 to 1. Negative down, positive up
+     * @return a list of matching {@link MoveDirection} enums
+     */
+    public static List<MoveDirection> parseMoveDirection(int xOffset, int yOffset) {
+        return Arrays.stream(SHORT_DIRECTIONS).filter(moveDirection -> moveDirection.getX() == xOffset && moveDirection.getY() == yOffset).collect(Collectors.toList());
+    }
 
     /**
      * all directions

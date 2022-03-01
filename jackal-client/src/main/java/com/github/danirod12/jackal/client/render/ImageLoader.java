@@ -317,7 +317,7 @@ public class ImageLoader {
 
         for (int x = 0; x < width; x++) {
             for (int y = 0; y < height; y++) {
-                if (overlay.getRGB(x, y) >> 24 == 0x00) {continue;}
+                if (overlay.getRGB(x, y) >> 24 == 0x00) continue;
                 result.setRGB(x, y, overlay.getRGB(x, y));
             }
         }

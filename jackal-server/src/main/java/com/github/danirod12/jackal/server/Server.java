@@ -21,7 +21,7 @@ public class Server {
 
     private static Server instance;
     private final ServerSocket listener;
-    private ConsoleListener consoleListener;
+    private Thread mainThread;
 
     public static final ConsoleSender CONSOLE_SENDER = new ConsoleSender();
 
@@ -40,21 +40,26 @@ public class Server {
         instance = new Server(port);
         CommandsHandler.registerDefaultCommands();
 
-        instance.startConsoleListener();
+        new ConsoleListener();
         instance.restartGameSession();
-
-    }
-
-    private void startConsoleListener() {
-
-        consoleListener = new ConsoleListener();
 
     }
 
     private void restartGameSession() {
 
         session = new GameSession();
-        instance.startServer();
+        if(mainThread != null) {
+            Thread thread = mainThread;
+            mainThread = null;
+            try {
+                thread.join();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+
+        mainThread = new Thread(startServer());
+        mainThread.start();
 
     }
 
@@ -62,39 +67,43 @@ public class Server {
         this.listener = new ServerSocket(port);
     }
 
-    public void startServer() {
+    public Runnable startServer() {
 
-        try {
+        return () -> {
 
-            while(!listener.isClosed()) {
+            try {
 
-                Socket socket = listener.accept();
-                System.out.println("A new connection from " + socket.getInetAddress().toString());
+                while(mainThread != null && !listener.isClosed()) {
 
-                ServerSideConnection connection = new ServerSideConnection(socket);
+                    Socket socket = listener.accept();
+                    System.out.println("A new connection from " + socket.getInetAddress().toString());
 
-                if(getConnections().size() >= 4) {
-                    connection.sendPacket(new ClientboundDisconnectPacket("Server is full"));
-                    connection.close();
-                    continue;
+                    ServerSideConnection connection = new ServerSideConnection(socket);
+
+                    if(getConnections().size() >= 4) {
+                        connection.sendPacket(new ClientboundDisconnectPacket("Server is full"));
+                        connection.close();
+                        continue;
+                    }
+
+                    if(session.getGameStatus() == GameStatus.INGAME) {
+                        connection.sendPacket(new ClientboundDisconnectPacket("Server already in game"));
+                        connection.close();
+                        continue;
+                    }
+
+                    Thread thread = new Thread(connection);
+                    thread.start();
+
+                    connections.add(connection);
+
                 }
 
-                if(session.getGameStatus() == GameStatus.INGAME) {
-                    connection.sendPacket(new ClientboundDisconnectPacket("Server already in game"));
-                    connection.close();
-                    continue;
-                }
-
-                Thread thread = new Thread(connection);
-                thread.start();
-
-                connections.add(connection);
-
+            } catch (IOException exception) {
+                exception.printStackTrace();
             }
 
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        };
 
     }
 

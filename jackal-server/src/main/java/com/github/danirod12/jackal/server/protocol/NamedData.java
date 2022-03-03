@@ -1,17 +1,18 @@
 package com.github.danirod12.jackal.server.protocol;
 
-import com.google.gson.annotations.SerializedName;
-
 public class NamedData {
 
-    @SerializedName(value = "id")
-    private int id;
+    private final int id;
 
-    @SerializedName(value = "data")
-    private String data;
+    private final String data;
 
     public int getID() { return id; }
 
     public String getData() { return data; }
+
+    public NamedData(int id, String data) {
+        this.id = id;
+        this.data = data;
+    }
 
 }

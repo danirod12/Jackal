@@ -11,7 +11,6 @@ import com.github.danirod12.jackal.client.util.GameColor;
 import com.github.danirod12.jackal.client.util.Pair;
 import com.github.danirod12.jackal.client.util.Triplet;
 import com.google.gson.Gson;
-import com.google.gson.JsonSyntaxException;
 
 import java.io.*;
 import java.net.Socket;
@@ -82,10 +81,10 @@ public class ClientSideConnection {
 
                     try {
 
-                        NamedData data = gson.fromJson(line, NamedData.class);
-                        onDataReceive(data);
+                        String[] data = SimpleDecoder.split(line, ":", 2);
+                        onDataReceive(new NamedData(Integer.parseInt(data[0]), data[1]));
 
-                    } catch(JsonSyntaxException exception) {
+                    } catch(NumberFormatException exception) {
                         System.out.println("Cannot fetch data from " + socket.getInetAddress().toString() + ": " + line);
                         exception.printStackTrace();
                     } catch (Throwable throwable) {

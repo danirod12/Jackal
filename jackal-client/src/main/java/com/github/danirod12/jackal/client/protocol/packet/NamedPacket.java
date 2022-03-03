@@ -10,7 +10,7 @@ public abstract class NamedPacket implements Packet {
 
     @Override
     public String build() {
-        return "{\"id\":\"" + id + "\",\"data\":\"" + data() + "\"}";
+        return id + ":" + data();
     }
 
     public abstract String data();

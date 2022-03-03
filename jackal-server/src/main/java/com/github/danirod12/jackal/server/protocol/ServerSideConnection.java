@@ -8,7 +8,6 @@ import com.github.danirod12.jackal.server.game.GameStatus;
 import com.github.danirod12.jackal.server.protocol.packet.*;
 import com.github.danirod12.jackal.server.util.GameColor;
 import com.google.gson.Gson;
-import com.google.gson.JsonSyntaxException;
 
 import java.io.*;
 import java.net.Socket;
@@ -56,10 +55,10 @@ public class ServerSideConnection implements Runnable, CommandSender {
 
                 try {
 
-                    NamedData data = gson.fromJson(line, NamedData.class);
-                    onDataReceive(data);
+                    String[] data = SimpleDecoder.split(line, ":", 2);
+                    onDataReceive(new NamedData(Integer.parseInt(data[0]), data[1]));
 
-                } catch(JsonSyntaxException exception) {
+                } catch(NumberFormatException exception) {
                     System.out.println("Cannot fetch data from " + socket.getInetAddress().toString() + ": " + line);
                     exception.printStackTrace();
                 } catch (Throwable throwable) {

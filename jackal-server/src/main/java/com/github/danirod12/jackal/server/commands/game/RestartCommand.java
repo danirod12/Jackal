@@ -14,7 +14,7 @@ public class RestartCommand extends ServerCommand {
     public void onCommand(CommandSender sender, String alias, String[] args) {
 
         Server.getInstance().restart();
-        sender.sendMessage("Server have been restarted");
+        sender.sendMessage("Server have been " + alias + "ed");
 
     }
 

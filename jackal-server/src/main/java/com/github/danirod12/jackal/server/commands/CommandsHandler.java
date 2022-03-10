@@ -2,6 +2,7 @@ package com.github.danirod12.jackal.server.commands;
 
 import com.github.danirod12.jackal.server.commands.game.BroadcastCommand;
 import com.github.danirod12.jackal.server.commands.game.ForceStartCommand;
+import com.github.danirod12.jackal.server.commands.game.RestartCommand;
 import com.github.danirod12.jackal.server.commands.sender.CommandSender;
 import com.github.danirod12.jackal.server.protocol.ServerSideConnection;
 
@@ -102,6 +103,7 @@ public class CommandsHandler {
 
         registerCommand(new ForceStartCommand());
         registerCommand(new BroadcastCommand());
+        registerCommand(new RestartCommand());
 
     }
 

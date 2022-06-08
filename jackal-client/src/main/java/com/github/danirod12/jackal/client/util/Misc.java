@@ -9,7 +9,7 @@ public class Misc {
 
     public static int percentage(int origin, int percent) {
 
-        if(percent < 0 || percent > 100) throw new IllegalArgumentException(percent + " not in [0, 100] range");
+        if (percent < 0 || percent > 100) throw new IllegalArgumentException(percent + " not in [0, 100] range");
         return origin * percent / 100;
 
     }
@@ -19,16 +19,16 @@ public class Misc {
     }
 
     public static int percentageOf(long firstNum, long secondNum) {
-        return (int)((firstNum * 100L) / secondNum);
+        return (int) ((firstNum * 100L) / secondNum);
     }
 
     public static boolean isInsideRoundedRect(int pos1, int pos2, int width, int height, int arc) {
 
         // bound
-        if(pos1 < 0 || pos2 < 0 || pos1 > width || pos2 > height) return false;
+        if (pos1 < 0 || pos2 < 0 || pos1 > width || pos2 > height) return false;
 
         // not arced zone
-        if(pos1 >= arc && pos1 <= width - arc || pos2 >= arc && pos2 <= height - arc) return true;
+        if (pos1 >= arc && pos1 <= width - arc || pos2 >= arc && pos2 <= height - arc) return true;
 
         // arced zone
         return getDistance(pos1, pos2, arc, arc) <= arc || getDistance(pos1, pos2, width - arc, arc) <= arc ||
@@ -42,9 +42,9 @@ public class Misc {
 
     public static String substringToSpace(String string) {
 
-        if(string.endsWith(" ")) {
+        if (string.endsWith(" ")) {
 
-            while(string.endsWith(" "))
+            while (string.endsWith(" "))
                 string = string.substring(0, string.length() - 1);
             return string;
 
@@ -52,7 +52,7 @@ public class Misc {
 
         String out = " ";
         String[] split = string.split(" ");
-        for(int i = 0; i < split.length - 1; ++i)
+        for (int i = 0; i < split.length - 1; ++i)
             out += split[i] + " ";
 
         return out.length() == 1 ? "" : out;
@@ -61,7 +61,7 @@ public class Misc {
 
     public static Pair<Integer, Integer> getStringParams(String string, Font font, Graphics2D graphics) {
         return new Pair<>(graphics.getFontMetrics().stringWidth(string),
-                (int)font.createGlyphVector(graphics.getFontRenderContext(), string).getPixelBounds(null, 0, 0).getHeight());
+                (int) font.createGlyphVector(graphics.getFontRenderContext(), string).getPixelBounds(null, 0, 0).getHeight());
     }
 
 }

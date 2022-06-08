@@ -9,14 +9,14 @@ public class ArrowTile extends GameTile {
 
     public ArrowTile(TileType type, MoveDirection... directions) {
         super(type, 2);
-        if(directions.length < 1) throw new IllegalArgumentException();
+        if (directions.length < 1) throw new IllegalArgumentException();
         this.directions = directions;
     }
 
     @Override
     public String getMetadata() {
         String metadata = null;
-        for(MoveDirection direction : directions)
+        for (MoveDirection direction : directions)
             metadata = metadata == null ? String.valueOf(direction.getId()) : metadata + "," + direction.getId();
         return metadata;
     }

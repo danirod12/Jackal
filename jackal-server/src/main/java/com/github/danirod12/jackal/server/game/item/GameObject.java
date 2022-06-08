@@ -12,7 +12,9 @@ public abstract class GameObject {
     private final UUID uuid = UUID.randomUUID();
     private final int id;
 
-    public UUID getUuid() { return uuid; }
+    public GameObject(int id) {
+        this.id = id;
+    }
 
     /*
 
@@ -21,8 +23,8 @@ public abstract class GameObject {
 
      */
 
-    public GameObject(int id) {
-        this.id = id;
+    public UUID getUuid() {
+        return uuid;
     }
 
     /**
@@ -32,10 +34,11 @@ public abstract class GameObject {
 
     /**
      * Create, update or destroy item
+     *
      * @param action 0 - Create/update, 1 - destroy
      */
     public ClientboundGameObjectPacket getUpdatePacket(int action, int y, int x) {
-        if(action < 0 || action > 1) throw new UnsupportedOperationException();
+        if (action < 0 || action > 1) throw new UnsupportedOperationException();
         return new ClientboundGameObjectPacket(action, uuid.toString(), id, y, x, getMetadata());
     }
 
@@ -49,10 +52,11 @@ public abstract class GameObject {
      */
     public GameTile getRelatedTile(GameTile[][] board) {
 
-        for(GameTile[] tiles : board)
-            for(GameTile tile : tiles)
-                if(tile.getItems().contains(this))
-                    return tile; return null;
+        for (GameTile[] tiles : board)
+            for (GameTile tile : tiles)
+                if (tile.getItems().contains(this))
+                    return tile;
+        return null;
 
     }
 
@@ -61,10 +65,11 @@ public abstract class GameObject {
      */
     public Pair<Integer, Integer> getRelatedTileYX(GameTile[][] board) {
 
-        for(int y = 0; y < board.length; y++)
-            for(int x = 0; x < board[y].length; ++x)
-                if(board[y][x].getItems().contains(this))
-                    return new Pair<>(y, x); return null;
+        for (int y = 0; y < board.length; y++)
+            for (int x = 0; x < board[y].length; ++x)
+                if (board[y][x].getItems().contains(this))
+                    return new Pair<>(y, x);
+        return null;
 
     }
 

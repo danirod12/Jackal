@@ -15,10 +15,10 @@ public class BroadcastCommand extends ServerCommand {
     public void onCommand(CommandSender sender, String alias, String[] args) {
 
         String message = null;
-        for(String arg : args)
+        for (String arg : args)
             message = message == null ? arg : message + " " + arg;
 
-        if(message == null) {
+        if (message == null) {
             sender.sendMessage("Enter a message");
             return;
         }

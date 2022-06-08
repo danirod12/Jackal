@@ -2,7 +2,7 @@ package com.github.danirod12.jackal.server.protocol.packet;
 
 import com.github.danirod12.jackal.server.protocol.ServerSideConnection;
 
-public class ClientboundDisconnectPacket extends NamedPacket{
+public class ClientboundDisconnectPacket extends NamedPacket {
 
     private final String reason;
 

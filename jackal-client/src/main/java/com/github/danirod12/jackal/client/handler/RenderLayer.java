@@ -20,6 +20,8 @@ public enum RenderLayer {
         this.layer = layer;
     }
 
-    public int getLayer() { return layer; }
+    public int getLayer() {
+        return layer;
+    }
 
 }

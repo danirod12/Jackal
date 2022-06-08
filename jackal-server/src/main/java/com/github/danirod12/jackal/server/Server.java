@@ -19,23 +19,28 @@ import java.util.List;
 
 public class Server {
 
+    public static final ConsoleSender CONSOLE_SENDER = new ConsoleSender();
     private static Server instance;
     private final ServerSocket listener;
-    private Thread mainThread;
-
-    public static final ConsoleSender CONSOLE_SENDER = new ConsoleSender();
-
     private final List<ServerSideConnection> connections = new ArrayList<>();
+    private Thread mainThread;
     private GameSession session;
 
-    public static Server getInstance() { return instance; }
+    public Server(int port) throws IOException {
+        this.listener = new ServerSocket(port);
+    }
+
+    public static Server getInstance() {
+        return instance;
+    }
 
     public static void main(String[] args) throws IOException {
 
         int port = 2143;
         try {
             port = Integer.parseInt(args[0]);
-        } catch(Exception ignored) {}
+        } catch (Exception ignored) {
+        }
 
         instance = new Server(port);
         CommandsHandler.registerDefaultCommands();
@@ -48,7 +53,7 @@ public class Server {
     private void restartGameSession() {
 
         session = new GameSession();
-        if(mainThread != null) {
+        if (mainThread != null) {
             Thread thread = mainThread;
             mainThread = null;
             try {
@@ -63,30 +68,26 @@ public class Server {
 
     }
 
-    public Server(int port) throws IOException {
-        this.listener = new ServerSocket(port);
-    }
-
     public Runnable startServer() {
 
         return () -> {
 
             try {
 
-                while(mainThread != null && !listener.isClosed()) {
+                while (mainThread != null && !listener.isClosed()) {
 
                     Socket socket = listener.accept();
                     System.out.println("A new connection from " + socket.getInetAddress().toString());
 
                     ServerSideConnection connection = new ServerSideConnection(socket);
 
-                    if(getConnections().size() >= 4) {
+                    if (getConnections().size() >= 4) {
                         connection.sendPacket(new ClientboundDisconnectPacket("Server is full"));
                         connection.close();
                         continue;
                     }
 
-                    if(session.getGameStatus() == GameStatus.INGAME) {
+                    if (session.getGameStatus() == GameStatus.INGAME) {
                         connection.sendPacket(new ClientboundDisconnectPacket("Server already in game"));
                         connection.close();
                         continue;
@@ -107,7 +108,9 @@ public class Server {
 
     }
 
-    public GameSession getGameSession() { return session; }
+    public GameSession getGameSession() {
+        return session;
+    }
 
     public List<ServerSideConnection> getConnections() {
         return new ArrayList<>(connections);
@@ -116,7 +119,7 @@ public class Server {
     public void removeConnection(ServerSideConnection connection) {
 
         connections.remove(connection);
-        if(connection.isAuthorized())
+        if (connection.isAuthorized())
             this.broadcast(new ClientboundPlayerRemovePacket(connection));
 
         session.onPlayerRemove(connection);

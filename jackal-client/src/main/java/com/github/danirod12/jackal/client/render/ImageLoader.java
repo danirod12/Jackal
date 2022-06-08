@@ -43,8 +43,8 @@ public class ImageLoader {
 
         int x = 0;
         int y = 0;
-        while(y < height) {
-            while(x < width) {
+        while (y < height) {
+            while (x < width) {
                 graphics.drawImage(origin, x, y, null);
                 x += origin.getWidth();
             }
@@ -78,7 +78,7 @@ public class ImageLoader {
 
     public static BufferedImage loadImage(String name) {
 
-        if(!name.contains(".")) name += ".png";
+        if (!name.contains(".")) name += ".png";
 
         try {
             return ImageIO.read(Jackal.class.getResource("/images/" + name));
@@ -104,7 +104,7 @@ public class ImageLoader {
         ThreadLocalRandom random = ThreadLocalRandom.current();
         for (int i = 0; i < width; i++) {
             for (int j = 0; j < height; j++) {
-                if(random.nextBoolean())
+                if (random.nextBoolean())
                     image.setRGB(i, j, 0xFFFFFF);
             }
         }
@@ -133,7 +133,7 @@ public class ImageLoader {
     public static BufferedImage getTile(BufferedImage origin, int tileWidth, int tileHeight, int x, int y) {
         try {
             return origin.getSubimage(tileWidth * x, tileHeight * y, tileWidth, tileHeight);
-        } catch(RasterFormatException exception) {
+        } catch (RasterFormatException exception) {
             exception.printStackTrace();
             System.out.println("Cannot crop image [(" + tileWidth * x + "," + tileHeight * y + ")," + tileWidth + "," + tileHeight
                     + "]. Image size " + origin.getWidth() + "x" + origin.getHeight());
@@ -155,11 +155,11 @@ public class ImageLoader {
             int x = 0;
             int y = 0;
             int tile = i;
-            while(y < height) {
-                while(x < width) {
+            while (y < height) {
+                while (x < width) {
                     graphics.drawImage(tiles[tile], x, y, null);
                     tile++;
-                    if(tile >= tiles.length)
+                    if (tile >= tiles.length)
                         tile = 0;
                     x += tile_width;
                 }
@@ -192,7 +192,7 @@ public class ImageLoader {
     /**
      * This method rotates an inputted image a desired amount of times by 90 degrees clockwise.
      *
-     * @param origin a {@link BufferedImage} object, only square images work
+     * @param origin     a {@link BufferedImage} object, only square images work
      * @param multiplier an {@link Integer}, describes how many times to rotate the image 90 degrees
      * @return a rotated object of {@link BufferedImage} class
      */

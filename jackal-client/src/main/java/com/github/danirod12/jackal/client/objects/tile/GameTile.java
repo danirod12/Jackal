@@ -11,12 +11,12 @@ public abstract class GameTile {
         this.type = type;
     }
 
-    public void setTexture(BufferedImage image) {
-        this.image = image;
-    }
-
     public BufferedImage getTexture() {
         return image;
+    }
+
+    public void setTexture(BufferedImage image) {
+        this.image = image;
     }
 
     public TileType getTileType() {

@@ -31,7 +31,7 @@ public class FrameRender extends Canvas {
         this.width = w;
         this.height = h < 0 ? w * 9 / 12 : h;
 
-        if(this.width < 10 || this.height < 10) throw new IllegalArgumentException("Frame is too small");
+        if (this.width < 10 || this.height < 10) throw new IllegalArgumentException("Frame is too small");
         System.out.println("Loading frame with dimension (w: " + width + ", h:" + height + ")");
 
         JFrame frame = new JFrame();
@@ -69,9 +69,13 @@ public class FrameRender extends Canvas {
 
     }
 
-    public int getWidth() { return width - OFFSET_NORMAL_W; }
+    public int getWidth() {
+        return width - OFFSET_NORMAL_W;
+    }
 
-    public int getHeight() { return height - OFFSET_NORMAL_H; }
+    public int getHeight() {
+        return height - OFFSET_NORMAL_H;
+    }
 
     public int getWidth(int size) {
         return Misc.percentage(getWidth(), size);
@@ -81,7 +85,9 @@ public class FrameRender extends Canvas {
         return Misc.percentage(getHeight(), size);
     }
 
-    public boolean displayFps() { return true; }
+    public boolean displayFps() {
+        return true;
+    }
 
     // Background
     public void render(Graphics2D graphics) {
@@ -92,7 +98,7 @@ public class FrameRender extends Canvas {
 
     public void createLobby(ObjectsHandler handler) {
 
-        if(Jackal.getGameLoop().getConnection() != null) {
+        if (Jackal.getGameLoop().getConnection() != null) {
             Jackal.getGameLoop().getConnection().close();
         }
 
@@ -116,7 +122,7 @@ public class FrameRender extends Canvas {
 
         handler.add(RenderLayer.LOBBY_SETTINGS, new ButtonObject(width / 2 - 150, height / 2 + 150, 300, 50, 40,
                 ColorTheme.NOT_ACTIVATED_BUTTON, ColorTheme.NOT_ACTIVATED_BOUND, ColorTheme.ACTIVATED_BUTTON, ColorTheme.ACTIVATED_BOUND, "Connect", small_text,
-                    () -> Jackal.getGameLoop().connect(name.getValue(), server.getValue())));
+                () -> Jackal.getGameLoop().connect(name.getValue(), server.getValue())));
 
     }
 

@@ -20,9 +20,8 @@ public class ButtonObject extends RenderObject implements MouseExecutor {
     private final String text;
     private final Font font;
     private final Runnable action;
-    private Pair<Integer, Integer> alignedTextLocation = null;
-
     boolean selected = false;
+    private Pair<Integer, Integer> alignedTextLocation = null;
 
     public ButtonObject(int x, int y, int width, int height, int arc, Color main, Color bound, Color activated, Color activated_bound,
                         String text, Font font, Runnable action) {
@@ -43,7 +42,7 @@ public class ButtonObject extends RenderObject implements MouseExecutor {
 
     @Override
     public boolean onMouseClick(int x, int y) {
-        if(Misc.isInsideRoundedRect(x - getX(), y - getY(), width, height, arc / 2)) {
+        if (Misc.isInsideRoundedRect(x - getX(), y - getY(), width, height, arc / 2)) {
             action.run();
             return true;
         }
@@ -56,7 +55,8 @@ public class ButtonObject extends RenderObject implements MouseExecutor {
     }
 
     @Override
-    public void tick() { }
+    public void tick() {
+    }
 
     @Override
     public void render(Graphics2D graphics) {
@@ -69,10 +69,10 @@ public class ButtonObject extends RenderObject implements MouseExecutor {
         graphics.drawRoundRect(getX(), getY(), width, height, arc, arc);
         graphics.setStroke(new BasicStroke(1));
 
-        if(text == null) return;
+        if (text == null) return;
 
         graphics.setColor(bound);
-        if(alignedTextLocation == null) {
+        if (alignedTextLocation == null) {
 
             Pair<Integer, Integer> pair = Misc.getStringParams(text, font, graphics);
             this.alignedTextLocation = new Pair<>((width - pair.getKey()) / 2 + getX(), (height + pair.getValue()) / 2 + getY());

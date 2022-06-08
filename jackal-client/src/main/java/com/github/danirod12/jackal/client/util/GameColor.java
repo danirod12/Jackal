@@ -20,15 +20,17 @@ public enum GameColor {
     }
 
     public static GameColor parseColor(int id) {
-        for(GameColor color : values())
-            if(color.id == id)
-                return color; return GameColor.UNKNOWN;
+        for (GameColor color : values())
+            if (color.id == id)
+                return color;
+        return GameColor.UNKNOWN;
     }
 
     public static GameColor parseColor(String name) {
-        for(GameColor color : values())
-            if(color.name().equalsIgnoreCase(name))
-                return color; return GameColor.UNKNOWN;
+        for (GameColor color : values())
+            if (color.name().equalsIgnoreCase(name))
+                return color;
+        return GameColor.UNKNOWN;
     }
 
     public Color asRenderColor() {

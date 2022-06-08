@@ -28,10 +28,10 @@ public class PlayersPanel extends RenderObject {
     /**
      * Generate RenderObject for players frame
      *
-     * @param players      Current players list ( [!] Not copy )
-     * @param x            X location
-     * @param y            Y location
-     * @param font         Font for text
+     * @param players Current players list ( [!] Not copy )
+     * @param x       X location
+     * @param y       Y location
+     * @param font    Font for text
      */
     public PlayersPanel(List<Player> players, int x, int y, int arc, Font font) {
         super(x, y);
@@ -47,7 +47,7 @@ public class PlayersPanel extends RenderObject {
     @Override
     public void render(Graphics2D graphics) {
 
-        if(text_data == null) {
+        if (text_data == null) {
             text_data = Misc.getStringParams("Ag]", font, graphics);
         }
 
@@ -73,13 +73,13 @@ public class PlayersPanel extends RenderObject {
                 final long cooldown = player.getTurnData().getA() * 50; // convert from ticks to ms
                 int fillPercentage = Misc.percentageOf(System.currentTimeMillis() - player.getTurnData().getB() + cooldown, cooldown);
 
-                if(fillPercentage >= 100) {
+                if (fillPercentage >= 100) {
 
                     player.setTurnData(null);
 
                 } else {
 
-                    if(fillPercentage <= 0) fillPercentage = 0;
+                    if (fillPercentage <= 0) fillPercentage = 0;
 
                     graphics.setColor(ColorTheme.NOT_ACTIVATED_FRAME);
                     graphics.fillRoundRect(current_x, current_y + 28, width, 6, arc, arc);

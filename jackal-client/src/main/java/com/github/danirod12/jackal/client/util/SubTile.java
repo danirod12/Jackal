@@ -25,9 +25,16 @@ public enum SubTile {
     public static SubTile findEmpty(List<SubTile> subtiles) {
 
         List<SubTile> tiles = Stream.of(values()).filter(n -> !subtiles.contains(n)).collect(Collectors.toList());
-        if(tiles.size() <= 0) throw new RuntimeException("No empty tiles");
+        if (tiles.size() <= 0) throw new RuntimeException("No empty tiles");
         return tiles.get(ThreadLocalRandom.current().nextInt(tiles.size()));
 
+    }
+
+    public static SubTile parse(int id) {
+        for (SubTile tile : values())
+            if (tile.id == id)
+                return tile;
+        return null;
     }
 
     public int getOffsetX() {
@@ -40,12 +47,6 @@ public enum SubTile {
 
     public int getOffsetY() {
         return offsetY;
-    }
-    
-    public static SubTile parse(int id) {
-        for(SubTile tile : values())
-            if(tile.id == id)
-                return tile; return null;
     }
 
 }

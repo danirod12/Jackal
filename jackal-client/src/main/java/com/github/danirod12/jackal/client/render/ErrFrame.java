@@ -15,7 +15,7 @@ public class ErrFrame {
         Dimension dimension = new Dimension(800, 700);
         frame.setSize(dimension);
         area.setForeground(Color.RED);
-        
+
         frame.add(new JScrollPane(area));
         frame.setVisible(true);
 

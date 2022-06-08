@@ -19,24 +19,24 @@ import java.util.concurrent.ThreadLocalRandom;
 public class MapGenerator {
 
     /**
-     * @param sizeY Height (Size Y)
-     * @param sizeX Width (Size X)
+     * @param sizeY   Height (Size Y)
+     * @param sizeX   Width (Size X)
      * @param players Players amount that will play on this map
      * @return GameTile[y][x]. Generated cuboid map. First index for Y, second index for X
      */
     public static GameTile[][] generateMap(int sizeY, int sizeX, int players) {
 
         // TODO generate map
-        return new GameTile[][] {
+        return new GameTile[][]{
 
-                { new VoidTile(), new VoidTile(), new VoidTile(), new VoidTile(), new VoidTile(), new VoidTile(), new VoidTile(), new VoidTile(), new VoidTile() },
-                { new VoidTile(), new VoidTile(), new VoidTile(), new EmptyTile(TileType.SAND), new EmptyTile(TileType.SAND), new EmptyTile(TileType.SAND), new VoidTile(), new VoidTile(), new VoidTile() },
-                { new VoidTile(), new EmptyTile(TileType.SAND), new EmptyTile(TileType.SAND), new EmptyTile(TileType.SAND), new EmptyTile(TileType.GRASS), new EmptyTile(TileType.GRASS), new EmptyTile(TileType.SAND), new VoidTile(), new VoidTile() },
-                { new VoidTile(), new EmptyTile(TileType.SAND), new EmptyTile(TileType.GRASS), new EmptyTile(TileType.GRASS), new EmptyTile(TileType.ROCK), new EmptyTile(TileType.GRASS), new EmptyTile(TileType.GRASS), new EmptyTile(TileType.SAND), new VoidTile() },
-                { new VoidTile(), new EmptyTile(TileType.SAND), new EmptyTile(TileType.GRASS), new EmptyTile(TileType.ROCK), new EmptyTile(TileType.ROCK), new EmptyTile(TileType.ROCK), new EmptyTile(TileType.GRASS), new EmptyTile(TileType.SAND), new VoidTile() },
-                { new VoidTile(), new VoidTile(), new EmptyTile(TileType.SAND), new EmptyTile(TileType.SAND), new EmptyTile(TileType.GRASS), new EmptyTile(TileType.GRASS), new EmptyTile(TileType.SAND), new EmptyTile(TileType.SAND), new VoidTile(), new VoidTile() },
-                { new VoidTile(), new VoidTile(), new VoidTile(), new EmptyTile(TileType.SAND), new EmptyTile(TileType.SAND), new EmptyTile(TileType.SAND), new EmptyTile(TileType.SAND), new EmptyTile(TileType.SAND), new VoidTile() },
-                { new VoidTile(), new VoidTile(), new VoidTile(), new VoidTile(), new VoidTile(), new VoidTile(), new VoidTile(), new VoidTile(), new VoidTile() }
+                {new VoidTile(), new VoidTile(), new VoidTile(), new VoidTile(), new VoidTile(), new VoidTile(), new VoidTile(), new VoidTile(), new VoidTile()},
+                {new VoidTile(), new VoidTile(), new VoidTile(), new EmptyTile(TileType.SAND), new EmptyTile(TileType.SAND), new EmptyTile(TileType.SAND), new VoidTile(), new VoidTile(), new VoidTile()},
+                {new VoidTile(), new EmptyTile(TileType.SAND), new EmptyTile(TileType.SAND), new EmptyTile(TileType.SAND), new EmptyTile(TileType.GRASS), new EmptyTile(TileType.GRASS), new EmptyTile(TileType.SAND), new VoidTile(), new VoidTile()},
+                {new VoidTile(), new EmptyTile(TileType.SAND), new EmptyTile(TileType.GRASS), new EmptyTile(TileType.GRASS), new EmptyTile(TileType.ROCK), new EmptyTile(TileType.GRASS), new EmptyTile(TileType.GRASS), new EmptyTile(TileType.SAND), new VoidTile()},
+                {new VoidTile(), new EmptyTile(TileType.SAND), new EmptyTile(TileType.GRASS), new EmptyTile(TileType.ROCK), new EmptyTile(TileType.ROCK), new EmptyTile(TileType.ROCK), new EmptyTile(TileType.GRASS), new EmptyTile(TileType.SAND), new VoidTile()},
+                {new VoidTile(), new VoidTile(), new EmptyTile(TileType.SAND), new EmptyTile(TileType.SAND), new EmptyTile(TileType.GRASS), new EmptyTile(TileType.GRASS), new EmptyTile(TileType.SAND), new EmptyTile(TileType.SAND), new VoidTile(), new VoidTile()},
+                {new VoidTile(), new VoidTile(), new VoidTile(), new EmptyTile(TileType.SAND), new EmptyTile(TileType.SAND), new EmptyTile(TileType.SAND), new EmptyTile(TileType.SAND), new EmptyTile(TileType.SAND), new VoidTile()},
+                {new VoidTile(), new VoidTile(), new VoidTile(), new VoidTile(), new VoidTile(), new VoidTile(), new VoidTile(), new VoidTile(), new VoidTile()}
 
         };
 
@@ -44,7 +44,8 @@ public class MapGenerator {
 
     /**
      * Insert team boats
-     * @param map Generated cuboid map
+     *
+     * @param map    Generated cuboid map
      * @param colors Colors to be inserted
      * @return Assigned colors and created boats
      */
@@ -57,13 +58,13 @@ public class MapGenerator {
             for (int x = 0; x < map[0].length; x++) {
 
                 GameTile tile = map[y][x];
-                if(tile instanceof VoidTile && getShores(map, true, y, x).size() != 0)
+                if (tile instanceof VoidTile && getShores(map, true, y, x).size() != 0)
                     tiles.add((VoidTile) tile);
 
             }
         }
 
-        for(GameColor color : colors) {
+        for (GameColor color : colors) {
 
             TeamBoat boat = new TeamBoat(color);
 
@@ -86,22 +87,23 @@ public class MapGenerator {
 
     /**
      * Get tile shores (List(Pair(y, x)))
-     * @param map Generated cuboid map
+     *
+     * @param map      Generated cuboid map
      * @param shortest True - only up, down, right and left. False - all directions
-     * @param y Y start location
-     * @param x X start location
+     * @param y        Y start location
+     * @param x        X start location
      * @return Tile shores
      */
     public static List<Pair<Integer, Integer>> getShores(GameTile[][] map, boolean shortest, int y, int x) {
 
         List<Pair<Integer, Integer>> list = new ArrayList<>();
-        for(MoveDirection direction : shortest ? MoveDirection.getAllShortestDirections() : MoveDirection.getAllShortDirections()) {
+        for (MoveDirection direction : shortest ? MoveDirection.getAllShortestDirections() : MoveDirection.getAllShortDirections()) {
 
             int newY = y + direction.getY();
             int newX = x + direction.getX();
 
-            if(newX < 0 || newY < 0 || newY >= map.length || newX >= map[0].length) continue;
-            if(!(map[newY][newX] instanceof VoidTile))
+            if (newX < 0 || newY < 0 || newY >= map.length || newX >= map[0].length) continue;
+            if (!(map[newY][newX] instanceof VoidTile))
                 list.add(new Pair<>(newY, newX));
 
         }
@@ -111,23 +113,24 @@ public class MapGenerator {
 
     /**
      * Get tile shores (List(Pair(y, x)))
-     * @param map Generated cuboid map
-     * @param shortest True - only up, down, right and left. False - all directions
+     *
+     * @param map             Generated cuboid map
+     * @param shortest        True - only up, down, right and left. False - all directions
      * @param shores_shortest True - only up, down, right and left. False - all directions
-     * @param y Y start location
-     * @param x X start location
+     * @param y               Y start location
+     * @param x               X start location
      * @return Tile shores
      */
     public static List<Pair<Integer, Integer>> getShoresRelatedArea(GameTile[][] map, boolean shortest, boolean shores_shortest, int y, int x) {
 
         List<Pair<Integer, Integer>> list = new ArrayList<>();
-        for(MoveDirection direction : shortest ? MoveDirection.getAllShortestDirections() : MoveDirection.getAllShortDirections()) {
+        for (MoveDirection direction : shortest ? MoveDirection.getAllShortestDirections() : MoveDirection.getAllShortDirections()) {
 
             int newY = y + direction.getY();
             int newX = x + direction.getX();
 
-            if(newX < 0 || newY < 0 || newY >= map.length || newX >= map[0].length) continue;
-            if(map[newY][newX] instanceof VoidTile && getShores(map, shores_shortest, newY, newX).size() != 0)
+            if (newX < 0 || newY < 0 || newY >= map.length || newX >= map[0].length) continue;
+            if (map[newY][newX] instanceof VoidTile && getShores(map, shores_shortest, newY, newX).size() != 0)
                 list.add(new Pair<>(newY, newX));
 
         }

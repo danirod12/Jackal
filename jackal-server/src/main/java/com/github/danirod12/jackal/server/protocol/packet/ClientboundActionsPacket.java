@@ -14,7 +14,7 @@ public class ClientboundActionsPacket extends NamedPacket {
         super(41);
 
         StringBuilder data = new StringBuilder(uuid.toString());
-        for(String action : actions)
+        for (String action : actions)
             data.append(";").append(action);
         this.data = data.toString();
 

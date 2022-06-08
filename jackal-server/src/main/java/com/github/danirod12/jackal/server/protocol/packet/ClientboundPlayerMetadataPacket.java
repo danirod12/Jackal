@@ -18,6 +18,8 @@ public class ClientboundPlayerMetadataPacket extends NamedPacket {
     }
 
     @Override
-    public String data() { return data; }
+    public String data() {
+        return data;
+    }
 
 }

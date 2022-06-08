@@ -23,6 +23,23 @@ public enum TileType {
         this.debug = debug;
     }
 
+    public static TileType parse(int id) {
+
+        for (TileType type : values())
+            if (type.id == id) return type;
+        return null;
+
+    }
+
+    public static TileType parse(String s) {
+
+        for (TileType type : values())
+            if (type.name().equalsIgnoreCase(s))
+                return type;
+        return null;
+
+    }
+
     public Color getAssociatedColor() {
         return debug;
     }
@@ -38,40 +55,52 @@ public enum TileType {
 
         if (closed) {
             switch (this.getId()) {
-                case 1: {texture = ImageLoader.SAND; break;}
-                case 2: {texture = ImageLoader.GRASS; break;}
-                case 3: {texture = ImageLoader.ROCK; break;}
-                default: {texture = ImageLoader.generateImage(64, 64, Color.GRAY); break;}
+                case 1: {
+                    texture = ImageLoader.SAND;
+                    break;
+                }
+                case 2: {
+                    texture = ImageLoader.GRASS;
+                    break;
+                }
+                case 3: {
+                    texture = ImageLoader.ROCK;
+                    break;
+                }
+                default: {
+                    texture = ImageLoader.generateImage(64, 64, Color.GRAY);
+                    break;
+                }
             }
         } else {
             switch (this.getId()) {
-                case 1: {texture = ImageLoader.OPEN_SAND; break;}
-                case 2: {texture = ImageLoader.OPEN_GRASS; break;}
-                case 3: {texture = ImageLoader.OPEN_ROCK; break;}
-                default: {texture = ImageLoader.generateImage(64, 64, Color.LIGHT_GRAY); break;}
+                case 1: {
+                    texture = ImageLoader.OPEN_SAND;
+                    break;
+                }
+                case 2: {
+                    texture = ImageLoader.OPEN_GRASS;
+                    break;
+                }
+                case 3: {
+                    texture = ImageLoader.OPEN_ROCK;
+                    break;
+                }
+                default: {
+                    texture = ImageLoader.generateImage(64, 64, Color.LIGHT_GRAY);
+                    break;
+                }
             }
         }
         return texture;
     }
 
-    public static TileType parse(int id) {
-
-        for(TileType type : values())
-            if(type.id == id) return type;
-        return null;
-
+    public int getId() {
+        return id;
     }
 
-    public static TileType parse(String s) {
-
-        for(TileType type : values())
-            if(type.name().equalsIgnoreCase(s))
-                return type; return null;
-
+    public boolean isTerrain() {
+        return this == SAND || this == GRASS || this == ROCK;
     }
-
-    public int getId() { return id; }
-
-    public boolean isTerrain() { return this == SAND || this == GRASS || this == ROCK; }
 
 }

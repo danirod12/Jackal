@@ -14,7 +14,6 @@ import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
 public class ChatObject extends RenderObject implements KeyboardExecutor, SelectableObject {
 
@@ -26,6 +25,8 @@ public class ChatObject extends RenderObject implements KeyboardExecutor, Select
     private final List<String> queue = new ArrayList<>();
 
     private int height = -1;
+    private boolean input = false;
+    private String value = "";
 
     public ChatObject(int frame_height, int width, Font font) {
         super(0, frame_height);
@@ -33,10 +34,9 @@ public class ChatObject extends RenderObject implements KeyboardExecutor, Select
         this.font = font;
     }
 
-    private boolean input = false;
-    public boolean isInput() { return input; }
-
-    private String value = "";
+    public boolean isInput() {
+        return input;
+    }
 
     public void open() {
 
@@ -48,13 +48,13 @@ public class ChatObject extends RenderObject implements KeyboardExecutor, Select
 
         input = false;
 
-        if(value.length() > 0) {
+        if (value.length() > 0) {
 
-            if(send) loop.getConnection().sendPacket(new ServerboundChatPacket(value));
+            if (send) loop.getConnection().sendPacket(new ServerboundChatPacket(value));
             value = "";
 
         }
-        if(unselect) loop.unselectObject();
+        if (unselect) loop.unselectObject();
 
     }
 
@@ -62,29 +62,29 @@ public class ChatObject extends RenderObject implements KeyboardExecutor, Select
     public void render(Graphics2D graphics) {
 
         // Chat height math code
-        if(height < 0) height = Misc.getStringParams("A[g", font, graphics).getValue();
+        if (height < 0) height = Misc.getStringParams("A[g", font, graphics).getValue();
 
         // Queue perform code
-        if(queue.size() > 0) {
+        if (queue.size() > 0) {
 
             List<String> queue = new ArrayList<>(this.queue);
             this.queue.clear();
 
-            for(String message : queue) {
+            for (String message : queue) {
 
                 String element = null;
-                for(String word : message.split(" ")) {
-                    if(element == null) {
+                for (String word : message.split(" ")) {
+                    if (element == null) {
                         element = word;
-                        while(graphics.getFontMetrics().stringWidth(element) > width) {
+                        while (graphics.getFontMetrics().stringWidth(element) > width) {
                             int crop = 1;
-                            while(graphics.getFontMetrics().stringWidth(element.substring(0, element.length() - crop)) > width)
+                            while (graphics.getFontMetrics().stringWidth(element.substring(0, element.length() - crop)) > width)
                                 crop++;
                             messages.add(new ChatMessage(element.substring(0, crop)));
                             element = element.substring(crop);
                         }
                     } else {
-                        if(graphics.getFontMetrics().stringWidth(element + " " + word) > width) {
+                        if (graphics.getFontMetrics().stringWidth(element + " " + word) > width) {
                             messages.add(new ChatMessage(element));
                             element = word;
                         } else {
@@ -92,15 +92,15 @@ public class ChatObject extends RenderObject implements KeyboardExecutor, Select
                         }
                     }
                 }
-                if(element != null && !element.isEmpty()) {
-                    while(graphics.getFontMetrics().stringWidth(element) > width) {
+                if (element != null && !element.isEmpty()) {
+                    while (graphics.getFontMetrics().stringWidth(element) > width) {
                         int crop = 1;
-                        while(graphics.getFontMetrics().stringWidth(element.substring(0, element.length() - crop)) > width)
+                        while (graphics.getFontMetrics().stringWidth(element.substring(0, element.length() - crop)) > width)
                             crop++;
                         messages.add(new ChatMessage(element.substring(0, crop)));
                         element = element.substring(crop);
                     }
-                    if(!element.isEmpty()) messages.add(new ChatMessage(element));
+                    if (!element.isEmpty()) messages.add(new ChatMessage(element));
                 }
 
             }
@@ -111,7 +111,7 @@ public class ChatObject extends RenderObject implements KeyboardExecutor, Select
 
         graphics.setFont(font);
 
-        if(input) {
+        if (input) {
 
             graphics.setColor(new Color(100, 100, 100, 184));
             graphics.fillRect(2, getY() - 34, 1259, 31);
@@ -164,7 +164,8 @@ public class ChatObject extends RenderObject implements KeyboardExecutor, Select
     }
 
     @Override
-    public void tick() { }
+    public void tick() {
+    }
 
     public void addMessage(String message) {
         queue.add(message);
@@ -173,21 +174,21 @@ public class ChatObject extends RenderObject implements KeyboardExecutor, Select
     @Override
     public void onKeyTyped(KeyEvent key) {
 
-        if(!input) return;
+        if (!input) return;
 
-        if(key.getKeyChar() == '\n') {
+        if (key.getKeyChar() == '\n') {
             close(true, true);
             return;
         }
 
-        if(key.getKeyChar() == '\b') {
-            if(value.length() > 0)
+        if (key.getKeyChar() == '\b') {
+            if (value.length() > 0)
                 value = value.substring(0, value.length() - 1);
             return;
         }
 
-        if(key.getKeyChar() == '\u007F') {
-            if(value.length() > 0)
+        if (key.getKeyChar() == '\u007F') {
+            if (value.length() > 0)
                 value = Misc.substringToSpace(value);
             return;
         }

@@ -22,29 +22,18 @@ import java.net.UnknownHostException;
 
 public class GameLoop implements Runnable {
 
-    private ClientSideConnection connection = null;
-    public void destroyConnection() {
-        connection = null;
-        handler.removeAll();
-        render.createLobby(handler);
-    }
-
-    public ClientSideConnection getConnection() { return connection; }
-
-    public boolean isInGame() { return connection != null; }
-
     private final double tps = 60.0D;
     private final Font system_font = new Font("Dialog", Font.PLAIN, 12);
     private final Thread thread;
     private final FrameRender render;
     private final ObjectsHandler handler;
-
-    private final SimpleScheduler<Boolean> boolean_ticker = new SimpleScheduler<>((int)(tps / 2));
-    public boolean getScheduledBoolean() { return boolean_ticker.get(); }
-
+    private final SimpleScheduler<Boolean> boolean_ticker = new SimpleScheduler<>((int) (tps / 2));
+    private ClientSideConnection connection = null;
     private String name;
     private SelectableObject selected;
-
+    private int fps = 0;
+    private boolean running = true;
+    private ErrFrame errLogger;
     public GameLoop(FrameRender render) {
 
         boolean_ticker.set(false);
@@ -58,16 +47,39 @@ public class GameLoop implements Runnable {
 
     }
 
-    public ObjectsHandler getObjectsHandler() { return handler; }
+    public void destroyConnection() {
+        connection = null;
+        handler.removeAll();
+        render.createLobby(handler);
+    }
 
-    public FrameRender getFrameRender() { return render; }
+    public ClientSideConnection getConnection() {
+        return connection;
+    }
 
-    public Font getSystemFont() { return system_font; }
+    public boolean isInGame() {
+        return connection != null;
+    }
 
-    private int fps = 0;
-    private boolean running = true;
+    public boolean getScheduledBoolean() {
+        return boolean_ticker.get();
+    }
 
-    public int getFps() { return fps; }
+    public ObjectsHandler getObjectsHandler() {
+        return handler;
+    }
+
+    public FrameRender getFrameRender() {
+        return render;
+    }
+
+    public Font getSystemFont() {
+        return system_font;
+    }
+
+    public int getFps() {
+        return fps;
+    }
 
     @Override
     public void run() {
@@ -78,19 +90,19 @@ public class GameLoop implements Runnable {
         long timer = System.currentTimeMillis();
         int frames = 0;
 
-        while(running) {
+        while (running) {
 
             long now = System.nanoTime();
             delta += (now - lastTime) / ns;
             lastTime = now;
-            while(delta >= 1) {
+            while (delta >= 1) {
                 tick();
                 delta--;
             }
-            if(running) render();
+            if (running) render();
             frames++;
 
-            if(System.currentTimeMillis() - timer > 1000) {
+            if (System.currentTimeMillis() - timer > 1000) {
                 timer += 1000;
                 fps = frames;
                 frames = 0;
@@ -106,7 +118,7 @@ public class GameLoop implements Runnable {
         try {
 
             BufferStrategy bs = render.getBufferStrategy();
-            if(bs == null) {
+            if (bs == null) {
                 render.createBufferStrategy(3);
                 return;
             }
@@ -119,13 +131,13 @@ public class GameLoop implements Runnable {
             this.render.render(graphics);
 
             // Game
-            if(this.connection != null && this.connection.getBoard() != null)
+            if (this.connection != null && this.connection.getBoard() != null)
                 this.connection.getBoard().render(graphics);
 
             // Foreground
             this.handler.getRenderObjects().forEach(n -> n.render(graphics));
 
-            if(render.displayFps()) {
+            if (render.displayFps()) {
                 graphics.setColor(ColorTheme.DEBUG_LIGHT);
                 graphics.setFont(system_font);
                 graphics.drawString("FPS: " + fps, 4, 15);
@@ -134,7 +146,7 @@ public class GameLoop implements Runnable {
             graphics.dispose();
             bs.show();
 
-        } catch(Throwable throwable) {
+        } catch (Throwable throwable) {
             throwable.printStackTrace();
             log(throwable);
         }
@@ -145,7 +157,7 @@ public class GameLoop implements Runnable {
 
         try {
 
-            if(boolean_ticker.tick()) boolean_ticker.set(!boolean_ticker.get());
+            if (boolean_ticker.tick()) boolean_ticker.set(!boolean_ticker.get());
             render.tick();
             handler.forEach(AppObject::tick);
 
@@ -177,17 +189,17 @@ public class GameLoop implements Runnable {
 
     public MouseExecutor onMouseClick(int x, int y) {
 
-        for(MouseExecutor executor : handler.getMouseExecutors()) {
+        for (MouseExecutor executor : handler.getMouseExecutors()) {
 
-            if(executor.onMouseClick(x, y)) {
-                if(executor instanceof SelectableObject)
+            if (executor.onMouseClick(x, y)) {
+                if (executor instanceof SelectableObject)
                     selected = (SelectableObject) executor;
                 return executor;
-            } else if(selected == executor) selected = null;
+            } else if (selected == executor) selected = null;
 
         }
-        if(connection != null && connection.getBoard() != null) {
-            if(connection.getBoard().onMouseClick(x, y))
+        if (connection != null && connection.getBoard() != null) {
+            if (connection.getBoard().onMouseClick(x, y))
                 return connection.getBoard();
         }
         return null;
@@ -197,10 +209,10 @@ public class GameLoop implements Runnable {
     public void onMouseMove(int x, int y) {
 
         // TODO remove debug
-        handler.add(RenderLayer.HIGHEST, new FadingOvalObject(x, y, 4, (int)(tps * .2D), ColorTheme.DEBUG_DARK));
+        handler.add(RenderLayer.HIGHEST, new FadingOvalObject(x, y, 4, (int) (tps * .2D), ColorTheme.DEBUG_DARK));
 
         handler.getMouseExecutors().forEach(n -> n.onMouseMove(x, y));
-        if(connection != null && connection.getBoard() != null)
+        if (connection != null && connection.getBoard() != null)
             connection.getBoard().onMouseMove(x, y);
 
     }
@@ -218,15 +230,15 @@ public class GameLoop implements Runnable {
 //            return;
 //        }
 
-        if(key.getKeyChar() == '\u001B' && selected != null) {
+        if (key.getKeyChar() == '\u001B' && selected != null) {
             unselectObject();
             return;
         }
 
-        if((key.getKeyChar() == '\n' || key.getKeyChar() == 't') && selected == null) {
+        if ((key.getKeyChar() == '\n' || key.getKeyChar() == 't') && selected == null) {
 
             ChatObject chat = handler.getChat();
-            if(chat != null) {
+            if (chat != null) {
                 selected = chat;
                 chat.open();
                 return;
@@ -235,21 +247,25 @@ public class GameLoop implements Runnable {
         }
 
         for (KeyboardExecutor keyboardExecutor : handler.getKeyboardExecutors()) {
-            if(selected != current_selected) break;
+            if (selected != current_selected) break;
             keyboardExecutor.onKeyTyped(key);
         }
 
     }
 
-    public SelectableObject getSelectedObject() { return selected; }
+    public SelectableObject getSelectedObject() {
+        return selected;
+    }
 
-    public int getTPS() { return (int) tps; }
+    public int getTPS() {
+        return (int) tps;
+    }
 
     public void connect(String name, String server) {
 
-        if(connection != null) connection.close();
+        if (connection != null) connection.close();
 
-        if(name.length() < 3 || name.length() > 16 || !Misc.PATTERN.matcher(name).matches()) {
+        if (name.length() < 3 || name.length() > 16 || !Misc.PATTERN.matcher(name).matches()) {
             System.out.println("incorrect name");
             // TODO incorrect name
             // handler.add(10, );
@@ -263,8 +279,9 @@ public class GameLoop implements Runnable {
         int port = -1;
         try {
             port = Integer.parseInt(data[1]);
-        } catch (Exception ignored) {}
-        if(port < 0) port = Jackal.DEFAULT_PORT;
+        } catch (Exception ignored) {
+        }
+        if (port < 0) port = Jackal.DEFAULT_PORT;
 
         System.out.println("Connecting to \"" + data[0] + ":" + port + "\" using name \"" + this.name + "\"...");
 
@@ -279,7 +296,7 @@ public class GameLoop implements Runnable {
             exception.printStackTrace();
             log(exception);
             return;
-        } catch(Throwable throwable) {
+        } catch (Throwable throwable) {
             // TODO other exception
             throwable.printStackTrace();
             log(throwable);
@@ -292,30 +309,28 @@ public class GameLoop implements Runnable {
     }
 
     public void unselectObject() {
-        if(selected instanceof ChatObject)
-            ((ChatObject)selected).close(false, false);
+        if (selected instanceof ChatObject)
+            ((ChatObject) selected).close(false, false);
         selected = null;
     }
 
-    public void selectObject (SelectableObject object) {
+    public void selectObject(SelectableObject object) {
         unselectObject();
         selected = object;
     }
 
-    private ErrFrame errLogger;
-
     public void log(Throwable throwable) {
 
-        if(errLogger == null || errLogger.isClosed()) errLogger = new ErrFrame();
+        if (errLogger == null || errLogger.isClosed()) errLogger = new ErrFrame();
 
         errLogger.log(throwable.getClass().getName() + " - " + throwable.getLocalizedMessage());
         int last_printed = -1;
         StackTraceElement[] elements = throwable.getStackTrace();
 
-        for(int i = 0; i < elements.length; ++i) {
+        for (int i = 0; i < elements.length; ++i) {
 
             String message = elements[i].toString();
-            if(message.startsWith("com.github.danirod12.jackal")) {
+            if (message.startsWith("com.github.danirod12.jackal")) {
                 while (last_printed <= i) {
                     last_printed++;
                     errLogger.log("   at  " + elements[last_printed].toString());
@@ -323,10 +338,10 @@ public class GameLoop implements Runnable {
             }
 
         }
-        for(int i = last_printed; i < elements.length && i < last_printed + 3; i++)
+        for (int i = last_printed; i < elements.length && i < last_printed + 3; i++)
             errLogger.log("   at  " + elements[i].toString());
 
-        if(elements.length - last_printed - 4 > 0)
+        if (elements.length - last_printed - 4 > 0)
             errLogger.log("      And " + (elements.length - last_printed - 4) + " more...");
 
     }

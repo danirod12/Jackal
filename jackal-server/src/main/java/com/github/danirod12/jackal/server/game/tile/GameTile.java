@@ -1,10 +1,8 @@
 package com.github.danirod12.jackal.server.game.tile;
 
-import com.github.danirod12.jackal.server.Server;
 import com.github.danirod12.jackal.server.game.item.GameObject;
 import com.github.danirod12.jackal.server.game.item.TeamBoat;
 import com.github.danirod12.jackal.server.game.move.MoveDirection;
-import com.github.danirod12.jackal.server.protocol.packet.ClientboundGameObjectPacket;
 import com.github.danirod12.jackal.server.protocol.packet.ClientboundTileMetadataPacket;
 import com.github.danirod12.jackal.server.util.GameColor;
 
@@ -45,7 +43,9 @@ public abstract class GameTile {
     /**
      * Tile render type
      */
-    public TileType getType() { return type; }
+    public TileType getType() {
+        return type;
+    }
 
     /**
      * Tile items (Coins, players, boats, etc.)
@@ -68,7 +68,7 @@ public abstract class GameTile {
      * Connect item to a tile
      */
     public void addItem(GameObject item) {
-        if(item instanceof TeamBoat && !(this instanceof VoidTile))
+        if (item instanceof TeamBoat && !(this instanceof VoidTile))
             throw new UnsupportedOperationException();
         items.add(item);
     }

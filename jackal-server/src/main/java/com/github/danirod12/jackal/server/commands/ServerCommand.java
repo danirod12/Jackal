@@ -15,21 +15,19 @@ public abstract class ServerCommand {
     private final List<String> aliases;
 
     /**
-     *
      * @param onlyServer Only server will be able to use this command
-     * @param aliases Commands list (origin, aliases)
+     * @param aliases    Commands list (origin, aliases)
      */
     public ServerCommand(boolean onlyServer, String... aliases) {
         this.onlyServer = onlyServer;
         this.aliases = Stream.of(aliases).map(String::toLowerCase).collect(Collectors.toList());
-        for(String command : aliases) {
-            if(!PATTERN.matcher(command).matches())
+        for (String command : aliases) {
+            if (!PATTERN.matcher(command).matches())
                 throw new IllegalArgumentException("Command " + command + " not matches pattern " + PATTERN.pattern());
         }
     }
 
     /**
-     *
      * @return Get all command aliases
      */
     public List<String> getAliases() {
@@ -37,7 +35,6 @@ public abstract class ServerCommand {
     }
 
     /**
-     *
      * @return Checks if command available only for server
      */
     public boolean isOnlyServer() {
@@ -59,10 +56,9 @@ public abstract class ServerCommand {
     }
 
     /**
-     *
      * @param sender Command sender (ConsoleSender or ServerSideConnection)
-     * @param alias Alias used
-     * @param args Command args
+     * @param alias  Alias used
+     * @param args   Command args
      */
     public abstract void onCommand(CommandSender sender, String alias, String[] args);
 

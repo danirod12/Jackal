@@ -9,13 +9,11 @@ import java.awt.event.MouseMotionListener;
 public class MouseHandler implements MouseListener, MouseMotionListener {
 
     private final GameLoop loop;
-
+    private boolean released = true;
+    private MouseExecutor drag_session = null;
     public MouseHandler(GameLoop loop) {
         this.loop = loop;
     }
-
-    private boolean released = true;
-    private MouseExecutor drag_session = null;
 
     @Override
     public void mouseClicked(MouseEvent e) {
@@ -29,8 +27,8 @@ public class MouseHandler implements MouseListener, MouseMotionListener {
 
     @Override
     public void mouseDragged(MouseEvent e) {
-        if(released) a(e.getX(), e.getY());
-        if(drag_session != null)
+        if (released) a(e.getX(), e.getY());
+        if (drag_session != null)
             drag_session.onMouseClick(e.getX(), e.getY());
     }
 
@@ -40,7 +38,8 @@ public class MouseHandler implements MouseListener, MouseMotionListener {
     }
 
     @Override
-    public void mousePressed(MouseEvent e) { }
+    public void mousePressed(MouseEvent e) {
+    }
 
     @Override
     public void mouseReleased(MouseEvent e) {
@@ -49,9 +48,11 @@ public class MouseHandler implements MouseListener, MouseMotionListener {
     }
 
     @Override
-    public void mouseEntered(MouseEvent e) { }
+    public void mouseEntered(MouseEvent e) {
+    }
 
     @Override
-    public void mouseExited(MouseEvent e) { }
+    public void mouseExited(MouseEvent e) {
+    }
 
 }

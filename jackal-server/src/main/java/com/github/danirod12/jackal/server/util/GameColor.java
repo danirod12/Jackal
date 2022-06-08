@@ -9,6 +9,7 @@ public enum GameColor {
     GREEN(2, 'a'),
     YELLOW(3, 'e');
 
+    private final static GameColor[] GAME_COLORS = new GameColor[]{WHITE, RED, GREEN, YELLOW};
     private final char colorCode;
     private final int id;
 
@@ -17,14 +18,12 @@ public enum GameColor {
         colorCode = color;
     }
 
-    public char getColorCode() {
-        return colorCode;
-    }
-
-    private final static GameColor[] GAME_COLORS = new GameColor[] { WHITE, RED, GREEN, YELLOW };
-
     public static GameColor[] getGameColors() {
         return GAME_COLORS;
+    }
+
+    public char getColorCode() {
+        return colorCode;
     }
 
     public int getId() {

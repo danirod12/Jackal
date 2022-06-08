@@ -1,12 +1,7 @@
 package com.github.danirod12.jackal.server.commands;
 
 import com.github.danirod12.jackal.server.Server;
-import com.github.danirod12.jackal.server.commands.CommandsHandler;
-import com.github.danirod12.jackal.server.game.GameSession;
-import com.github.danirod12.jackal.server.protocol.packet.ClientboundChatPacket;
 
-import java.util.Arrays;
-import java.util.List;
 import java.util.Scanner;
 
 public class ConsoleListener implements Runnable {

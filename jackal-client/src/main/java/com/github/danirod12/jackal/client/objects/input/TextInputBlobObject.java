@@ -12,7 +12,6 @@ import com.github.danirod12.jackal.client.util.Misc;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
@@ -34,8 +33,6 @@ public class TextInputBlobObject extends RenderObject implements MouseExecutor, 
 
     private String typed = "";
 
-    public String getValue() { return typed; }
-
     public TextInputBlobObject(int x, int y, int width, int height, int arc, Color main, Color bound, Color selected,
                                Color selected_bound, Font font, int limit, String default_text, Consumer<String> accept) {
         super(x, y);
@@ -53,6 +50,10 @@ public class TextInputBlobObject extends RenderObject implements MouseExecutor, 
 
     }
 
+    public String getValue() {
+        return typed;
+    }
+
     @Override
     public boolean onMouseClick(int x, int y) {
         return Misc.isInsideRoundedRect(x - getX(), y - getY(), width, height, arc / 2);
@@ -64,7 +65,8 @@ public class TextInputBlobObject extends RenderObject implements MouseExecutor, 
     }
 
     @Override
-    public void tick() { }
+    public void tick() {
+    }
 
     @Override
     public void render(Graphics2D graphics) {
@@ -79,8 +81,8 @@ public class TextInputBlobObject extends RenderObject implements MouseExecutor, 
 
         // Draw text
 
-        if(text_offset < 0) {
-            int text_height = (int)font.createGlyphVector(graphics.getFontRenderContext(), "A").getPixelBounds(null, 0, 0).getHeight();
+        if (text_offset < 0) {
+            int text_height = (int) font.createGlyphVector(graphics.getFontRenderContext(), "A").getPixelBounds(null, 0, 0).getHeight();
             this.text_offset = (height + text_height) / 2;
         }
 
@@ -93,30 +95,30 @@ public class TextInputBlobObject extends RenderObject implements MouseExecutor, 
                 getX() + (width - graphics.getFontMetrics().stringWidth(text)) / 2, getY() + text_offset);
 
         // Draw text enter-validator
-        
+
     }
 
     public void accept(boolean clear) {
         action.accept(typed);
-        if(clear) typed = "";
+        if (clear) typed = "";
     }
 
     @Override
     public void onKeyTyped(KeyEvent key) {
 
-        if(this != Jackal.getGameLoop().getSelectedObject()) return;
+        if (this != Jackal.getGameLoop().getSelectedObject()) return;
 
-        if(key.getKeyChar() == '\n') {
+        if (key.getKeyChar() == '\n') {
 
             if (action != null)
                 action.accept(typed);
 
-        } else if(key.getKeyChar() == '\b') {
+        } else if (key.getKeyChar() == '\b') {
 
             if (typed.length() > 0)
                 typed = typed.substring(0, typed.length() - 1);
 
-        } else if(key.getKeyChar() == '\u007F') {
+        } else if (key.getKeyChar() == '\u007F') {
 
             if (typed.length() > 0)
                 typed = Misc.substringToSpace(typed);

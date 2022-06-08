@@ -25,9 +25,9 @@ public class SimpleDecoder {
         String[] parsed = new String[args];
         String last = null;
         int index = 0;
-        for(String string : data.split(separator)) {
+        for (String string : data.split(separator)) {
 
-            if(index == parsed.length - 1) {
+            if (index == parsed.length - 1) {
                 last = last == null ? string : last + separator + string;
             } else {
                 parsed[index] = string;
@@ -35,7 +35,8 @@ public class SimpleDecoder {
             }
 
         }
-        if(index != parsed.length - 1 || last == null) throw new IllegalArgumentException("Incorrect data \"" + data + "\" (Required " + args + " args)");
+        if (index != parsed.length - 1 || last == null)
+            throw new IllegalArgumentException("Incorrect data \"" + data + "\" (Required " + args + " args)");
         parsed[index] = last;
         return parsed;
 
@@ -44,7 +45,7 @@ public class SimpleDecoder {
     public static String join(String[] array, int i, String separator) {
 
         String data = null;
-        for(; i < array.length; ++i)
+        for (; i < array.length; ++i)
             data = data == null ? array[i] : data + separator + array[i];
         return data;
 

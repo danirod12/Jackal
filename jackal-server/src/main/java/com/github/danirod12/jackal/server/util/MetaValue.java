@@ -17,9 +17,13 @@ public enum MetaValue {
         this.function = function;
     }
 
-    public int getId() { return id; }
+    public int getId() {
+        return id;
+    }
 
-    public String getData(ServerSideConnection connection) { return function.apply(connection); }
+    public String getData(ServerSideConnection connection) {
+        return function.apply(connection);
+    }
 
     public String build(ServerSideConnection connection) {
         return id + ":" + connection.getName() + ":" + getData(connection);

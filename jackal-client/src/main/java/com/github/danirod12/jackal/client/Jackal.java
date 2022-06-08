@@ -1,7 +1,7 @@
 package com.github.danirod12.jackal.client;
 
-import com.github.danirod12.jackal.client.render.GameLoop;
 import com.github.danirod12.jackal.client.render.FrameRender;
+import com.github.danirod12.jackal.client.render.GameLoop;
 import com.github.danirod12.jackal.client.render.ImageLoader;
 
 public class Jackal {
@@ -20,12 +20,17 @@ public class Jackal {
 
     }
 
+    public static Jackal getInstance() {
+        return instance;
+    }
+
+    public static GameLoop getGameLoop() {
+        return instance.game_loop;
+    }
+
     private void createGameLoop() {
         this.game_loop = new GameLoop(new FrameRender("Jackal", 1280, 720));
         this.game_loop.reset();
     }
-
-    public static Jackal getInstance() { return instance; }
-    public static GameLoop getGameLoop() { return instance.game_loop; }
 
 }

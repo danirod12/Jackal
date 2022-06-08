@@ -10,10 +10,6 @@ public class TextObject extends RenderObject {
     private final String string;
     private final Color color;
 
-    public Font getFont() { return font; }
-    public String getString() { return string; }
-    public Color getColor() { return color; }
-
     public TextObject(int x, int y, String text, Font font, Color color) {
         super(x, y);
         this.font = font;
@@ -21,8 +17,21 @@ public class TextObject extends RenderObject {
         this.color = color;
     }
 
+    public Font getFont() {
+        return font;
+    }
+
+    public String getString() {
+        return string;
+    }
+
+    public Color getColor() {
+        return color;
+    }
+
     @Override
-    public void tick() { }
+    public void tick() {
+    }
 
     @Override
     public void render(Graphics2D graphics) {

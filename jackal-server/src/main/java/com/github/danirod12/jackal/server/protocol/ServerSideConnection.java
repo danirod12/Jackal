@@ -41,13 +41,13 @@ public class ServerSideConnection implements Runnable, CommandSender {
 
     public void run() {
 
-        while(socket.isConnected() && !socket.isClosed()) {
+        while (socket.isConnected() && !socket.isClosed()) {
 
             try {
 
                 final String line = reader.readLine();
                 System.out.println("INC " + name + ": " + line);
-                if(line == null) {
+                if (line == null) {
                     System.out.println("Client \"" + (name == null ? "Unknown" : name) + "\" lost. [" + socket + "] (Null packet)");
                     close();
                     return;
@@ -58,7 +58,7 @@ public class ServerSideConnection implements Runnable, CommandSender {
                     String[] data = SimpleDecoder.split(line, ":", 2);
                     onDataReceive(new NamedData(Integer.parseInt(data[0]), data[1]));
 
-                } catch(NumberFormatException exception) {
+                } catch (NumberFormatException exception) {
                     System.out.println("Cannot fetch data from " + socket.getInetAddress().toString() + ": " + line);
                     exception.printStackTrace();
                 } catch (Throwable throwable) {
@@ -66,7 +66,7 @@ public class ServerSideConnection implements Runnable, CommandSender {
                     throwable.printStackTrace();
                 }
 
-            } catch(SocketException exception) {
+            } catch (SocketException exception) {
                 System.out.println("Client \"" + (name == null ? "Unknown" : name) + "\" lost. [" + socket + "] (" + exception.getLocalizedMessage() + ")");
                 close();
                 break;
@@ -98,26 +98,30 @@ public class ServerSideConnection implements Runnable, CommandSender {
             close();
         }
 
-        if(packet instanceof ClientboundDisconnectPacket) close();
+        if (packet instanceof ClientboundDisconnectPacket) close();
 
     }
 
-    public boolean isAuthorized() { return name != null; }
+    public boolean isAuthorized() {
+        return name != null;
+    }
 
-    public String getName() { return name; }
+    public String getName() {
+        return name;
+    }
 
     public void onDataReceive(NamedData data) {
 
-        switch(data.getID()) {
+        switch (data.getID()) {
 
             // Login packet
             case 0: {
 
-                if(name == null) {
+                if (name == null) {
 
                     for (ServerSideConnection connection : Server.getInstance().getConnections()) {
-                        if(connection == this) continue;
-                        if(connection.isAuthorized() && connection.getName().equalsIgnoreCase(name)) {
+                        if (connection == this) continue;
+                        if (connection.isAuthorized() && connection.getName().equalsIgnoreCase(name)) {
                             sendPacket(new ClientboundDisconnectPacket("This name already exists (" + name + ")"));
                             return;
                         }
@@ -130,8 +134,8 @@ public class ServerSideConnection implements Runnable, CommandSender {
                     Server.getInstance().broadcast(new ClientboundPlayerAddPacket(this));
                     Server.getInstance().broadcast(new ClientboundChatPacket(name + " joined the game"));
 
-                    for(ServerSideConnection connection : Server.getInstance().getConnections()) {
-                        if(connection == this) continue;
+                    for (ServerSideConnection connection : Server.getInstance().getConnections()) {
+                        if (connection == this) continue;
                         sendPacket(new ClientboundPlayerAddPacket(connection));
                         // TODO metadata packet ?
                     }
@@ -146,13 +150,13 @@ public class ServerSideConnection implements Runnable, CommandSender {
             // Chat packet
             case 1: {
 
-                if(data.getData().startsWith("/")) {
+                if (data.getData().startsWith("/")) {
                     System.out.println("COMMAND: [" + name + "] " + data.getData());
                     CommandsHandler.onCommand(this, data.getData());
                     return;
                 }
                 System.out.println("CHAT: [" + name + "] " + data.getData());
-                if(data.getData().length() > 0 && data.getData().replaceAll("&[a-fA-F0-9]*", "").length() != 0) {
+                if (data.getData().length() > 0 && data.getData().replaceAll("&[a-fA-F0-9]*", "").length() != 0) {
                     Server.getInstance().broadcast(new ClientboundChatPacket("[&" + color.getColorCode() + name + "&0] " + data.getData()));
                 }
                 return;
@@ -163,11 +167,11 @@ public class ServerSideConnection implements Runnable, CommandSender {
             case 10: {
 
                 GameSession session = Server.getInstance().getGameSession();
-                if(session.getGameStatus() != GameStatus.INGAME) return;
+                if (session.getGameStatus() != GameStatus.INGAME) return;
 
                 UUID uuid = UUID.fromString(data.getData());
                 List<String> actions = session.getAvailableActions(uuid, color);
-                if(actions == null) return;
+                if (actions == null) return;
 
                 sendPacket(new ClientboundActionsPacket(uuid, actions));
                 return;
@@ -178,7 +182,7 @@ public class ServerSideConnection implements Runnable, CommandSender {
             case 11: {
 
                 GameSession session = Server.getInstance().getGameSession();
-                if(session.getGameStatus() != GameStatus.INGAME) return;
+                if (session.getGameStatus() != GameStatus.INGAME) return;
 
                 String[] parsed = data.getData().split(":");
                 session.onPlayerAction(color, parsed[0], Integer.parseInt(parsed[1]), Integer.parseInt(parsed[2]));
@@ -186,7 +190,8 @@ public class ServerSideConnection implements Runnable, CommandSender {
 
             }
 
-            default: throw new IllegalArgumentException("Unknown packet ID - " + data.getID());
+            default:
+                throw new IllegalArgumentException("Unknown packet ID - " + data.getID());
 
         }
 
@@ -196,8 +201,8 @@ public class ServerSideConnection implements Runnable, CommandSender {
 
         try {
 
-            if(writer != null) writer.close();
-            if(reader != null) reader.close();
+            if (writer != null) writer.close();
+            if (reader != null) reader.close();
 
             socket.close();
 
@@ -208,10 +213,16 @@ public class ServerSideConnection implements Runnable, CommandSender {
 
     }
 
-    public void setColor(GameColor color) { this.color = color; }
+    public GameColor getColor() {
+        return this.color;
+    }
 
-    public GameColor getColor() { return this.color; }
+    public void setColor(GameColor color) {
+        this.color = color;
+    }
 
-    public int getMoney() { return money; }
+    public int getMoney() {
+        return money;
+    }
 
 }

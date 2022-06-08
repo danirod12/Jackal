@@ -13,6 +13,8 @@ public class ClientboundBoardCreatePacket extends NamedPacket {
     }
 
     @Override
-    public String data() { return data; }
+    public String data() {
+        return data;
+    }
 
 }

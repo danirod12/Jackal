@@ -9,6 +9,32 @@ public class ColorBuilder implements Cloneable {
     private int blue;
     private int alpha;
 
+    public ColorBuilder() {
+        this(0, 0, 0, 255);
+    }
+
+    public ColorBuilder(Color color) {
+        this(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha());
+    }
+
+    public ColorBuilder(int red, int green, int blue) {
+        this(red, green, blue, 255);
+    }
+
+    public ColorBuilder(int red, int green, int blue, int alpha) {
+
+        checkValue(red, "red");
+        checkValue(green, "green");
+        checkValue(blue, "blue");
+        checkValue(alpha, "alpha");
+
+        this.red = red;
+        this.green = green;
+        this.blue = blue;
+        this.alpha = alpha;
+
+    }
+
     @Override
     public ColorBuilder clone() {
         return new ColorBuilder(red, green, blue, alpha);
@@ -64,18 +90,6 @@ public class ColorBuilder implements Cloneable {
         return this;
     }
 
-    public ColorBuilder() {
-        this(0, 0, 0, 255);
-    }
-
-    public ColorBuilder(Color color) {
-        this(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha());
-    }
-
-    public ColorBuilder(int red, int green, int blue) {
-        this(red, green, blue, 255);
-    }
-
     public ColorBuilder set(int red, int green, int blue, int alpha) {
 
         checkValue(red, "red");
@@ -98,22 +112,9 @@ public class ColorBuilder implements Cloneable {
 
     }
 
-    public ColorBuilder(int red, int green, int blue, int alpha) {
-
-        checkValue(red, "red");
-        checkValue(green, "green");
-        checkValue(blue, "blue");
-        checkValue(alpha, "alpha");
-
-        this.red = red;
-        this.green = green;
-        this.blue = blue;
-        this.alpha = alpha;
-
-    }
-
     public void checkValue(int data, String name) {
-        if(data < 0 || data > 255) throw new IllegalArgumentException("Incorrect " + name + " value, should be in 0-255 range");
+        if (data < 0 || data > 255)
+            throw new IllegalArgumentException("Incorrect " + name + " value, should be in 0-255 range");
     }
 
     public Color build() {

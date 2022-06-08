@@ -16,12 +16,12 @@ public class ForceStartCommand extends ServerCommand {
     public void onCommand(CommandSender sender, String alias, String[] args) {
 
         GameSession session = Server.getInstance().getGameSession();
-        if(session.getGameStatus() == GameStatus.INGAME) {
+        if (session.getGameStatus() == GameStatus.INGAME) {
             sender.sendMessage("Game already started");
             return;
         }
 
-        if(Server.getInstance().getConnections().size() < 2) {
+        if (Server.getInstance().getConnections().size() < 2) {
             sender.sendMessage("Not enough player to start the game");
             return;
         }

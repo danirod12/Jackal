@@ -15,11 +15,11 @@ public class ImagesCollection {
     public ImagesCollection(int ticks, boolean reversed, BufferedImage... images) {
         this.delay = current_delay = ticks;
         this.reversed = reversed;
-        this.images = images == null ? new BufferedImage[] { ImageLoader.generateCorruptedImage(32, 32) } : images;
+        this.images = images == null ? new BufferedImage[]{ImageLoader.generateCorruptedImage(32, 32)} : images;
     }
 
     public void set(BufferedImage[] bufferedImages) {
-        if(bufferedImages.length == 0) throw new IllegalArgumentException();
+        if (bufferedImages.length == 0) throw new IllegalArgumentException();
         this.images = bufferedImages;
         current_index = 0;
     }
@@ -30,7 +30,7 @@ public class ImagesCollection {
 
         int index = 0;
 
-        while(index < images.length) {
+        while (index < images.length) {
             array[index] = images[index];
             index++;
         }
@@ -48,15 +48,15 @@ public class ImagesCollection {
 
         current_delay--;
 
-        if(current_delay == 0) {
+        if (current_delay == 0) {
 
-            if(reversed) {
+            if (reversed) {
                 current_index--;
-                if(current_index < 0)
+                if (current_index < 0)
                     current_index = images.length - 1;
             } else {
                 current_index++;
-                if(current_index >= images.length)
+                if (current_index >= images.length)
                     current_index = 0;
             }
             current_delay = delay;

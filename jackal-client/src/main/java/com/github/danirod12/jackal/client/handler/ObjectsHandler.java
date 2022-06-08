@@ -7,7 +7,10 @@ import com.github.danirod12.jackal.client.objects.AppObject;
 import com.github.danirod12.jackal.client.objects.RenderObject;
 import com.github.danirod12.jackal.client.objects.input.ChatObject;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.Map;
 import java.util.concurrent.ConcurrentSkipListMap;
 import java.util.function.Consumer;
 
@@ -17,7 +20,7 @@ public class ObjectsHandler {
 
     public synchronized ChatObject getChat() {
 
-        if(map.containsKey(RenderLayer.CHAT.getLayer())) {
+        if (map.containsKey(RenderLayer.CHAT.getLayer())) {
 
             Collection<AppObject> collection = map.get(RenderLayer.CHAT.getLayer());
             return collection.size() == 0 ? null : (ChatObject) collection.iterator().next();
@@ -31,7 +34,7 @@ public class ObjectsHandler {
 
         Collection<RenderObject> objects = new ArrayList<>();
         for (Map.Entry<Integer, Collection<AppObject>> collection : map.entrySet()) {
-            if(collection.getKey() == RenderLayer.NOT_RENDER.getLayer()) continue;
+            if (collection.getKey() == RenderLayer.NOT_RENDER.getLayer()) continue;
             objects.addAll(this.findAll(RenderObject.class, collection.getValue()));
         }
         return objects;
@@ -69,9 +72,9 @@ public class ObjectsHandler {
     }
 
     public synchronized Collection<AppObject> getLayer(int layer, boolean create) {
-        if(map.containsKey(layer)) return map.get(layer);
+        if (map.containsKey(layer)) return map.get(layer);
         Collection<AppObject> collection = new ArrayList<>();
-        if(create) map.put(layer, collection);
+        if (create) map.put(layer, collection);
         return collection;
     }
 

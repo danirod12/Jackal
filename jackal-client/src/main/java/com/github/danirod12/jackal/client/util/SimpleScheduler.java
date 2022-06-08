@@ -21,10 +21,12 @@ public class SimpleScheduler<T> {
         this.value = t;
     }
 
-    public T get() { return value; }
+    public T get() {
+        return value;
+    }
 
     public boolean tick() {
-        if(current-- < 0) {
+        if (current-- < 0) {
             current = ticks;
             return true;
         }

@@ -25,16 +25,11 @@ public class ClientSideConnection {
 
     private final Socket socket;
     private final String name;
+    private final List<Player> players = new ArrayList<>();
     private BufferedWriter writer;
     private BufferedReader reader;
-
     private Player self = null;
-    private final List<Player> players = new ArrayList<>();
     private GameBoard board;
-
-    public GameBoard getBoard() {
-        return board;
-    }
 
     public ClientSideConnection(Socket socket, String name) {
 
@@ -48,6 +43,10 @@ public class ClientSideConnection {
         listenForPackets();
         this.sendPacket(new ServerboundLoginPacket(this.name = name));
 
+    }
+
+    public GameBoard getBoard() {
+        return board;
     }
 
     public void sendPacket(Packet packet) {
@@ -67,13 +66,13 @@ public class ClientSideConnection {
 
         new Thread(() -> {
 
-            while(socket.isConnected() && !socket.isClosed()) {
+            while (socket.isConnected() && !socket.isClosed()) {
 
                 try {
 
                     final String line = reader.readLine();
 
-                    if(line == null) {
+                    if (line == null) {
                         System.out.println("Connection is reset by server");
                         close();
                         return;
@@ -84,7 +83,7 @@ public class ClientSideConnection {
                         String[] data = SimpleDecoder.split(line, ":", 2);
                         onDataReceive(new NamedData(Integer.parseInt(data[0]), data[1]));
 
-                    } catch(NumberFormatException exception) {
+                    } catch (NumberFormatException exception) {
                         System.out.println("Cannot fetch data from " + socket.getInetAddress().toString() + ": " + line);
                         exception.printStackTrace();
                     } catch (Throwable throwable) {
@@ -92,7 +91,7 @@ public class ClientSideConnection {
                         throwable.printStackTrace();
                     }
 
-                } catch(SocketException exception) {
+                } catch (SocketException exception) {
                     exception.printStackTrace();
                     close();
                 } catch (Throwable exception) {
@@ -121,11 +120,12 @@ public class ClientSideConnection {
             // Add player packet
             case 1: {
 
-                if(getPlayer(data.getData()) != null) throw new IllegalArgumentException("Player " + data.getData() + " already exists");
+                if (getPlayer(data.getData()) != null)
+                    throw new IllegalArgumentException("Player " + data.getData() + " already exists");
 
                 Player new_player = new Player(data.getData());
                 players.add(new_player);
-                if(new_player.getName().equalsIgnoreCase(name))
+                if (new_player.getName().equalsIgnoreCase(name))
                     self = new_player;
 
                 return;
@@ -136,7 +136,7 @@ public class ClientSideConnection {
             case 2: {
 
                 ChatObject chat = Jackal.getGameLoop().getObjectsHandler().getChat();
-                if(chat != null) chat.addMessage(data.getData());
+                if (chat != null) chat.addMessage(data.getData());
                 else System.out.println("CHAT: " + data.getData());
                 return;
 
@@ -155,7 +155,7 @@ public class ClientSideConnection {
 
                 Triplet<Integer, String, String> parsed = SimpleDecoder.parseIdentifiedMarkedData(data.getData(), ":");
                 Player player = getPlayer(parsed.getB());
-                if(player == null) return;
+                if (player == null) return;
                 switch (parsed.getA()) {
                     // Update player color
                     case 0: {
@@ -168,7 +168,8 @@ public class ClientSideConnection {
                         return;
                     }
                     // Unknown metadata id
-                    default: throw new IllegalArgumentException("Unknown metadata ID - " + parsed.getA());
+                    default:
+                        throw new IllegalArgumentException("Unknown metadata ID - " + parsed.getA());
                 }
 
             }
@@ -176,7 +177,7 @@ public class ClientSideConnection {
             // Game object packet
             case 10: {
 
-                if(board == null) throw new UnsupportedOperationException("Board not exists");
+                if (board == null) throw new UnsupportedOperationException("Board not exists");
 
                 // action:uuid:id:y:x:metadata
                 String[] parsed = SimpleDecoder.split(data.getData(), ":", 6);
@@ -188,7 +189,7 @@ public class ClientSideConnection {
             // Create board packet
             case 20: {
 
-                if(board != null) throw new UnsupportedOperationException("Board already exists");
+                if (board != null) throw new UnsupportedOperationException("Board already exists");
 
                 board = new GameBoard(Integer.parseInt(data.getData().split(":")[0]), Integer.parseInt(data.getData().split(":")[1]));
                 return;
@@ -198,7 +199,7 @@ public class ClientSideConnection {
             // Create tile packet
             case 21: {
 
-                if(board == null) throw new UnsupportedOperationException("Board does not exist");
+                if (board == null) throw new UnsupportedOperationException("Board does not exist");
 
                 Pair<Pair<Integer, Integer>, TileType> parsed = SimpleDecoder.parseLocatedTileType(data.getData());
                 board.createTile(parsed.getKey().getA(), parsed.getKey().getB(), parsed.getValue());
@@ -209,7 +210,7 @@ public class ClientSideConnection {
             // Tile metadata packet
             case 22: {
 
-                if(board == null) throw new UnsupportedOperationException("Board not exists");
+                if (board == null) throw new UnsupportedOperationException("Board not exists");
 
                 // TODO y:x:id:metadata
                 System.out.println("Tile metadata changed - " + data.getData());
@@ -220,14 +221,14 @@ public class ClientSideConnection {
             // Turn change packet
             case 40: {
 
-                if(board == null) throw new UnsupportedOperationException("Board not exists");
+                if (board == null) throw new UnsupportedOperationException("Board not exists");
 
                 String[] parsedData = data.getData().split(":");
 
                 board.resetSelectedEntity();
 
-                for(Player player : players) {
-                    if(player.getName().equalsIgnoreCase(parsedData[0])) {
+                for (Player player : players) {
+                    if (player.getName().equalsIgnoreCase(parsedData[0])) {
                         boolean self = parsedData.length > 3 && name.equalsIgnoreCase(parsedData[0]);
                         player.setTurnData(
                                 new Triplet<>(
@@ -237,7 +238,7 @@ public class ClientSideConnection {
                                 )
                         );
 
-                        if(self && !parsedData[3].contains(",")) {
+                        if (self && !parsedData[3].contains(",")) {
                             board.forceSelect(UUID.fromString(parsedData[3]));
                         }
 
@@ -250,7 +251,7 @@ public class ClientSideConnection {
             // Available action
             case 41: {
 
-                if(board == null) throw new UnsupportedOperationException("Board not exists");
+                if (board == null) throw new UnsupportedOperationException("Board not exists");
 
                 String[] parsed = data.getData().split(";");
                 board.setAvailableMovements(parsed);
@@ -259,7 +260,8 @@ public class ClientSideConnection {
             }
 
             // Unknown packet id
-            default: throw new IllegalArgumentException("Unknown packet ID - " + data.getID());
+            default:
+                throw new IllegalArgumentException("Unknown packet ID - " + data.getID());
 
         }
 
@@ -269,8 +271,8 @@ public class ClientSideConnection {
 
         try {
 
-            if(writer != null) writer.close();
-            if(reader != null) reader.close();
+            if (writer != null) writer.close();
+            if (reader != null) reader.close();
 
             socket.close();
 
@@ -289,12 +291,15 @@ public class ClientSideConnection {
 
     public Player getPlayer(String name) {
 
-        for(Player player : getPlayers())
-            if(player.getName().equalsIgnoreCase(name))
-                return player; return null;
+        for (Player player : getPlayers())
+            if (player.getName().equalsIgnoreCase(name))
+                return player;
+        return null;
 
     }
 
-    public List<Player> getPlayers() { return players; }
+    public List<Player> getPlayers() {
+        return players;
+    }
 
 }

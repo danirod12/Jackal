@@ -10,16 +10,17 @@ public class ClientboundTurnChangePacket extends NamedPacket {
 
     /**
      * Send turn change for players.
-     * @param connection Next turn target
-     * @param cooldown in ticks (1 second = 20 ticks)
+     *
+     * @param connection    Next turn target
+     * @param cooldown      in ticks (1 second = 20 ticks)
      * @param cooldown_ends is optional
-     * @param filter {@code unprotected} filter for actions
+     * @param filter        {@code unprotected} filter for actions
      */
     public ClientboundTurnChangePacket(ServerSideConnection connection, long cooldown, long cooldown_ends, UUID... filter) {
         super(40);
 
         String compiled = null;
-        for(UUID uuid : filter)
+        for (UUID uuid : filter)
             compiled = compiled == null ? uuid.toString() : compiled + "," + uuid.toString();
 
         this.data = connection.getName() + ":" + cooldown + ":"

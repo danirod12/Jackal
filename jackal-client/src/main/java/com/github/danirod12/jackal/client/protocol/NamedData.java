@@ -6,13 +6,17 @@ public class NamedData {
 
     private final String data;
 
-    public int getID() { return id; }
-
-    public String getData() { return data; }
-
     public NamedData(int id, String data) {
         this.id = id;
         this.data = data;
+    }
+
+    public int getID() {
+        return id;
+    }
+
+    public String getData() {
+        return data;
     }
 
 }

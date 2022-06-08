@@ -23,7 +23,7 @@ public enum ChatColor {
     private final char key;
     private final ColorBuilder builder;
 
-    ChatColor (char key, ColorBuilder builder) {
+    ChatColor(char key, ColorBuilder builder) {
         this.key = key;
         this.builder = builder;
     }

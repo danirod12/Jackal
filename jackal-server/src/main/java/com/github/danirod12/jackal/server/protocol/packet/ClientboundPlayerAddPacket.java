@@ -13,7 +13,7 @@ public class ClientboundPlayerAddPacket extends NamedPacket {
      */
     public ClientboundPlayerAddPacket(ServerSideConnection connection) {
         super(1);
-        if(!connection.isAuthorized()) throw new UnsupportedOperationException("Cannot broadcast nullable player");
+        if (!connection.isAuthorized()) throw new UnsupportedOperationException("Cannot broadcast nullable player");
         this.name = connection.getName();
     }
 

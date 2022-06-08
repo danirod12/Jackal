@@ -15,6 +15,8 @@ public class ClientboundTileCreatePacket extends NamedPacket {
     }
 
     @Override
-    public String data() { return data; }
+    public String data() {
+        return data;
+    }
 
 }

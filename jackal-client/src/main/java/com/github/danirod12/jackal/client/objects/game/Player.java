@@ -24,18 +24,20 @@ public class Player {
         return color;
     }
 
-    public int getMoney() {
-        return money;
-    }
-
-    public String getName() { return name; }
-
     public void setColor(GameColor color) {
         this.color = color;
     }
 
+    public int getMoney() {
+        return money;
+    }
+
     public void setMoney(int money) {
         this.money = money;
+    }
+
+    public String getName() {
+        return name;
     }
 
     public boolean isWaitingForMove() {
@@ -48,12 +50,12 @@ public class Player {
 
     /**
      * Update turn data
+     *
      * @param turnData {@link Triplet} with arguments
      *
-     *                                <p> A - Long (Cooldown), </p>
-     *                                <p> B - Long (Cooldown end time), </p>
-     *                                <p> C - String (Nullable, filter available actions uuid,uuid,uuid) </p>
-     *
+     *                 <p> A - Long (Cooldown), </p>
+     *                 <p> B - Long (Cooldown end time), </p>
+     *                 <p> C - String (Nullable, filter available actions uuid,uuid,uuid) </p>
      */
     public void setTurnData(Triplet<Long, Long, String> turnData) {
 

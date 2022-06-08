@@ -16,8 +16,12 @@ public enum TileType {
         this.id = id;
     }
 
-    public int getId() { return id; }
+    public int getId() {
+        return id;
+    }
 
-    public boolean isTerrain() { return this == SAND || this == GRASS || this == ROCK; }
+    public boolean isTerrain() {
+        return this == SAND || this == GRASS || this == ROCK;
+    }
 
 }

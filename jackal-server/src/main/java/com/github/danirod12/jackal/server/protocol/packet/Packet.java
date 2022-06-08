@@ -23,6 +23,7 @@ public interface Packet {
 
     /**
      * Build packet data for socket
+     *
      * @return packet data for client
      */
     String build();

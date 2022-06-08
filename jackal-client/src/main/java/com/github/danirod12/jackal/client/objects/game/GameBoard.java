@@ -29,25 +29,24 @@ public class GameBoard implements MouseExecutor {
     private final GameTile[][] board;
     private final HashMap<GameColor, TeamBoat> boats = new HashMap<>();
     private final List<EntityPlayer> players = new ArrayList<>();
+    private Pair<GameObject, List<String>> selected_entity = null;
+
+    public GameBoard(int height, int width) {
+
+        this.board = new GameTile[height][width];
+        for (int y = 0; y < height; ++y) {
+            for (int x = 0; x < width; ++x) {
+                board[y][x] = new VoidTile();
+            }
+        }
+
+    }
 
     /**
      * Reset selected entity for next turn
      */
     public void resetSelectedEntity() {
         selected_entity = null;
-    }
-
-    private Pair<GameObject, List<String>> selected_entity = null;
-
-    public GameBoard(int height, int width) {
-
-        this.board = new GameTile[height][width];
-        for(int y = 0; y < height; ++y) {
-            for(int x = 0; x < width; ++x) {
-                board[y][x] = new VoidTile();
-            }
-        }
-
     }
 
     /**
@@ -86,7 +85,7 @@ public class GameBoard implements MouseExecutor {
         }
 
         // Render boats
-        for(TeamBoat boat : new ArrayList<>(boats.values())) {
+        for (TeamBoat boat : new ArrayList<>(boats.values())) {
 
             renderX = 100 + boat.getX() * 64;
             renderY = 100 + boat.getY() * 64;
@@ -94,7 +93,7 @@ public class GameBoard implements MouseExecutor {
             graphics.setColor(Color.BLACK);
             graphics.fillRect(renderX, renderY, 64, 64);
 
-            if(selected_entity != null && selected_entity.getKey() == boat) {
+            if (selected_entity != null && selected_entity.getKey() == boat) {
                 graphics.setColor(ColorTheme.AVAILABLE_ACTIONS);
                 graphics.setStroke(new BasicStroke(5));
                 graphics.drawRect(renderX, renderY, 64, 64);
@@ -109,16 +108,16 @@ public class GameBoard implements MouseExecutor {
         // TODO render items
 
         // Render players
-        for(EntityPlayer player : new ArrayList<>(players)) {
+        for (EntityPlayer player : new ArrayList<>(players)) {
 
-            if(player.getSubTile() == null) continue;
+            if (player.getSubTile() == null) continue;
 
             renderX = 100 + player.getX() * 64;
             renderY = 100 + player.getY() * 64;
 
             graphics.setColor(player.getColor().asRenderColor());
             graphics.fillOval(renderX + player.getSubTile().getOffsetX() + 4, renderY + player.getSubTile().getOffsetY() + 4, 20, 20);
-            if(selected_entity != null && selected_entity.getKey() == player) {
+            if (selected_entity != null && selected_entity.getKey() == player) {
                 graphics.setStroke(new BasicStroke(5));
                 graphics.setColor(ColorTheme.AVAILABLE_ACTIONS);
                 graphics.drawOval(renderX + player.getSubTile().getOffsetX() + 4, renderY + player.getSubTile().getOffsetY() + 4, 20, 20);
@@ -128,14 +127,15 @@ public class GameBoard implements MouseExecutor {
         }
 
         // TODO introduce an option to draw lines or not
-        actions: {
-            if(selected_entity != null) {
+        actions:
+        {
+            if (selected_entity != null) {
 
-                if(selected_entity.getValue() == null) break actions;
+                if (selected_entity.getValue() == null) break actions;
 
                 graphics.setColor(ColorTheme.AVAILABLE_ACTIONS);
                 graphics.setStroke(new BasicStroke(4));
-                for(String target : selected_entity.getValue()) {
+                for (String target : selected_entity.getValue()) {
 
                     String[] path = target.split("\\.");
                     renderX = -1;
@@ -167,14 +167,14 @@ public class GameBoard implements MouseExecutor {
      */
     public void onObjectUpdate(int action, String uuid, int id, int y, int x, String metadata) {
 
-        if(action == 1) {
+        if (action == 1) {
 
             players.removeIf(n -> n.getUuid().toString().equalsIgnoreCase(uuid));
             // TODO items
             // TODO for boats? Not sure
             return;
 
-        } else if(action == 0) {
+        } else if (action == 0) {
 
             switch (id) {
 
@@ -182,17 +182,18 @@ public class GameBoard implements MouseExecutor {
                 case 0: {
 
                     TeamBoat boat = null;
-                    for(TeamBoat object : boats.values()) {
-                        if(object.getUuid().toString().equalsIgnoreCase(uuid)) {
+                    for (TeamBoat object : boats.values()) {
+                        if (object.getUuid().toString().equalsIgnoreCase(uuid)) {
                             boat = object;
                             break;
                         }
                     }
 
-                    if(boat == null) {
+                    if (boat == null) {
 
                         GameColor color = GameColor.parseColor(Integer.parseInt(metadata));
-                        if(color == GameColor.UNKNOWN) throw new UnsupportedOperationException("Cannot create boat that not assigned to any team");
+                        if (color == GameColor.UNKNOWN)
+                            throw new UnsupportedOperationException("Cannot create boat that not assigned to any team");
                         boats.put(color, new TeamBoat(UUID.fromString(uuid), color, y, x));
                         return;
 
@@ -209,21 +210,21 @@ public class GameBoard implements MouseExecutor {
                 case 1: {
 
                     EntityPlayer player = null;
-                    for(EntityPlayer object : players) {
-                        if(object.getUuid().toString().equalsIgnoreCase(uuid)) {
+                    for (EntityPlayer object : players) {
+                        if (object.getUuid().toString().equalsIgnoreCase(uuid)) {
                             player = object;
                             break;
                         }
                     }
 
-                    if(player == null) {
+                    if (player == null) {
                         players.add(player = new EntityPlayer(UUID.fromString(uuid), GameColor.parseColor(Integer.parseInt(metadata))));
                     }
 
                     List<SubTile> subtiles = new ArrayList<>();
-                    for(EntityPlayer object : players) {
-                        if(object == player || player.getColor() != object.getColor()) continue;
-                        if(object.getX() != x || object.getY() != y) continue;
+                    for (EntityPlayer object : players) {
+                        if (object == player || player.getColor() != object.getColor()) continue;
+                        if (object.getX() != x || object.getY() != y) continue;
                         subtiles.add(object.getSubTile());
                     }
 
@@ -257,8 +258,8 @@ public class GameBoard implements MouseExecutor {
      */
     public void createTile(int y, int x, TileType type) {
 
-        if(!type.isTerrain()) {
-            if(!(board[y][x] instanceof VoidTile))
+        if (!type.isTerrain()) {
+            if (!(board[y][x] instanceof VoidTile))
                 board[y][x] = new VoidTile();
             return;
         }
@@ -270,32 +271,32 @@ public class GameBoard implements MouseExecutor {
         tile.setTexture(texture);
 
         board[y][x] = tile;
-        
+
     }
 
     @Override
     public boolean onMouseClick(int x, int y) {
 
         Player self = loop.getConnection().getSelf();
-        if(!self.isWaitingForMove()) return false;
+        if (!self.isWaitingForMove()) return false;
 
-        for(EntityPlayer player : players) {
+        for (EntityPlayer player : players) {
 
-            if(player.getColor() != self.getColor()) continue;
+            if (player.getColor() != self.getColor()) continue;
 
             int middleX = 100 + player.getX() * 64 + player.getSubTile().getOffsetX() + 14;
             int middleY = 100 + player.getY() * 64 + player.getSubTile().getOffsetY() + 14;
 
-            if(Misc.getDistance(x, y, middleX, middleY) <= 20) {
+            if (Misc.getDistance(x, y, middleX, middleY) <= 20) {
 
                 // clicked to player
-                if(selected_entity != null && selected_entity.getKey() == player) {
-                    if(!self.isOnlyFilter(selected_entity.getA().getUuid()))
+                if (selected_entity != null && selected_entity.getKey() == player) {
+                    if (!self.isOnlyFilter(selected_entity.getA().getUuid()))
                         selected_entity = null;
                     return true;
                 }
 
-                if(self.getTurnData().getC() == null || self.isFilter(player.getUuid())) {
+                if (self.getTurnData().getC() == null || self.isFilter(player.getUuid())) {
                     selected_entity = new Pair<>(player, null);
                     loop.getConnection().sendPacket(new ServerboundRequestActionsPacket(player.getUuid()));
                 }
@@ -305,15 +306,15 @@ public class GameBoard implements MouseExecutor {
 
         }
 
-        if(selected_entity != null && selected_entity.getValue() != null) {
+        if (selected_entity != null && selected_entity.getValue() != null) {
 
-            for(String path : selected_entity.getValue()) {
+            for (String path : selected_entity.getValue()) {
 
                 String[] data = path.split("\\.");
                 int offsetY = Integer.parseInt(data[data.length - 1].split(":")[0]) - (y - 100) / 64;
                 int offsetX = Integer.parseInt(data[data.length - 1].split(":")[1]) - (x - 100) / 64;
 
-                if(offsetY == 0 && offsetX == 0) {
+                if (offsetY == 0 && offsetX == 0) {
 
                     // click to tile
                     loop.getConnection().sendPacket(new ServerboundSelectActionPacket(selected_entity.getKey().getUuid(), data[data.length - 1]));
@@ -330,16 +331,16 @@ public class GameBoard implements MouseExecutor {
         TeamBoat boat = boats.get(self.getColor());
         int offsetX = x - 100 - boat.getX() * 64;
         int offsetY = y - 100 - boat.getY() * 64;
-        if(offsetY >= 0 && offsetX >= 0 && offsetY <= 64 && offsetX <= 64) {
+        if (offsetY >= 0 && offsetX >= 0 && offsetY <= 64 && offsetX <= 64) {
 
             // click to boat
-            if(selected_entity != null && selected_entity.getKey() == boat) {
-                if(!self.isOnlyFilter(selected_entity.getA().getUuid()))
+            if (selected_entity != null && selected_entity.getKey() == boat) {
+                if (!self.isOnlyFilter(selected_entity.getA().getUuid()))
                     selected_entity = null;
                 return true;
             }
 
-            if(self.getTurnData().getC() == null || self.isFilter(boat.getUuid())) {
+            if (self.getTurnData().getC() == null || self.isFilter(boat.getUuid())) {
                 selected_entity = new Pair<>(boat, null);
                 loop.getConnection().sendPacket(new ServerboundRequestActionsPacket(boat.getUuid()));
             }
@@ -361,19 +362,21 @@ public class GameBoard implements MouseExecutor {
      */
     public void setAvailableMovements(String[] parsed) {
 
-        if(selected_entity == null || !selected_entity.getKey().getUuid().toString().equalsIgnoreCase(parsed[0])) return;
+        if (selected_entity == null || !selected_entity.getKey().getUuid().toString().equalsIgnoreCase(parsed[0]))
+            return;
         selected_entity.setValue(Arrays.asList(parsed).subList(1, parsed.length));
 
     }
 
     /**
      * Force player to select an object
+     *
      * @param uuid Object {@link UUID} to be selected
      */
     public void forceSelect(UUID uuid) {
 
         GameObject entity = getInteractableEntity(uuid);
-        if(entity == null) /*  :(  */ return;
+        if (entity == null) /*  :(  */ return;
 
         selected_entity = new Pair<>(entity, null);
         loop.getConnection().sendPacket(new ServerboundRequestActionsPacket(uuid));
@@ -382,18 +385,19 @@ public class GameBoard implements MouseExecutor {
 
     /**
      * Find interactable entity by UUID
+     *
      * @param uuid Entity UUID
      * @return Nullable entity
      */
     private GameObject getInteractableEntity(UUID uuid) {
 
         // Find player
-        for(EntityPlayer player : players)
-            if(player.getUuid().equals(uuid)) return player;
+        for (EntityPlayer player : players)
+            if (player.getUuid().equals(uuid)) return player;
 
         // Find boat
-        for(TeamBoat boat : boats.values())
-            if(boat.getUuid().equals(uuid)) return boat;
+        for (TeamBoat boat : boats.values())
+            if (boat.getUuid().equals(uuid)) return boat;
 
         // Not found
         return null;

@@ -32,7 +32,7 @@ public class VoidTile extends GameTile {
      */
     public TeamBoat getBoat() {
         for (GameObject item : getItems())
-            if(item instanceof TeamBoat)
+            if (item instanceof TeamBoat)
                 return ((TeamBoat) item);
         return null;
     }
